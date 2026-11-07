@@ -10,8 +10,8 @@ h1,h2,h3{font-family:'Fraunces',Georgia,serif;line-height:1.05;margin:0}
 a{color:inherit}
 .wrap{max-width:1040px;margin:0 auto;padding:0 22px}
 header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.logo{font:800 22px 'Fraunces',Georgia,serif;text-decoration:none;letter-spacing:-.02em}
-.logo b{color:var(--acc)}
+.logo{font:800 22px 'Fraunces',Georgia,serif;text-decoration:none;letter-spacing:-.02em;color:var(--acc)}
+.logo:hover{color:var(--acc2)}
 nav{display:flex;gap:18px;font:13px 'JetBrains Mono',monospace;flex-wrap:wrap}
 nav a{text-decoration:none;color:var(--mute)}nav a:hover{color:var(--acc)}
 nav a.active,nav a[aria-current="page"]{color:var(--acc2);font-weight:600}
