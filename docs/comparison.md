@@ -11,6 +11,7 @@ outputs for reproduction.
 | latency / allocation / footprint | `docs/benchmarks.md`, `results/benchmarks/jmh-packed.json` |
 | API and migration | `docs/compatibility.md` |
 | engine internals | `docs/design.md` |
+| Python baseline (`inflect`) | `docs/python-baseline.md` |
 
 ## Headline numbers
 

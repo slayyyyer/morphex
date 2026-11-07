@@ -175,6 +175,7 @@ The lexical artifact is generated offline from a pinned Kaikki/Wiktionary dump (
 | `docs/benchmarks.md`     | JMH methodology, raw numbers, honest interpretation                         |
 | `docs/learning.md`       | candidate-oracle ceiling, learners, routing, seeds, decision                |
 | `docs/compatibility.md`  | differences from evo-inflector, intentional changes, migration recipe       |
+| `docs/python-baseline.md`  | PyPI `inflect` 7.6.0 scored on the same frozen P1 protocol                   |
 | `docs/design.md`         | engine architecture, precedence, lexicon layout, casing, compounds           |
 | `docs/comparison.md`     | head-to-head vs evo-inflector 2.0, with qualifications                      |
 

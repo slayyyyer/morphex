@@ -91,6 +91,24 @@ String plural = INFLECTOR.pluralize(word);</code></pre>
       25.4&nbsp;MB retained) — or use the rules-only build to drop the data entirely at the cost
       of irregular forms.</div>
     </div>
+    <div class="card">
+      <h3>Python baseline: <code>inflect</code> 7.6.0</h3>
+      <p class="small">The most widely used Python pluralization engine, scored on the same frozen P1
+      protocol (50,938 records, default modern mode). Full write-up in
+      <a href="https://github.com/slayyyyer/morphex/blob/main/docs/python-baseline.md">docs/python-baseline.md</a>.</p>
+      <table class="data">
+        <tr><th>System</th><th>P1 primary</th><th>Errors</th></tr>
+        <tr><td>This library</td><td><strong>99.997%</strong></td><td>1</td></tr>
+        <tr><td>evo-inflector 2.0</td><td>96.502%</td><td>1,222</td></tr>
+        <tr><td>PyPI <code>inflect</code></td><td>94.157%</td><td>2,041</td></tr>
+        <tr><td>Repaired rules only</td><td>88.618%</td><td>3,976</td></tr>
+      </table>
+      <p class="small"><code>inflect</code> agrees on the headline irregulars (<code>German</code>,
+      <code>blouse</code>, <code>person → people</code>, <code>die → dice</code>) and shares the
+      <code>passer-by → passer-bies</code> weakness. Its misses concentrate in initialism casing
+      (<code>UFO → UFOS</code>, 0/1,110 on the initialism slice), classical <code>-us</code> forms,
+      and mass nouns pluralized — the same structural overall-accuracy story (67.08% vs 68.83% evo2).</p>
+    </div>
   </section>
 </main>
 <footer class="site-footer"><div class="wrap"><span>english-inflector — deterministic English noun pluralization for Java.</span><span class="spacer"></span><a href="https://github.com/slayyyyer/morphex">GitHub</a><a href="./javadoc/">Javadoc</a></div></footer>
