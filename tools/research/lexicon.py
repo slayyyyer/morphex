@@ -53,7 +53,11 @@ def productive_form(lemma: str) -> str:
         return lemma[:-5] + "women"
     if low.endswith("wife"):
         return lemma[:-4] + "wives"
+    # Java's MAN rule is lowercase-only: proper names such as Cartman take the default
+    # productive suffix, not "cartmen". The mirror must match that guard or a proper
+    # name can be selected as a default that the engine would never produce itself.
     if (len(low) >= 6 and low.endswith("man") and not low.endswith("woman")
+            and lemma == lemma.lower()
             and low not in MAN_EXCEPTIONS and not low.endswith("human")):
         return lemma[:-3] + "men"
     if len(low) >= 5 and low.endswith("sis"):
@@ -80,19 +84,88 @@ def classical_like(lemma: str, form: str) -> bool:
     return False
 
 
+def form_sort_key(form: str) -> tuple[str, str]:
+    """Deterministic form order, independent of the order records appear in the dump."""
+    return (form.lower(), form)
+
+
+def unique_forms(forms: list[str]) -> list[str]:
+    return sorted(dict.fromkeys(forms), key=form_sort_key)
+
+
+def casing(form: str) -> str:
+    """Coarse casing shape, matching the runtime's LOWER/UPPER/CAPITALIZED/MIXED distinction."""
+    if form.islower():
+        return "LOWER"
+    if form.isupper():
+        return "UPPER"
+    if form[:1].isupper() and form[1:].islower():
+        return "CAPITALIZED"
+    return "MIXED"
+
+
 def derive_preferences(lemma: str, forms: list[str]) -> tuple[str, str | None, list[str]]:
-    """Anglicized preference, classical preference (or None), remaining accepted alternatives."""
-    classical_forms = [form for form in forms if form.lower() != lemma.lower() and classical_like(lemma, form)]
-    if not classical_forms:
-        return forms[0], None, forms[1:]
-    anglicized = productive_form(lemma)
-    if anglicized.lower() not in {form.lower() for form in forms}:
-        anglicized = next((form for form in forms if form not in classical_forms), forms[0])
-    classical = classical_forms[0]
-    alternatives = [form for form in forms if form != anglicized and form != classical]
+    """Stable anglicized/classical preferences and remaining accepted alternatives.
+
+    Source records are merged in dump order, so taking ``forms[0]`` made the selected
+    default depend on record order. Selection is now a pure function of the form set:
+
+    * an independently attested productive plural (``robots``) beats identity for an
+      eligible countable/mixed entry;
+    * if the productive form is not attested, an attested overt plural beats identity;
+    * an overt form is preferred over identity among the remaining forms;
+    * classical forms remain a separate preference selected only by ``Mode.CLASSICAL``.
+
+    Curated rows bypass this function and are authoritative.
+    """
+    ordered = unique_forms(forms)
+    identity = [form for form in ordered if form.lower() == lemma.lower()]
+    overt = [form for form in ordered if form.lower() != lemma.lower()]
+    classical_forms = [form for form in overt if classical_like(lemma, form)]
+    productive = productive_form(lemma)
+    lemma_case = casing(lemma)
+
+    if lemma_case == "UPPER":
+        # Uppercase entries are case-sensitive in the runtime. Prefer a suffix that preserves
+        # the lemma's case (LES -> LESs), then an attested identity (FOSS -> FOSS); otherwise
+        # a lower-case source variant would be re-cased as FOSSES/GOES and lose the accepted
+        # identity form. Only fall through to ordinary selection when neither exists.
+        exact_suffix = next((form for form in ordered if form in (lemma + "s", lemma + "es")), None)
+        if exact_suffix is not None:
+            anglicized = exact_suffix
+        elif identity:
+            anglicized = identity[0]
+        else:
+            candidates = [form for form in overt if casing(form) == "UPPER"] or overt
+            anglicized = _preferred_from(candidates, productive, classical_forms) or productive
+    else:
+        # A merge of case variants can put "Bombs" next to "bombs" under the same lower-case
+        # key. Select a form with the lemma's own casing before any case-mismatched variant;
+        # otherwise a lowercase head such as bomb is stored as "Bombs" and every compound
+        # using it inherits the wrong case (A-bomb -> A-Bombs).
+        candidates = [form for form in overt if casing(form) == lemma_case] or overt
+        anglicized = _preferred_from(candidates, productive, classical_forms)
+        if anglicized is None:
+            anglicized = identity[0] if identity else productive
+
+    classical = classical_forms[0] if classical_forms else None
     if classical == anglicized:
         classical = None
+    alternatives = [form for form in ordered if form != anglicized and form != classical]
     return anglicized, classical, alternatives
+
+
+def _preferred_from(candidates: list[str], productive: str,
+                    classical_forms: list[str]) -> str | None:
+    """Prefer an attested productive form, then a non-classical overt form."""
+    attested_productive = next(
+        (form for form in candidates if form.lower() == productive.lower()), None)
+    if attested_productive is not None:
+        return attested_productive
+    non_classical = [form for form in candidates if form not in classical_forms]
+    if non_classical:
+        return non_classical[0]
+    return candidates[0] if candidates else None
 
 
 def _split_allowed(lemma: str, split_filter: str, assignments: dict[str, dict[str, str]]) -> bool:
@@ -238,7 +311,11 @@ def build(split_filter: str = "all", selection: str = "compact",
             plural, classical, alternatives = derive_preferences(lemma, forms)
             if invariant:
                 plural = lemma
-                alternatives = [form for form in forms if form.lower() != lemma.lower()] + alternatives
+                classical = None
+                alternatives = sorted(
+                    {*alternatives, *(form for form in forms if form.lower() != lemma.lower())},
+                    key=form_sort_key,
+                )
         if not plural:
             skipped += 1
             continue
@@ -283,7 +360,7 @@ def run(split_filter: str = "all", target=None, selection: str = "compact", spli
     rows = build(split_filter, selection, membership, splits_path=splits_path)
     normalized_sha = dataset.sha256_file(dataset.NORMALIZED) if dataset.NORMALIZED.exists() else "missing"
     write(rows, target, split_filter, selection, normalized_sha)
-    target_membership = target.parent / "lexicon-membership-v1.bin"
+    target_membership = target.parent / dataset.CORE_MEMBERSHIP.name
     write_membership(target_membership, membership)
     if split_filter == "all":
         dataset.write_tsv(

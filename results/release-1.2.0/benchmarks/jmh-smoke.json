@@ -1,0 +1,427 @@
+[
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "io.github.slayyyyer.morphex.inflector.bench.ConcurrentBenchmark.inflectorConcurrent",
+        "mode" : "thrpt",
+        "threads" : 4,
+        "forks" : 1,
+        "jvm" : "C:\\Users\\justin\\projects\\morphex\\.tools\\jdk-21.0.13+9\\bin\\java.exe",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "21.0.13",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "21.0.13+9-LTS",
+        "warmupIterations" : 1,
+        "warmupTime" : "100 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "100 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 1396.8524194947613,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1396.8524194947613,
+                "50.0" : 1396.8524194947613,
+                "90.0" : 1396.8524194947613,
+                "95.0" : 1396.8524194947613,
+                "99.0" : 1396.8524194947613,
+                "99.9" : 1396.8524194947613,
+                "99.99" : 1396.8524194947613,
+                "99.999" : 1396.8524194947613,
+                "99.9999" : 1396.8524194947613,
+                "100.0" : 1396.8524194947613
+            },
+            "scoreUnit" : "ops/ms",
+            "rawData" : [
+                [
+                    1396.8524194947613
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.evo2LexicalHit",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "C:\\Users\\justin\\projects\\morphex\\.tools\\jdk-21.0.13+9\\bin\\java.exe",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "21.0.13",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "21.0.13+9-LTS",
+        "warmupIterations" : 1,
+        "warmupTime" : "100 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "100 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 263.97651828819437,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 263.97651828819437,
+                "50.0" : 263.97651828819437,
+                "90.0" : 263.97651828819437,
+                "95.0" : 263.97651828819437,
+                "99.0" : 263.97651828819437,
+                "99.9" : 263.97651828819437,
+                "99.99" : 263.97651828819437,
+                "99.999" : 263.97651828819437,
+                "99.9999" : 263.97651828819437,
+                "100.0" : 263.97651828819437
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    263.97651828819437
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "C:\\Users\\justin\\projects\\morphex\\.tools\\jdk-21.0.13+9\\bin\\java.exe",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "21.0.13",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "21.0.13+9-LTS",
+        "warmupIterations" : 1,
+        "warmupTime" : "100 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "100 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 750.6185736244385,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 750.6185736244385,
+                "50.0" : 750.6185736244385,
+                "90.0" : 750.6185736244385,
+                "95.0" : 750.6185736244385,
+                "99.0" : 750.6185736244385,
+                "99.9" : 750.6185736244385,
+                "99.99" : 750.6185736244385,
+                "99.999" : 750.6185736244385,
+                "99.9999" : 750.6185736244385,
+                "100.0" : 750.6185736244385
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    750.6185736244385
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompound",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "C:\\Users\\justin\\projects\\morphex\\.tools\\jdk-21.0.13+9\\bin\\java.exe",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "21.0.13",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "21.0.13+9-LTS",
+        "warmupIterations" : 1,
+        "warmupTime" : "100 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "100 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 1141.1201384261976,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1141.1201384261976,
+                "50.0" : 1141.1201384261976,
+                "90.0" : 1141.1201384261976,
+                "95.0" : 1141.1201384261976,
+                "99.0" : 1141.1201384261976,
+                "99.9" : 1141.1201384261976,
+                "99.99" : 1141.1201384261976,
+                "99.999" : 1141.1201384261976,
+                "99.9999" : 1141.1201384261976,
+                "100.0" : 1141.1201384261976
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1141.1201384261976
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorDiagnosticsWorkload",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "C:\\Users\\justin\\projects\\morphex\\.tools\\jdk-21.0.13+9\\bin\\java.exe",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "21.0.13",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "21.0.13+9-LTS",
+        "warmupIterations" : 1,
+        "warmupTime" : "100 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "100 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 1289.431564839753,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1289.431564839753,
+                "50.0" : 1289.431564839753,
+                "90.0" : 1289.431564839753,
+                "95.0" : 1289.431564839753,
+                "99.0" : 1289.431564839753,
+                "99.9" : 1289.431564839753,
+                "99.99" : 1289.431564839753,
+                "99.999" : 1289.431564839753,
+                "99.9999" : 1289.431564839753,
+                "100.0" : 1289.431564839753
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1289.431564839753
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorLexicalHit",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "C:\\Users\\justin\\projects\\morphex\\.tools\\jdk-21.0.13+9\\bin\\java.exe",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "21.0.13",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "21.0.13+9-LTS",
+        "warmupIterations" : 1,
+        "warmupTime" : "100 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "100 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 104.57025591739429,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 104.57025591739429,
+                "50.0" : 104.57025591739429,
+                "90.0" : 104.57025591739429,
+                "95.0" : 104.57025591739429,
+                "99.0" : 104.57025591739429,
+                "99.9" : 104.57025591739429,
+                "99.99" : 104.57025591739429,
+                "99.999" : 104.57025591739429,
+                "99.9999" : 104.57025591739429,
+                "100.0" : 104.57025591739429
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    104.57025591739429
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorUnknown",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "C:\\Users\\justin\\projects\\morphex\\.tools\\jdk-21.0.13+9\\bin\\java.exe",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "21.0.13",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "21.0.13+9-LTS",
+        "warmupIterations" : 1,
+        "warmupTime" : "100 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "100 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 977.1032139858005,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 977.1032139858005,
+                "50.0" : 977.1032139858005,
+                "90.0" : 977.1032139858005,
+                "95.0" : 977.1032139858005,
+                "99.0" : 977.1032139858005,
+                "99.9" : 977.1032139858005,
+                "99.99" : 977.1032139858005,
+                "99.999" : 977.1032139858005,
+                "99.9999" : 977.1032139858005,
+                "100.0" : 977.1032139858005
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    977.1032139858005
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorUnsupported",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "C:\\Users\\justin\\projects\\morphex\\.tools\\jdk-21.0.13+9\\bin\\java.exe",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "21.0.13",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "21.0.13+9-LTS",
+        "warmupIterations" : 1,
+        "warmupTime" : "100 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "100 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 442.2718556611174,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 442.2718556611174,
+                "50.0" : 442.2718556611174,
+                "90.0" : 442.2718556611174,
+                "95.0" : 442.2718556611174,
+                "99.0" : 442.2718556611174,
+                "99.9" : 442.2718556611174,
+                "99.99" : 442.2718556611174,
+                "99.999" : 442.2718556611174,
+                "99.9999" : 442.2718556611174,
+                "100.0" : 442.2718556611174
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    442.2718556611174
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.37",
+        "benchmark" : "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorUppercase",
+        "mode" : "avgt",
+        "threads" : 1,
+        "forks" : 1,
+        "jvm" : "C:\\Users\\justin\\projects\\morphex\\.tools\\jdk-21.0.13+9\\bin\\java.exe",
+        "jvmArgs" : [
+        ],
+        "jdkVersion" : "21.0.13",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "21.0.13+9-LTS",
+        "warmupIterations" : 1,
+        "warmupTime" : "100 ms",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 1,
+        "measurementTime" : "100 ms",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 1047.118963820961,
+            "scoreError" : "NaN",
+            "scoreConfidence" : [
+                "NaN",
+                "NaN"
+            ],
+            "scorePercentiles" : {
+                "0.0" : 1047.118963820961,
+                "50.0" : 1047.118963820961,
+                "90.0" : 1047.118963820961,
+                "95.0" : 1047.118963820961,
+                "99.0" : 1047.118963820961,
+                "99.9" : 1047.118963820961,
+                "99.99" : 1047.118963820961,
+                "99.999" : 1047.118963820961,
+                "99.9999" : 1047.118963820961,
+                "100.0" : 1047.118963820961
+            },
+            "scoreUnit" : "ns/op",
+            "rawData" : [
+                [
+                    1047.118963820961
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+

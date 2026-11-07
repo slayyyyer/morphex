@@ -31,12 +31,13 @@
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/comparison.md">docs/comparison.md</a>.</p>
       <div class="tw"><table class="data">
         <tr><th>Dimension</th><th>evo-inflector 2.0</th><th>This library</th></tr>
-        <tr><td>P1 frozen-lexicon accuracy (36,239 records)</td><td>96.473% (1,278 errors)</td><td><strong>100.000%</strong> (0 errors)</td></tr>
-        <tr><td>P1 paired gain (95% CI)</td><td>—</td><td><strong>+3.5266 pp</strong> [+3.3323, +3.7159], 1,278 fixes, 0 regressions</td></tr>
-        <tr><td>P2 unseen-family accuracy</td><td>96.473% (1,278 errors)</td><td><strong>97.376%</strong> (951 errors; +0.9023 pp)</td></tr>
-        <tr><td>External UD EWT selected overall / unseen / seen</td><td>98.12% / 98.90% / 94.29%</td><td><strong>98.21%</strong> / <strong>99.17%</strong> / 93.48%; 98.76% alternative coverage</td></tr>
-        <tr><td>Repeated lookup (fresh short run)</td><td>81.5 ns/op</td><td><strong>77.8 ns/op</strong> (0.95×)</td></tr>
-        <tr><td>Distinct-word lookup (fresh short run)</td><td>163.6 ns/op</td><td>226.0 ns/op (1.38× slower)</td></tr>
+        <tr><td>P1 frozen-lexicon accuracy (36,241 records)</td><td>96.474% (1,278 errors)</td><td><strong>100.000%</strong> (0 errors)</td></tr>
+        <tr><td>P1 paired gain (95% CI)</td><td>—</td><td><strong>+3.5264 pp</strong> [+3.3318, +3.7132], 1,278 fixes, 0 regressions</td></tr>
+        <tr><td>P2 family-holdout accuracy (36,241)</td><td>96.474% (1,278 errors)</td><td><strong>97.365%</strong> (955 errors; +0.8913 pp; +4 vs historical v1)</td></tr>
+        <tr><td>External UD EWT selected overall / full-vocab seen (2,148) / artifact hit (363)</td><td>98.12% / 98.23% / 94.21%</td><td><strong>98.76%</strong> / <strong>98.88%</strong> / <strong>96.69%</strong>; 98.99% alternative coverage</td></tr>
+        <tr><td>Repeated lookup (fixed workload)</td><td>110.9 ns/op</td><td><strong>81.4 ns/op</strong> (0.73×)</td></tr>
+        <tr><td>Compacted regular-word lookup</td><td>104.7 ns/op</td><td>456.4 ns/op (4.36× slower)</td></tr>
+        <tr><td>Concurrent throughput, 4 threads</td><td><strong>20.91M ops/s</strong></td><td>4.82M ops/s (4.34× lower)</td></tr>
         <tr><td>Runtime dependencies</td><td>none</td><td>none</td></tr>
       </table></div>
     </div>
@@ -74,7 +75,7 @@
           <tr><td><code>user_id</code>, <code>3.14</code></td><td>unchanged (<code>FALLBACK</code>)</td><td>out of scope, reported</td></tr>
           <tr><td><code>well-known</code></td><td>unchanged</td><td>unmatched compounds not guessed</td></tr>
         </table></div>
-        <div class="callout warn"><strong>Qualifications:</strong> P1 is dictionary coverage, not generalization. External selected accuracy is only slightly ahead (98.21% vs 98.12%) and the seen subset is lower; alternative coverage is 98.76%. Remaining errors are mostly EWT annotation noise. Distinct-word lookup is 1.38× slower than stock.</div>
+        <div class="callout warn"><strong>Qualifications:</strong> P1 is dictionary coverage, not generalization. External overall accuracy is 98.76% vs 98.12%; 98.88% on full-vocabulary-seen lemmas and 96.69% on compact-artifact hits. Only 36 lemmas are genuinely unseen, so that slice cannot support a strong unseen-generalization claim. Current P2 has 4 more errors than the historical v1 measurement (955 vs 951).</div>
       </div>
     </div>
     <div class="card">
@@ -89,18 +90,19 @@ String plural = INFLECTOR.pluralize(word);</code></pre>
       <div class="callout"><strong>Which should you use?</strong> Stay with evo-inflector 2.0 if you want the
       smallest thing that works — no data file, static API, well understood. Choose this library
       if the rows above matter to you and you can carry the 7.55&nbsp;MB TSV (1.18&nbsp;MB gzip,
-      ~24&nbsp;MB retained) — or use the rules-only build to drop the data entirely at the cost
-      of irregular forms.</div>
+      ~18.2&nbsp;MiB retained) — or use the rules-only runtime mode, which does not load the data
+      but does not remove it from the JAR or its CC BY-SA obligations. It loses irregular forms.</div>
     </div>
     <div class="card">
       <h3>Python baseline: <code>inflect</code> 7.6.0</h3>
-      <p class="small">The most widely used Python pluralization engine, scored on the same frozen P1
-      protocol (50,938 records, default modern mode). Full write-up in
+      <p class="small">The most widely used Python pluralization engine, scored on the <b>historical v1</b>
+      P1 protocol (36,239 primary / 50,938 overall, default modern mode). These baseline numbers are
+      retained as historical evidence and are not current v2 measurements. Full write-up in
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/python-baseline.md">docs/python-baseline.md</a>.</p>
       <div class="tw"><table class="data">
         <tr><th>System</th><th>P1 primary</th><th>Errors</th></tr>
-        <tr><td>This library</td><td><strong>100.000%</strong></td><td>0 (36,239 records)</td></tr>
-        <tr><td>evo-inflector 2.0</td><td>96.473%</td><td>1,278</td></tr>
+        <tr><td>This library (historical v1 run)</td><td><strong>100.000%</strong></td><td>0 (36,239 records)</td></tr>
+        <tr><td>evo-inflector 2.0 (historical v1 run)</td><td>96.473%</td><td>1,278</td></tr>
         <tr><td>PyPI <code>inflect</code></td><td>94.169%</td><td>2,113</td></tr>
         <tr><td>Repaired rules only</td><td>95.168%</td><td>1,751</td></tr>
       </table></div>

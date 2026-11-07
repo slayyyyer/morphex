@@ -25,6 +25,9 @@ import org.openjdk.jmh.infra.Blackhole;
 /**
  * Identical workloads for stock evo-inflector 2.0 and this library. Data preparation happens in
  * {@code @Setup}, outside the timed region; every result is consumed by the blackhole.
+ *
+ * <p>Category methods consume {@code benchmark-workload-v1.tsv}. The older unique/mixed/repeated
+ * methods are retained for comparison with the historical measurements.
  */
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -34,16 +37,21 @@ import org.openjdk.jmh.infra.Blackhole;
 @State(Scope.Thread)
 public class LookupBenchmark {
 
-    /** Loaded from the shipped artifact, so the corpus is the real vocabulary, not five tokens. */
+    private static final EnglishInflector INFLECTOR = EnglishInflector.standard();
+
+    /** Loaded from the shipped artifact, so the historical corpus is the real vocabulary. */
     private String[] unique = new String[0];
     private String[] mixedCase = new String[0];
     private String[] mostlyRepeated = new String[0];
+    private Workload workload;
     private int index;
+    private int categoryIndex;
+    private int allIndex;
 
     @Setup(Level.Trial)
     public void setUp() throws IOException {
         List<String> lemmas = new ArrayList<>(60_000);
-        InputStream in = EnglishInflector.class.getResourceAsStream("/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv");
+        InputStream in = EnglishInflector.class.getResourceAsStream("/io/github/slayyyyer/morphex/inflector/lexicon-v2.tsv");
         if (in != null) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
                 String line;
@@ -72,6 +80,7 @@ public class LookupBenchmark {
         for (int i = 0; i < mostlyRepeated.length; i++) {
             mostlyRepeated[i] = unique[i * 97 % unique.length];
         }
+        workload = Workload.load();
     }
 
     private String nextUnique() {
@@ -98,7 +107,101 @@ public class LookupBenchmark {
         return mostlyRepeated[index];
     }
 
-    // ---------------------------------------------------------------- evo-inflector 2.0 (stock)
+    private String nextCategory(String category) {
+        String[] values = workload.category(category);
+        categoryIndex++;
+        if (categoryIndex >= values.length) {
+            categoryIndex = 0;
+        }
+        return values[categoryIndex];
+    }
+
+    private String nextAll() {
+        String[] values = workload.all();
+        allIndex++;
+        if (allIndex >= values.length) {
+            allIndex = 0;
+        }
+        return values[allIndex];
+    }
+
+    // ---------------------------------------------------------------- fixed workload: evo-inflector 2.0
+
+    @Benchmark
+    public void evo2LexicalHit(Blackhole blackhole) {
+        blackhole.consume(org.atteo.evo.inflector.English.plural(nextCategory("lexical")));
+    }
+
+    @Benchmark
+    public void evo2Compacted(Blackhole blackhole) {
+        blackhole.consume(org.atteo.evo.inflector.English.plural(nextCategory("compacted")));
+    }
+
+    @Benchmark
+    public void evo2Unknown(Blackhole blackhole) {
+        blackhole.consume(org.atteo.evo.inflector.English.plural(nextCategory("unknown")));
+    }
+
+    @Benchmark
+    public void evo2Uppercase(Blackhole blackhole) {
+        blackhole.consume(org.atteo.evo.inflector.English.plural(nextCategory("uppercase")));
+    }
+
+    @Benchmark
+    public void evo2Compound(Blackhole blackhole) {
+        blackhole.consume(org.atteo.evo.inflector.English.plural(nextCategory("compound")));
+    }
+
+    @Benchmark
+    public void evo2Unsupported(Blackhole blackhole) {
+        blackhole.consume(org.atteo.evo.inflector.English.plural(nextCategory("unsupported")));
+    }
+
+    @Benchmark
+    public void evo2AnalyzeWorkloadEquivalent(Blackhole blackhole) {
+        String word = nextAll();
+        blackhole.consume(org.atteo.evo.inflector.English.plural(word));
+        blackhole.consume(org.atteo.evo.inflector.English.plural(word, 2));
+    }
+
+    // ---------------------------------------------------------------- fixed workload: this library
+
+    @Benchmark
+    public void inflectorLexicalHit(Blackhole blackhole) {
+        blackhole.consume(INFLECTOR.pluralize(nextCategory("lexical")));
+    }
+
+    @Benchmark
+    public void inflectorCompacted(Blackhole blackhole) {
+        blackhole.consume(INFLECTOR.pluralize(nextCategory("compacted")));
+    }
+
+    @Benchmark
+    public void inflectorUnknown(Blackhole blackhole) {
+        blackhole.consume(INFLECTOR.pluralize(nextCategory("unknown")));
+    }
+
+    @Benchmark
+    public void inflectorUppercase(Blackhole blackhole) {
+        blackhole.consume(INFLECTOR.pluralize(nextCategory("uppercase")));
+    }
+
+    @Benchmark
+    public void inflectorCompound(Blackhole blackhole) {
+        blackhole.consume(INFLECTOR.pluralize(nextCategory("compound")));
+    }
+
+    @Benchmark
+    public void inflectorUnsupported(Blackhole blackhole) {
+        blackhole.consume(INFLECTOR.pluralize(nextCategory("unsupported")));
+    }
+
+    @Benchmark
+    public void inflectorDiagnosticsWorkload(Blackhole blackhole) {
+        blackhole.consume(INFLECTOR.analyze(nextAll()));
+    }
+
+    // ---------------------------------------------------------------- historical corpus comparisons
 
     @Benchmark
     public void evo2Repeated(Blackhole blackhole) {
@@ -120,26 +223,24 @@ public class LookupBenchmark {
         blackhole.consume(org.atteo.evo.inflector.English.plural(nextUnique(), 2));
     }
 
-    // ---------------------------------------------------------------- this library
-
     @Benchmark
     public void inflectorRepeated(Blackhole blackhole) {
-        blackhole.consume(EnglishInflector.standard().pluralize(nextRepeated()));
+        blackhole.consume(INFLECTOR.pluralize(nextRepeated()));
     }
 
     @Benchmark
     public void inflectorUnique(Blackhole blackhole) {
-        blackhole.consume(EnglishInflector.standard().pluralize(nextUnique()));
+        blackhole.consume(INFLECTOR.pluralize(nextUnique()));
     }
 
     @Benchmark
     public void inflectorMixedCase(Blackhole blackhole) {
-        blackhole.consume(EnglishInflector.standard().pluralize(nextMixed()));
+        blackhole.consume(INFLECTOR.pluralize(nextMixed()));
     }
 
     @Benchmark
     public void inflectorCount(Blackhole blackhole) {
-        blackhole.consume(EnglishInflector.standard().pluralize(nextUnique(), 2));
+        blackhole.consume(INFLECTOR.pluralize(nextUnique(), 2));
     }
 
     @Benchmark
@@ -149,18 +250,18 @@ public class LookupBenchmark {
 
     @Benchmark
     public void inflectorAnalyze(Blackhole blackhole) {
-        blackhole.consume(EnglishInflector.standard().analyze(nextUnique()));
+        blackhole.consume(INFLECTOR.analyze(nextUnique()));
     }
 
     @Benchmark
     public void evo2AnalyzeEquivalent(Blackhole blackhole) {
-        // evo-inflector has no diagnostic API; the closest equivalent is two plural calls (word and count).
+        // evo-inflector has no diagnostic API; the closest equivalent is two plural calls.
         String word = nextUnique();
         blackhole.consume(org.atteo.evo.inflector.English.plural(word));
         blackhole.consume(org.atteo.evo.inflector.English.plural(word, 2));
     }
 
-    /** Rules-only instance built once, mirroring a consumer that opts out of the bundled lexicon. */
+    /** Rules-only instance built once, mirroring a consumer that opts out of loading the bundled lexicon. */
     static final class RulesOnly {
         static final EnglishInflector INFLECTOR = EnglishInflector.builder().withoutBundledLexicon().build();
     }

@@ -2,9 +2,10 @@
 
 A third-party reference point outside the Java ecosystem: PyPI
 [`inflect`](https://pypi.org/project/inflect/) 7.6.0 (`jaraco/inflect`), the most widely
-used Python singular→plural engine, scored on the same frozen P1 protocol as everything
-else in this repository. Nothing here was tuned; `inflect` runs in its default (modern)
-mode, matching this library's anglicized default.
+used Python singular→plural engine, scored on the historical v1 P1 protocol. Nothing here was
+tuned; `inflect` runs in its default (modern) mode, matching this library's anglicized
+default. These numbers are retained as historical baseline evidence; they are not current v2
+measurements and use the old 36,239 / 50,938 denominator.
 
 ## Method
 
@@ -22,7 +23,7 @@ mode, matching this library's anglicized default.
 * Report: `results/eval/pyinflect-report.json` (plus the generated `.md`). Like P1, this
   measures dictionary coverage on the frozen test families, not unseen generalization.
 
-## Headline (P1, 36,239 primary records)
+## Headline (historical v1 P1, 36,239 primary records)
 
 | system | primary accuracy | errors | overall accuracy | overall errors / 50,938 |
 | --- | --- | --- | --- | --- |
@@ -31,9 +32,9 @@ mode, matching this library's anglicized default.
 | **PyPI `inflect` 7.6.0** | **94.169%** | **2,113** | **67.152%** | **16,732** |
 | repaired rules only (historical run) | 88.714% | 4,090 | 64.259% | 18,206 |
 
-The rules-only row is from the historical companion run, before the final backoff and
-compound changes; the current rules-only P1 result is 95.168% (1,751 errors). The `inflect`
-comparison itself is unchanged because its predictions were not retuned.
+The rules-only row is from the historical companion run. The current v2 rules-only P1 result
+is 95.163% (1,753/36,241), on a different denominator; it is not substituted into this
+historical `inflect` comparison. The `inflect` predictions were not retuned.
 
 Paired vs evo2: **−2.2846 pp** `[-2.4513, -2.1104]`, 103 corrections, 937 regressions —
 `inflect` sits between the rules-only floor and evo2 on this noun dictionary.

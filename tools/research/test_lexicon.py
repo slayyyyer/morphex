@@ -22,9 +22,69 @@ class ArtifactCompactionTest(unittest.TestCase):
         self.assertEqual("women", lexicon.productive_form("woman"))
         self.assertEqual("aircraftwomen", lexicon.productive_form("aircraftwoman"))
 
+    def test_proper_name_does_not_use_the_lowercase_man_backoff(self):
+        self.assertEqual("Cartmans", lexicon.productive_form("Cartman"))
+        preferred, _, alternatives = lexicon.derive_preferences(
+            "Cartman", ["Cartman", "cartmen", "Cartmans"])
+        self.assertEqual("Cartmans", preferred)
+        self.assertEqual(["Cartman", "cartmen"], alternatives)
+
     def test_hyphenated_and_uppercase_entries_are_never_omitted(self):
         self.assertFalse(lexicon.is_rule_reproducible("credit-card", ["credit-cards"]))
         self.assertFalse(lexicon.is_rule_reproducible("CAT", ["CATS"]))
+
+
+class PreferenceSelectionTest(unittest.TestCase):
+    def test_attested_regular_plural_beats_identity(self):
+        for lemma in ("robot", "plate", "way", "craft", "prawn", "wonton"):
+            preferred, classical, alternatives = lexicon.derive_preferences(
+                lemma, [lemma, lemma + "s"])
+            self.assertEqual(lemma + "s", preferred)
+            self.assertIsNone(classical)
+            self.assertEqual([lemma], alternatives)
+
+    def test_selection_is_independent_of_source_order(self):
+        variants = [
+            ["plate", "plates"],
+            ["plates", "plate"],
+        ]
+        results = [lexicon.derive_preferences("plate", forms) for forms in variants]
+        self.assertEqual(results[0], results[1])
+        self.assertEqual("plates", results[0][0])
+
+    def test_classical_form_is_not_the_default_and_stays_an_alternative(self):
+        forms = ["cactus", "cactuses", "cacti"]
+        for permutation in (forms, list(reversed(forms))):
+            preferred, classical, alternatives = lexicon.derive_preferences("cactus", permutation)
+            self.assertEqual("cactuses", preferred)
+            self.assertEqual("cacti", classical)
+            self.assertEqual(["cactus"], alternatives)
+
+    def test_irregular_overt_plural_is_kept_when_no_productive_form_is_attested(self):
+        preferred, classical, alternatives = lexicon.derive_preferences("child", ["child", "children"])
+        self.assertEqual("children", preferred)
+        self.assertIsNone(classical)
+        self.assertEqual(["child"], alternatives)
+
+    def test_lowercase_lemma_does_not_select_a_capitalized_source_variant(self):
+        preferred, classical, alternatives = lexicon.derive_preferences("bomb", ["Bombs", "bombs"])
+        self.assertEqual("bombs", preferred)
+        self.assertIsNone(classical)
+        self.assertEqual(["Bombs"], alternatives)
+
+    def test_uppercase_identity_beats_a_lowercase_source_variant(self):
+        for lemma, forms in (("FOSS", ["FOSS", "fosses"]), ("GO", ["GO", "goes"]),
+                             ("MLEM", ["MLEM", "mlems"]), ("ROSC", ["ROSC", "roscada"])):
+            preferred, classical, alternatives = lexicon.derive_preferences(lemma, forms)
+            self.assertEqual(lemma, preferred)
+            self.assertIsNone(classical)
+            self.assertEqual([forms[1]], alternatives)
+
+    def test_uppercase_case_preserving_initialism_suffix_wins(self):
+        preferred, classical, alternatives = lexicon.derive_preferences("LES", ["LESs", "leses"])
+        self.assertEqual("LESs", preferred)
+        self.assertIsNone(classical)
+        self.assertEqual(["leses"], alternatives)
 
 
 class EvaluationContractTest(unittest.TestCase):

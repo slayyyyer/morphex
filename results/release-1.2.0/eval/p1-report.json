@@ -1,0 +1,459 @@
+{
+  "generated": "2026-11-07T21:05:12+00:00",
+  "protocol_version": "eval-v2",
+  "split": "test",
+  "lexicon_split": "all",
+  "records": 50978,
+  "denominators": {
+    "overall": 50978,
+    "primary": 36241
+  },
+  "gold_sha256": "334510e7f63ee04362181f7104e64b8cd6a69583d1d9a88f9485577bff492b98",
+  "prediction_sha256": {
+    "p1-test-preds.tsv": "0283afa3183d272ced51509fe88bc00b28a9371aafa008ac56c1dd8ec6785c07"
+  },
+  "config": {
+    "baseline": "evo2",
+    "iterations": 2000,
+    "seed": 20261107,
+    "primary_selector": "countability in {COUNTABLE,MIXED} and not invariant"
+  },
+  "revision": "05fefd36553cae68490acd317e472373e21bd8c7",
+  "systems": {
+    "evo2": {
+      "overall": {
+        "total": 50978,
+        "correct": 35089,
+        "errors": 15889,
+        "accuracy": 0.6883165286986543
+      },
+      "primary": {
+        "total": 36241,
+        "correct": 34963,
+        "errors": 1278,
+        "accuracy": 0.9647360724041831
+      },
+      "primary_by_bucket": {
+        "compound": {
+          "total": 2018,
+          "correct": 1945,
+          "errors": 73,
+          "accuracy": 0.9638255698711595
+        },
+        "initialism": {
+          "total": 806,
+          "correct": 729,
+          "errors": 77,
+          "accuracy": 0.9044665012406948
+        },
+        "simple": {
+          "total": 33149,
+          "correct": 32042,
+          "errors": 1107,
+          "accuracy": 0.9666053274608586
+        },
+        "unicode": {
+          "total": 268,
+          "correct": 247,
+          "errors": 21,
+          "accuracy": 0.9216417910447762
+        }
+      },
+      "primary_by_source": {
+        "evo2": {
+          "total": 36241,
+          "correct": 34963,
+          "errors": 1278,
+          "accuracy": 0.9647360724041831
+        }
+      },
+      "primary_plain_non_invariant": {
+        "total": 33149,
+        "correct": 32042,
+        "errors": 1107,
+        "accuracy": 0.9666053274608586
+      },
+      "by_bucket": {
+        "compound": {
+          "total": 2601,
+          "correct": 1954,
+          "errors": 647,
+          "accuracy": 0.7512495194156094
+        },
+        "initialism": {
+          "total": 1110,
+          "correct": 729,
+          "errors": 381,
+          "accuracy": 0.6567567567567567
+        },
+        "simple": {
+          "total": 46916,
+          "correct": 32159,
+          "errors": 14757,
+          "accuracy": 0.6854591184244181
+        },
+        "unicode": {
+          "total": 351,
+          "correct": 247,
+          "errors": 104,
+          "accuracy": 0.7037037037037037
+        }
+      },
+      "by_countability": {
+        "COUNTABLE": {
+          "total": 29592,
+          "correct": 28242,
+          "errors": 1350,
+          "accuracy": 0.9543795620437956
+        },
+        "MASS": {
+          "total": 13687,
+          "correct": 96,
+          "errors": 13591,
+          "accuracy": 0.007013954847665668
+        },
+        "MIXED": {
+          "total": 6915,
+          "correct": 6746,
+          "errors": 169,
+          "accuracy": 0.9755603759942155
+        },
+        "PLURAL_ONLY": {
+          "total": 784,
+          "correct": 5,
+          "errors": 779,
+          "accuracy": 0.006377551020408163
+        }
+      },
+      "by_length": {
+        "short": {
+          "total": 3757,
+          "correct": 3469,
+          "errors": 288,
+          "accuracy": 0.9233430928932659
+        },
+        "medium": {
+          "total": 17226,
+          "correct": 16637,
+          "errors": 589,
+          "accuracy": 0.9658075002902589
+        },
+        "long": {
+          "total": 15258,
+          "correct": 14857,
+          "errors": 401,
+          "accuracy": 0.9737187049416699
+        }
+      },
+      "predicted": 50978
+    },
+    "lexicon": {
+      "overall": {
+        "total": 50978,
+        "correct": 50978,
+        "errors": 0,
+        "accuracy": 1.0
+      },
+      "primary": {
+        "total": 36241,
+        "correct": 36241,
+        "errors": 0,
+        "accuracy": 1.0
+      },
+      "primary_by_bucket": {
+        "compound": {
+          "total": 2018,
+          "correct": 2018,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "initialism": {
+          "total": 806,
+          "correct": 806,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "simple": {
+          "total": 33149,
+          "correct": 33149,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "unicode": {
+          "total": 268,
+          "correct": 268,
+          "errors": 0,
+          "accuracy": 1.0
+        }
+      },
+      "primary_by_source": {
+        "lexicon:lexicon": {
+          "total": 7245,
+          "correct": 7245,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "lexicon:rule": {
+          "total": 28996,
+          "correct": 28996,
+          "errors": 0,
+          "accuracy": 1.0
+        }
+      },
+      "primary_plain_non_invariant": {
+        "total": 33149,
+        "correct": 33149,
+        "errors": 0,
+        "accuracy": 1.0
+      },
+      "by_bucket": {
+        "compound": {
+          "total": 2601,
+          "correct": 2601,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "initialism": {
+          "total": 1110,
+          "correct": 1110,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "simple": {
+          "total": 46916,
+          "correct": 46916,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "unicode": {
+          "total": 351,
+          "correct": 351,
+          "errors": 0,
+          "accuracy": 1.0
+        }
+      },
+      "by_countability": {
+        "COUNTABLE": {
+          "total": 29592,
+          "correct": 29592,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "MASS": {
+          "total": 13687,
+          "correct": 13687,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "MIXED": {
+          "total": 6915,
+          "correct": 6915,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "PLURAL_ONLY": {
+          "total": 784,
+          "correct": 784,
+          "errors": 0,
+          "accuracy": 1.0
+        }
+      },
+      "by_length": {
+        "short": {
+          "total": 3757,
+          "correct": 3757,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "medium": {
+          "total": 17226,
+          "correct": 17226,
+          "errors": 0,
+          "accuracy": 1.0
+        },
+        "long": {
+          "total": 15258,
+          "correct": 15258,
+          "errors": 0,
+          "accuracy": 1.0
+        }
+      },
+      "predicted": 50978
+    },
+    "rules": {
+      "overall": {
+        "total": 50978,
+        "correct": 34562,
+        "errors": 16416,
+        "accuracy": 0.6779787359253011
+      },
+      "primary": {
+        "total": 36241,
+        "correct": 34488,
+        "errors": 1753,
+        "accuracy": 0.9516293700504953
+      },
+      "primary_by_bucket": {
+        "compound": {
+          "total": 2018,
+          "correct": 1869,
+          "errors": 149,
+          "accuracy": 0.9261645193260654
+        },
+        "initialism": {
+          "total": 806,
+          "correct": 0,
+          "errors": 806,
+          "accuracy": 0.0
+        },
+        "simple": {
+          "total": 33149,
+          "correct": 32366,
+          "errors": 783,
+          "accuracy": 0.9763793779601194
+        },
+        "unicode": {
+          "total": 268,
+          "correct": 253,
+          "errors": 15,
+          "accuracy": 0.9440298507462687
+        }
+      },
+      "primary_by_source": {
+        "rules:compound": {
+          "total": 1915,
+          "correct": 1869,
+          "errors": 46,
+          "accuracy": 0.9759791122715404
+        },
+        "rules:fallback": {
+          "total": 103,
+          "correct": 0,
+          "errors": 103,
+          "accuracy": 0.0
+        },
+        "rules:rule": {
+          "total": 34223,
+          "correct": 32619,
+          "errors": 1604,
+          "accuracy": 0.9531309353358852
+        }
+      },
+      "primary_plain_non_invariant": {
+        "total": 33149,
+        "correct": 32366,
+        "errors": 783,
+        "accuracy": 0.9763793779601194
+      },
+      "by_bucket": {
+        "compound": {
+          "total": 2601,
+          "correct": 1942,
+          "errors": 659,
+          "accuracy": 0.746635909265667
+        },
+        "initialism": {
+          "total": 1110,
+          "correct": 0,
+          "errors": 1110,
+          "accuracy": 0.0
+        },
+        "simple": {
+          "total": 46916,
+          "correct": 32367,
+          "errors": 14549,
+          "accuracy": 0.6898925739619746
+        },
+        "unicode": {
+          "total": 351,
+          "correct": 253,
+          "errors": 98,
+          "accuracy": 0.7207977207977208
+        }
+      },
+      "by_countability": {
+        "COUNTABLE": {
+          "total": 29592,
+          "correct": 27941,
+          "errors": 1651,
+          "accuracy": 0.9442078940254123
+        },
+        "MASS": {
+          "total": 13687,
+          "correct": 69,
+          "errors": 13618,
+          "accuracy": 0.005041280046759699
+        },
+        "MIXED": {
+          "total": 6915,
+          "correct": 6548,
+          "errors": 367,
+          "accuracy": 0.9469269703543023
+        },
+        "PLURAL_ONLY": {
+          "total": 784,
+          "correct": 4,
+          "errors": 780,
+          "accuracy": 0.00510204081632653
+        }
+      },
+      "by_length": {
+        "short": {
+          "total": 3757,
+          "correct": 2870,
+          "errors": 887,
+          "accuracy": 0.7639073729039128
+        },
+        "medium": {
+          "total": 17226,
+          "correct": 16804,
+          "errors": 422,
+          "accuracy": 0.975502147915941
+        },
+        "long": {
+          "total": 15258,
+          "correct": 14814,
+          "errors": 444,
+          "accuracy": 0.9709005112072355
+        }
+      },
+      "predicted": 50978
+    }
+  },
+  "comparisons": [
+    {
+      "corrections": 1278,
+      "regressions": 0,
+      "net_corrections": 1278,
+      "baseline_errors": 1278,
+      "candidate_errors": 0,
+      "delta_accuracy_pp": 3.526392759581689,
+      "ci95_pp": [
+        3.33176261884303,
+        3.7131565947637086
+      ],
+      "relative_error_reduction": 1.0,
+      "iterations": 2000,
+      "families": 34323,
+      "baseline": "evo2",
+      "candidate": "lexicon"
+    },
+    {
+      "corrections": 463,
+      "regressions": 938,
+      "net_corrections": -475,
+      "baseline_errors": 1278,
+      "candidate_errors": 1753,
+      "delta_accuracy_pp": -1.3106702353687814,
+      "ci95_pp": [
+        -1.5146489773355445,
+        -1.1084113680417156
+      ],
+      "relative_error_reduction": -0.37167449139280123,
+      "iterations": 2000,
+      "families": 34323,
+      "baseline": "evo2",
+      "candidate": "rules"
+    }
+  ]
+}

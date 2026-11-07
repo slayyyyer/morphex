@@ -20,7 +20,7 @@ class LexiconArtifactTest {
 
     @Test
     void bundledArtifactLoadsAndCarriesProvenance() throws IOException {
-        InputStream in = EnglishInflector.class.getResourceAsStream("/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv");
+        InputStream in = EnglishInflector.class.getResourceAsStream("/io/github/slayyyyer/morphex/inflector/lexicon-v2.tsv");
         assertNotNull(in, "bundled artifact must be packaged");
         Set<String> sources = new HashSet<>();
         int records = 0;

@@ -60,8 +60,11 @@ public final class EnglishInflector {
 
     private static final List<Rule> RULES = List.of(WOMAN, WIFE, MAN, GREEK_SIS, SIBILANT, CONSONANT_Y, DEFAULT);
 
-    /** Head pluralization inside a compound may use simple words only, never another compound. */
-    private static final int MAX_COMPOUND_DEPTH = 1;
+    /**
+     * Compound transformations are nested, never unbounded: a free tail may contain another documented
+     * compound ({@code great-grandfather-in-law}), so the parser carries an explicit recursion budget.
+     */
+    private static final int MAX_COMPOUND_DEPTH = 4;
 
     private static final String FALLBACK_ID = "fallback:unsupported";
 
@@ -119,7 +122,7 @@ public final class EnglishInflector {
      */
     public String pluralize(String noun) {
         Objects.requireNonNull(noun, "noun must not be null");
-        return resolve(noun, null, 0);
+        return resolve(noun, null, 0, casePolicy);
     }
 
     /**
@@ -130,7 +133,7 @@ public final class EnglishInflector {
      */
     public String pluralize(String noun, int count) {
         Objects.requireNonNull(noun, "noun must not be null");
-        return count == 1 ? noun : resolve(noun, null, 0);
+        return count == 1 ? noun : resolve(noun, null, 0, casePolicy);
     }
 
     /**
@@ -142,14 +145,14 @@ public final class EnglishInflector {
     public Inflection analyze(String noun) {
         Objects.requireNonNull(noun, "noun must not be null");
         Sink sink = new Sink();
-        String plural = resolve(noun, sink, 0);
+        String plural = resolve(noun, sink, 0, casePolicy);
         return new Inflection(noun, plural, sink.alternatives, sink.source, sink.id, sink.countability,
                 sink.invariant, sink.ambiguous, sink.note);
     }
 
     // ------------------------------------------------------------------ resolution
 
-    private String resolve(String noun, Sink sink, int depth) {
+    private String resolve(String noun, Sink sink, int depth, CasePolicy policy) {
         if (noun.isEmpty()) {
             if (sink != null) {
                 sink.set(DecisionSource.FALLBACK, "fallback:empty", Countability.UNKNOWN,
@@ -170,7 +173,7 @@ public final class EnglishInflector {
         String lower = WordShape.lower(noun);
         int entry = lexicon.find(lower);
         if (entry >= 0 && lexicon.matchesCase(entry, noun)) {
-            return fromEntry(noun, lower, entry, sink);
+            return fromEntry(noun, lower, entry, sink, policy);
         }
 
         if (!initialisms.isEmpty() && initialisms.contains(lower)) {
@@ -178,7 +181,7 @@ public final class EnglishInflector {
                 sink.set(DecisionSource.LEXICON, "config:initialism", Countability.UNKNOWN,
                         false, false, null, "token declared an initialism by configuration");
             }
-            return renderInitialism(noun, lower, initialismSuffix(lower));
+            return renderInitialism(noun, lower, initialismSuffix(lower), policy);
         }
 
         // Unknown all-uppercase token: a bounded initialism policy, not an assumption that every
@@ -197,13 +200,15 @@ public final class EnglishInflector {
                         "unknown all-upper-case token of 2-6 Latin letters: appended lower-case s; "
                                 + "lexical membership was checked first");
             }
-            return renderInitialism(noun, lower, "s");
+            return renderInitialism(noun, lower, "s", policy);
         }
 
         if (depth < MAX_COMPOUND_DEPTH) {
-            String compound = resolveCompound(noun, lower, depth, sink);
+            String compound = resolveCompound(noun, lower, depth, policy, sink);
             if (compound != null) {
-                return compound;
+                // An unchanged reconstruction is the caller's own input: preserve the instance and avoid an
+                // allocation, matching the documented identity behaviour for invariant words.
+                return compound.equals(noun) ? noun : compound;
             }
         }
 
@@ -214,7 +219,7 @@ public final class EnglishInflector {
                         sink.set(DecisionSource.RULE, rule.id(), Countability.UNKNOWN,
                                 false, false, null, rule.description());
                     }
-                    return render(noun, lower, rule.cut(), rule.append());
+                    return render(noun, lower, rule.cut(), rule.append(), policy);
                 }
             }
         }
@@ -228,14 +233,14 @@ public final class EnglishInflector {
         return noun;
     }
 
-    private String fromEntry(String noun, String lower, int entry, Sink sink) {
+    private String fromEntry(String noun, String lower, int entry, Sink sink, CasePolicy policy) {
         if (lexicon.initialism(entry)) {
             if (sink != null) {
                 sink.set(DecisionSource.LEXICON, lexicon.id(entry) + "#initialism", lexicon.countability(entry),
                         false, lexicon.ambiguous(entry), null,
                         "initialism metadata: append the entry's s/es suffix without whole-token re-casing");
             }
-            return renderInitialism(noun, lower, lexicon.append(entry));
+            return renderInitialism(noun, lower, lexicon.append(entry), policy);
         }
 
         Countability countability = lexicon.countability(entry);
@@ -245,7 +250,7 @@ public final class EnglishInflector {
                 || invariant) {
             if (sink != null) {
                 sink.set(DecisionSource.LEXICON, lexicon.id(entry), countability,
-                        invariant, lexicon.ambiguous(entry), renderAlternatives(noun, lower, entry, false),
+                        invariant, lexicon.ambiguous(entry), renderAlternatives(noun, lower, entry, false, policy),
                         entryNote(entry));
             }
             return noun;
@@ -254,17 +259,18 @@ public final class EnglishInflector {
         boolean classical = mode == Mode.CLASSICAL && lexicon.classicalCut(entry) >= 0;
         int cut = classical ? lexicon.classicalCut(entry) : lexicon.cut(entry);
         String append = classical ? lexicon.classicalAppend(entry) : lexicon.append(entry);
-        String plural = render(noun, lower, cut, append);
+        String plural = render(noun, lower, cut, append, policy);
 
         if (sink != null) {
             sink.set(DecisionSource.LEXICON, lexicon.id(entry), countability, false, lexicon.ambiguous(entry),
-                    renderAlternatives(noun, lower, entry, classical),
+                    renderAlternatives(noun, lower, entry, classical, policy),
                     classical ? "classical preference selected by mode" : entryNote(entry));
         }
         return plural;
     }
 
-    private List<String> renderAlternatives(String noun, String lower, int entry, boolean classicalUsed) {
+    private List<String> renderAlternatives(String noun, String lower, int entry, boolean classicalUsed,
+            CasePolicy policy) {
         List<String> stored = lexicon.alternatives(entry);
         String classical = lexicon.classical(entry);
         if (stored.isEmpty() && classical == null && !classicalUsed) {
@@ -272,12 +278,12 @@ public final class EnglishInflector {
         }
         List<String> alternatives = new ArrayList<>(stored.size() + 1);
         if (classicalUsed) {
-            alternatives.add(renderFull(noun, lower, lexicon.plural(entry)));
+            alternatives.add(renderFull(noun, lower, lexicon.plural(entry), policy));
         } else if (classical != null) {
-            alternatives.add(renderFull(noun, lower, classical));
+            alternatives.add(renderFull(noun, lower, classical, policy));
         }
         for (String alternative : stored) {
-            alternatives.add(renderFull(noun, lower, alternative));
+            alternatives.add(renderFull(noun, lower, alternative, policy));
         }
         return alternatives;
     }
@@ -293,27 +299,26 @@ public final class EnglishInflector {
 
     // ------------------------------------------------------------------ compounds
 
-    private String resolveCompound(String noun, String lower, int depth, Sink sink) {
+    private String resolveCompound(String noun, String lower, int depth, CasePolicy policy, Sink sink) {
         String exact = compounds.exactPlural(lower);
         if (exact != null) {
             if (sink != null) {
                 sink.set(DecisionSource.COMPOUND, "compound:exact:" + lower, Countability.UNKNOWN,
                         false, false, null, "exact compound entry");
             }
-            return renderFull(noun, lower, exact);
+            return renderFull(noun, lower, exact, policy);
         }
 
         int freeSuffix = compounds.freeTailSuffix(lower);
-        if (freeSuffix > 0) {
-            String head = noun.substring(0, freeSuffix);
-            String headPlural = pluralizeCompoundPrefix(head, depth);
+        if (freeSuffix > 0 && freeSuffix < noun.length()) {
+            HeadResult headPlural = resolveHead(noun.substring(0, freeSuffix), depth, true);
             if (headPlural != null) {
                 if (sink != null) {
                     sink.set(DecisionSource.COMPOUND, "compound:hyphen:free-tail-suffix", Countability.UNKNOWN,
                             false, false, null,
                             "documented trailing free tail: head before the suffix is inflected");
                 }
-                return headPlural + noun.substring(freeSuffix);
+                return applyCasePolicy(headPlural.text() + noun.substring(freeSuffix), policy);
             }
         }
 
@@ -324,13 +329,13 @@ public final class EnglishInflector {
             boolean recognised = compounds.isFreeTail(tail)
                     || (compounds.isPostposed(tail) && compounds.isCuratedHead(WordShape.lower(head)));
             if (recognised) {
-                String headPlural = pluralizeHead(head, depth);
+                HeadResult headPlural = resolveHead(head, depth);
                 if (headPlural != null) {
                     if (sink != null) {
                         sink.set(DecisionSource.COMPOUND, "compound:hyphen:" + tail, Countability.UNKNOWN,
                                 false, false, null, "documented hyphenated compound pattern '" + tail + "'");
                     }
-                    return headPlural + noun.substring(hyphen);
+                    return applyCasePolicy(headPlural.text() + noun.substring(hyphen), policy);
                 }
             }
             if (isParticleCompound(noun, hyphen, tail)) {
@@ -339,42 +344,42 @@ public final class EnglishInflector {
                             false, false, null,
                             "verb-particle hyphenated noun: whole expression takes s");
                 }
-                return render(noun, lower, 0, "s");
+                return render(noun, lower, 0, "s", policy);
             }
             if (isHeadFinalCompound(noun, hyphen, tail)) {
-                String tailPlural = pluralizeCompoundHead(noun.substring(hyphen + 1), depth, true,
-                        WordShape.casingOf(noun) != WordShape.Casing.UPPER || hasInitialismPrefix(noun));
+                String tailPlural = pluralizeCompoundHead(noun.substring(hyphen + 1), depth, true);
                 if (tailPlural != null) {
                     if (sink != null) {
                         sink.set(DecisionSource.COMPOUND, "compound:hyphen:head-final", Countability.UNKNOWN,
                                 false, false, null,
                                 "head-final hyphenated compound: final noun head inflected");
                     }
-                    return noun.substring(0, hyphen + 1) + tailPlural;
+                    return applyCasePolicy(noun.substring(0, hyphen + 1) + tailPlural, policy);
                 }
             }
             int lastHyphen = noun.lastIndexOf('-');
             if (lastHyphen > hyphen && isMultiHeadFinalCompound(noun)) {
                 String multiTail = noun.substring(lastHyphen + 1);
-                String tailPlural = pluralizeCompoundHead(multiTail, depth, true,
-                        WordShape.casingOf(noun) != WordShape.Casing.UPPER || hasInitialismPrefix(noun));
+                String tailPlural = pluralizeCompoundHead(multiTail, depth, true);
                 if (tailPlural != null) {
                     if (sink != null) {
                         sink.set(DecisionSource.COMPOUND, "compound:hyphen:multi-head-final", Countability.UNKNOWN,
                                 false, false, null,
                                 "multi-hyphen head-final noun without a function word: final head inflected");
                     }
-                    return noun.substring(0, lastHyphen + 1) + tailPlural;
+                    return applyCasePolicy(noun.substring(0, lastHyphen + 1) + tailPlural, policy);
                 }
             }
             return null;
         }
 
-        int space = lower.indexOf(' ');
-        if (space < 0) {
+        int space = noun.indexOf(' ');
+        // Only single-space separators are a supported compound shape. Leading, trailing or repeated
+        // whitespace is unsupported input and is returned unchanged; it is never trimmed or rewritten.
+        if (space < 0 || space == 0 || space == noun.length() - 1 || noun.indexOf("  ") >= 0) {
             return null;
         }
-        String[] tokens = noun.split(" ");
+        String[] tokens = noun.split(" ", -1);
         if (tokens.length < 2) {
             return null;
         }
@@ -394,14 +399,14 @@ public final class EnglishInflector {
             }
             String headLower = headBuilder.toString();
             if (compounds.isCuratedHead(headLower)) {
-                String headPlural = pluralizeHead(noun.substring(0, space), depth);
+                HeadResult headPlural = resolveHead(noun.substring(0, space), depth);
                 if (headPlural != null) {
                     if (sink != null) {
                         sink.set(DecisionSource.COMPOUND, "compound:space:" + lastLower, Countability.UNKNOWN,
                                 false, false, null,
                                 "postposed modifier '" + lastLower + "' after a curated head");
                     }
-                    return headPlural + noun.substring(space);
+                    return applyCasePolicy(headPlural.text() + noun.substring(space), policy);
                 }
             }
         }
@@ -414,7 +419,7 @@ public final class EnglishInflector {
         if (!WordShape.isPlainLatinToken(last)) {
             return null;
         }
-        String lastPlural = pluralizeHead(last, depth);
+        String lastPlural = pluralizeCompoundHead(last, depth, false);
         if (lastPlural == null) {
             return null;
         }
@@ -422,51 +427,68 @@ public final class EnglishInflector {
             sink.set(DecisionSource.COMPOUND, "compound:space:final", Countability.UNKNOWN,
                     false, false, null, "space-separated compound: final token inflected");
         }
-        return noun.substring(0, noun.length() - last.length()) + lastPlural;
-    }
-
-    /** Pluralizes a compound head using only productive rules and lexical entries. */
-    private String pluralizeHead(String head, int depth) {
-        if (depth >= MAX_COMPOUND_DEPTH || !WordShape.isPlainLatinToken(head)) {
-            return null;
-        }
-        return resolve(head, null, depth + 1);
+        int lastStart = noun.length() - last.length();
+        return applyCasePolicy(noun.substring(0, lastStart) + lastPlural, policy);
     }
 
     /**
-     * A final head may have an unchanged lexical result because the artifact stored a mass/plural-only sense or
-     * because the held-out family is absent. In a compound the productive spelling is the safer fallback; true
-     * invariant plurals stay untouched. The upper-case suffix is kept lower-case for initialism-like heads.
+     * Resolves one compound constituent and keeps the provenance needed to decide whether a final head may be
+     * respelled. The head is rendered in the caller's shape only; the enclosing compound applies its case
+     * policy once to the complete reconstructed expression.
      */
-    private String pluralizeCompoundHead(String head, int depth, boolean respellUnchanged,
-            boolean lowerUpperSuffix) {
-        String result = pluralizeHead(head, depth);
-        if (result == null) {
+    private HeadResult resolveHead(String head, int depth) {
+        return resolveHead(head, depth, false);
+    }
+
+    private HeadResult resolveHead(String head, int depth, boolean allowCompoundShape) {
+        if (depth >= MAX_COMPOUND_DEPTH || head.isEmpty()) {
             return null;
         }
-        if (respellUnchanged && (result.equals(head)
-                || lexicon.find(WordShape.lower(head)) < 0)
-                && !compounds.isInvariantHead(WordShape.lower(head))) {
-            result = spellHead(head);
+        if (!allowCompoundShape && !WordShape.isPlainLatinToken(head)) {
+            return null;
         }
-        if (lowerUpperSuffix && WordShape.isAllUpperLatinToken(head) && result != null
-                && result.startsWith(head)) {
-            String suffix = result.substring(head.length());
-            if (suffix.equalsIgnoreCase("s") || suffix.equalsIgnoreCase("es")) {
-                return head + suffix.toLowerCase(Locale.ROOT);
-            }
+        Sink headSink = new Sink();
+        String text = resolve(head, headSink, depth + 1, CasePolicy.PRESERVE);
+        if (headSink.source == DecisionSource.FALLBACK) {
+            return null;
         }
-        return result;
+        return new HeadResult(text, headSink.source, headSink.id, headSink.invariant);
+    }
+
+    /**
+     * A final head may be respelled only when it is genuinely unresolved: no override, no lexical entry, no
+     * nested compound, no initialism metadata and no evidence of ordinary source membership. A regular word
+     * omitted by artifact compaction is still a lexical word and keeps its productive result.
+     */
+    private String pluralizeCompoundHead(String head, int depth, boolean allowRespell) {
+        HeadResult resolved = resolveHead(head, depth);
+        if (resolved == null) {
+            return null;
+        }
+        if (allowRespell && shouldRespell(resolved, head)) {
+            return spellHead(head, CasePolicy.PRESERVE);
+        }
+        return resolved.text();
+    }
+
+    private boolean shouldRespell(HeadResult resolved, String head) {
+        if (resolved.source() != DecisionSource.RULE) {
+            return false;
+        }
+        String lower = WordShape.lower(head);
+        // Without a membership table there is no compaction evidence; retain the documented rules-only
+        // spelling heuristic. With a table, a hit means a regular word was omitted by compaction.
+        return !lexicon.hasMembership() || !lexicon.isOrdinaryWord(lower);
     }
 
     /** Applies the productive spelling rules without consulting the lexicon. */
-    private String spellHead(String head) {
+    private String spellHead(String head, CasePolicy policy) {
         if (!WordShape.isPlainLatinToken(head)) {
             return null;
         }
         String lower = WordShape.lower(head);
         if (lower.endsWith("child")) {
-            return render(head, lower, 5, "children");
+            return render(head, lower, 5, "children", policy);
         }
         String[][] fToVes = {
                 {"life", "lives"}, {"shelf", "shelves"}, {"half", "halves"}, {"staff", "staves"},
@@ -476,36 +498,15 @@ public final class EnglishInflector {
         };
         for (String[] pair : fToVes) {
             if (lower.endsWith(pair[0])) {
-                return render(head, lower, pair[0].length(), pair[1]);
+                return render(head, lower, pair[0].length(), pair[1], policy);
             }
         }
         for (Rule rule : RULES) {
             if (rule.applies(lower) && (!rule.lowercaseOnly() || head.equals(lower))) {
-                return render(head, lower, rule.cut(), rule.append());
+                return render(head, lower, rule.cut(), rule.append(), policy);
             }
         }
-        return head + "s";
-    }
-
-    /** Inflects a prefix that may itself be a hyphenated compound ({@code great-grandfather}). */
-    private String pluralizeCompoundPrefix(String head, int depth) {
-        if (depth >= MAX_COMPOUND_DEPTH) {
-            return null;
-        }
-        return resolve(head, null, depth);
-    }
-
-    /** A short initial prefix keeps the plural suffix lower-case ({@code G-PONs}, {@code LV-ROMs}). */
-    private static boolean hasInitialismPrefix(String noun) {
-        int hyphen = noun.indexOf('-');
-        if (hyphen <= 0) {
-            return false;
-        }
-        String prefix = noun.substring(0, hyphen);
-        if (prefix.length() == 1) {
-            return Character.isUpperCase(prefix.charAt(0));
-        }
-        return prefix.length() <= 3 && WordShape.isAllUpperLatinToken(prefix);
+        return render(head, lower, 0, "s", policy);
     }
 
     /**
@@ -571,8 +572,8 @@ public final class EnglishInflector {
 
     // ------------------------------------------------------------------ rendering
 
-    private String render(String source, String lower, int cut, String append) {
-        switch (casePolicy) {
+    private String render(String source, String lower, int cut, String append, CasePolicy policy) {
+        switch (policy) {
             case LOWERCASE:
                 return edit(lower, cut, append);
             case UPPERCASE:
@@ -612,8 +613,8 @@ public final class EnglishInflector {
     }
 
     /** Renders a complete lowercase form (lexical alternative, compound) with the caller's casing shape. */
-    private String renderFull(String source, String lower, String fullLower) {
-        switch (casePolicy) {
+    private String renderFull(String source, String lower, String fullLower, CasePolicy policy) {
+        switch (policy) {
             case LOWERCASE:
                 return fullLower;
             case UPPERCASE:
@@ -639,12 +640,25 @@ public final class EnglishInflector {
         return lower.charAt(lower.length() - 1) == 's' ? "es" : "s";
     }
 
-    private String renderInitialism(String source, String lower, String suffix) {
-        return switch (casePolicy) {
+    private String renderInitialism(String source, String lower, String suffix, CasePolicy policy) {
+        return switch (policy) {
             case LOWERCASE -> lower + suffix;
             case UPPERCASE -> source.toUpperCase(Locale.ROOT) + suffix.toUpperCase(Locale.ROOT);
             default -> source + suffix;
         };
+    }
+
+    /** Applies one configured case policy to a fully reconstructed compound. */
+    private static String applyCasePolicy(String value, CasePolicy policy) {
+        return switch (policy) {
+            case LOWERCASE -> value.toLowerCase(Locale.ROOT);
+            case UPPERCASE -> value.toUpperCase(Locale.ROOT);
+            default -> value;
+        };
+    }
+
+    /** A resolved compound constituent plus the provenance that controls final-head respelling. */
+    private record HeadResult(String text, DecisionSource source, String id, boolean invariant) {
     }
 
     // ------------------------------------------------------------------ diagnostics sink

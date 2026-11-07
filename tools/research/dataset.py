@@ -16,20 +16,23 @@ CURATED = DATA / "curated"
 REGRESSION = DATA / "regression"
 RESULTS = ROOT / "results"
 
-CORE_RESOURCE = ROOT / "inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv"
-CORE_MEMBERSHIP = CORE_RESOURCE.parent / "lexicon-membership-v1.bin"
+CORE_RESOURCE = ROOT / "inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v2.tsv"
+CORE_MEMBERSHIP = CORE_RESOURCE.parent / "lexicon-membership-v2.bin"
 
-DATASET_VERSION = "nouns-v1"
-EXTRACTION_VERSION = "extract-v2"
-ARTIFACT_VERSION = "lexicon-v1"
+# nouns-v2 / extract-v3 corrects sense-scoped plural-only handling (accent, work) and adds a
+# reviewed curated correction for amenity. The split algorithm is unchanged (split-v1): family
+# assignment remains a pure function of the family key and version, not of forms or labels.
+DATASET_VERSION = "nouns-v2"
+EXTRACTION_VERSION = "extract-v3"
+ARTIFACT_VERSION = "lexicon-v2"
 SPLIT_VERSION = "split-v1"
 
 RAW_NOUNS = RAW / "kaikki-english-nouns.jsonl.gz"
-NORMALIZED = DERIVED / "nouns-v1.tsv.gz"
-QUARANTINE = DERIVED / "quarantine-v1.tsv"
-MANIFEST = DERIVED / "manifest-v1.json"
-ARTIFACT = DERIVED / "lexicon-v1.tsv"
-MEMBERSHIP = DERIVED / "lexicon-membership-v1.bin"
+NORMALIZED = DERIVED / "nouns-v2.tsv.gz"
+QUARANTINE = DERIVED / "quarantine-v2.tsv"
+MANIFEST = DERIVED / "manifest-v2.json"
+ARTIFACT = DERIVED / "lexicon-v2.tsv"
+MEMBERSHIP = DERIVED / "lexicon-membership-v2.bin"
 SPLITS = DERIVED / "splits-v1.tsv"
 
 # Pinned snapshot metadata. The checksum is verified when the raw dump is present.

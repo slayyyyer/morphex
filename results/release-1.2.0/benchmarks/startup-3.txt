@@ -1,0 +1,12 @@
+startup_ms=720.179
+first_pluralize_us=2963.900
+steady_50k_calls_ms=427.689
+first_result=children
+lexicon_entries=147338
+baseline_heap_bytes=3062072
+heap_after_load_bytes=65675968
+retained_heap_bytes=19076968
+max_heap_bytes=268435456
+artifact_bytes benchmarks.jar=11898219
+jvm=OpenJDK 64-Bit Server VM 21.0.13
+jvm_args=[-Xms256m, -Xmx256m]

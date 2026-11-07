@@ -72,11 +72,6 @@ final class CompoundTable {
     /** Preposition-like prefixes reviewed as productive in head-final nouns ({@code on-ramp}). */
     private final Set<String> compoundPrefixes = Set.of("on");
 
-    /** True invariant plurals that must not be respelled when used as a compound head. */
-    private final Set<String> invariantHeads = Set.of(
-            "series", "species", "means", "offspring", "deer", "sheep", "swine", "bison", "moose",
-            "aircraft", "hovercraft", "spacecraft", "salmon", "trout", "cod");
-
     /**
      * Lower-case -man words that are not compounds of a noun + man, so the -man backoff must not touch them.
      * Proper names are additionally excluded by requiring an all-lower-case input for this rule.
@@ -135,10 +130,6 @@ final class CompoundTable {
 
     boolean isManException(String tokenLower) {
         return manExceptions.contains(tokenLower) || tokenLower.endsWith("human");
-    }
-
-    boolean isInvariantHead(String tokenLower) {
-        return invariantHeads.contains(tokenLower);
     }
 
     boolean isCoordinator(String tokenLower) {

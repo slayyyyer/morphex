@@ -5,24 +5,26 @@
 | File | Origin | License |
 | --- | --- | --- |
 | `data/raw/kaikki-english-nouns.jsonl.gz` (not committed, 298,543,101 bytes) | Kaikki.org English dictionary, noun part-of-speech extract | CC BY-SA 3.0 (Wiktionary) |
-| `data/derived/nouns-v1.tsv.gz` | validated normalization of the above | CC BY-SA 3.0 |
-| `data/derived/lexicon-v1.tsv` and the packaged resource | subset of the above plus `data/curated/core-nouns.tsv` | CC BY-SA 3.0 for extracted rows; curated rows authored here |
+| `data/derived/nouns-v2.tsv.gz` | validated normalization of the above (`extract-v3`) | CC BY-SA 3.0 |
+| `inflector-core/src/main/resources/.../lexicon-v2.tsv` and membership | subset of the above plus `data/curated/core-nouns.tsv` | CC BY-SA 3.0 for extracted rows; curated rows authored here |
 | `data/curated/core-nouns.tsv` | hand-authored in this repository | MIT (same as code) |
 | `data/regression/nouns-regression.tsv` | hand-authored in this repository | MIT |
 
 The code is MIT. The generated data files are **not** relicensed by MIT; they remain
 CC BY-SA 3.0. Redistributing the jar therefore distributes CC BY-SA 3.0 data alongside
-MIT code. `NOTICE` records the attribution. If that is unacceptable, build without the
-bundled artifact (see README) or regenerate the artifact from a source you can license.
+MIT code. `NOTICE` records the attribution. `withoutBundledLexicon()` avoids loading the
+data at runtime, but the resource remains in the JAR and the data terms still apply. To
+remove the data entirely, build a jar that excludes the resources or regenerate them from a
+source you can license.
 
 ## External validation corpus (not redistributed)
 
 `docs/evaluation.md` reports an external check on
 [UD English EWT](https://github.com/UniversalDependencies/UD_English-EWT), licensed
-**CC BY-SA 4.0**. The corpus is downloaded into `build/external/` and is not committed; only aggregate
-reports under `results/external/` and citations are kept (derived pair/prediction TSVs are
-gitignored). The shipped artifact is not derived from this corpus and the corpus was not
-used for training or tuning.
+**CC BY-SA 4.0**. The corpus is downloaded into `build/external/` and is not committed; only
+aggregate reports and predictions under `results/release-1.2.0/external/` are kept. The
+shipped artifact is not derived from this corpus and the corpus was not used for training or
+tuning.
 
 ## Pinned snapshot
 
@@ -32,7 +34,7 @@ used for training or tuning.
 | SHA-256 | `9a47500cabdb5d6c918a4b16abeefb55d32e2c1a2f29d260080c02329278ab43` |
 | Bytes | 298,543,101 |
 | Last-Modified | Sat, 31 Oct 2026 03:12:47 GMT |
-| Extraction | `tools/research/extract.py`, version `extract-v1` |
+| Extraction | `tools/research/extract.py`, version `extract-v3` |
 | Generator | Kaikki.org, built with Wiktextract |
 
 The dump does not carry a per-record revision field. Provenance is therefore the dump
@@ -43,10 +45,10 @@ downloads and verifies it explicitly (network).
 ## What the pipeline does
 
 1. `extract` streams the gzip JSONL, keeps `pos == noun`, validates lemma and form surface
-   shapes, separates restricted forms (archaic/obsolete/nonstandard/rare/...) from accepted
-   forms, classifies countability from the `en-noun` head expansion and sense tags, and
-   quarantines unsupported records with a reason instead of guessing.
-2. `splits` assigns whole lemma families to train/dev/test by a pinned hash.
+   shapes, separates restricted forms from accepted forms, classifies countability from the
+   `en-noun` head expansion and sense tags, and inspects every head template for plural-only
+   evidence. It quarantines unsupported records with a reason instead of guessing.
+2. `splits` assigns whole lemma families to train/dev/test by the pinned `split-v1` hash.
 3. `artifact` selects entries the productive rules cannot reproduce, plus entries that carry
    countability, invariance, initialism or casing metadata, and merges the curated table
    (curated rows win).
@@ -54,24 +56,21 @@ downloads and verifies it explicitly (network).
 Wiktionary directives are data, never labels: `{{en-noun|++}}` for `quiz` yields the form
 `quizzes`, and `p` for `scissors` yields a plural-only classification, not a literal `p`.
 
-## Counts from the recorded run
+## Counts from the recorded v2 run
 
-See `data/derived/manifest-v1.json` for exact numbers and checksums. The committed run:
+The normalized dataset has **340,734 lemmas**. The shipped artifact has **147,338 entries**
+(7,553,688 bytes TSV) and a **340,741-lemma** full membership table (2,725,940 bytes). The P2
+train-only artifact has 103,668 entries and 238,927 membership lemmas. Exact hashes and
+versions are recorded in `results/release-1.2.0/EVIDENCE.md` and its manifest.
 
-* 834,878 raw noun records read
-* 354,313 records kept, 340,558 unique lemmas
-* quarantined: 256,764 `no-attested-plural`, 223,801 `lemma-surface` (multi-word, non-Latin)
-* countability: 198,596 countable, 90,437 mass, 46,677 mixed, 4,848 plural-only
-* runtime artifact: 150,267 entries, 7,708,247 bytes raw / 1,212,308 bytes gzip (compact
-  selection; 190,298 lemmas whose plural is exactly the productive rule output are omitted and
-  are still handled by rules)
+The v2 changes include 178 new plural-only lemmas, removal of `PADS` and `PL`, and
+reclassification of `accent` and `work` as `MIXED`.
 
 ## Redistribution checklist
 
-* Keep `NOTICE` and this file with any distribution of the jar or the derived data.
+* Keep `NOTICE` and this file with any distribution of the jar or derived data.
 * State the CC BY-SA 3.0 license and attribution to Wiktionary contributors, Kaikki.org and
   Wiktextract.
-* If you modify the data (for example regenerate the artifact), the modified data must be
-  shared under CC BY-SA 3.0; mark it as modified.
+* If you modify the data, share the modified data under CC BY-SA 3.0 and mark it modified.
 * Do not describe the data as MIT-licensed merely because it sits in the same artifact as
   MIT code.

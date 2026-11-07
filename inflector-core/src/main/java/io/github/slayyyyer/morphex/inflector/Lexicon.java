@@ -31,7 +31,7 @@ import java.util.Set;
  */
 final class Lexicon {
 
-    static final String RESOURCE = "lexicon-v1.tsv";
+    static final String RESOURCE = "lexicon-v2.tsv";
     private static final int COLUMNS = 7;
 
     private static final int FLAG_INVARIANT = 1;
@@ -208,7 +208,7 @@ final class Lexicon {
      * leakage-safe train-only lexicon). Not part of the supported application API; see README.
      */
     private static final String LEXICON_PROPERTY = "english.inflector.lexicon";
-    private static final String MEMBERSHIP_RESOURCE = "lexicon-membership-v1.bin";
+    private static final String MEMBERSHIP_RESOURCE = "lexicon-membership-v2.bin";
 
     private static Lexicon loadBundled() {
         String external = System.getProperty(LEXICON_PROPERTY);

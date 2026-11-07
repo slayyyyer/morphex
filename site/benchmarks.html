@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Benchmarks — english-inflector</title>
-  <meta name="description" content="JMH methodology, raw numbers, allocation, startup and footprint for english-inflector vs evo-inflector 2.0." />
+  <meta name="description" content="Fixed-workload JMH, startup, memory and concurrency results for english-inflector vs evo-inflector 2.0." />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&display=swap">
   <link rel="stylesheet" href="./styles.css" />
 </head>
@@ -24,55 +24,65 @@
   <section class="block">
     <div class="card">
       <h2>Benchmarks</h2>
-      <p class="small">JMH 1.37, independent forks, average time with GC profiler. Raw data:
-      <code>results/benchmarks/jmh-packed.json</code>. Full methodology in
+      <p class="small">JMH 1.37, two forks, five 500 ms measurements, GC profiler. Inputs are the
+      fixed, versioned <code>benchmark-workload-v1.tsv</code>; they are not sampled at run time.
+      Raw data: <code>results/release-1.2.0/benchmarks/jmh-workload-v1.json</code>. Methodology:
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/benchmarks.md">docs/benchmarks.md</a>.</p>
       <div class="tw"><table class="data">
         <tr><th>Field</th><th>Value</th></tr>
         <tr><td>CPU / RAM / OS</td><td>12th Gen Intel i5-12500H (12c/16t) · 16 GB · Windows 11</td></tr>
-        <tr><td>JDK / Maven / JMH</td><td>Temurin 21.0.13 · 3.9.9 (wrapper) · 1.37 (<code>-f 2 -wi 3 -i 5 -w 1s -r 1s -prof gc</code>)</td></tr>
-        <tr><td>Compare</td><td><code>org.atteo:evo-inflector:2.0</code> from Maven Central, same-run ratios</td></tr>
+        <tr><td>JDK / Maven / JMH</td><td>Temurin 21.0.13 · 3.9.9 · 1.37 (<code>-f 2 -wi 3 -i 5 -w 500ms -r 500ms -prof gc</code>)</td></tr>
+        <tr><td>Compare</td><td><code>org.atteo:evo-inflector:2.0</code>, same run and inputs</td></tr>
       </table></div>
       <div class="tw"><table class="data">
-        <tr><th>Benchmark</th><th>Mode</th><th>Score</th><th>Unit</th><th>Alloc</th></tr>
-        <tr><td>evo2Repeated</td><td>avgt</td><td>98.211</td><td>ns/op</td><td>113.3 B/op</td></tr>
-        <tr><td><strong>inflectorRepeated</strong></td><td>avgt</td><td><strong>81.696</strong></td><td>ns/op</td><td>35.3 B/op</td></tr>
-        <tr><td>evo2Unique</td><td>avgt</td><td>150.706</td><td>ns/op</td><td>136.6 B/op</td></tr>
-        <tr><td><strong>inflectorUnique</strong></td><td>avgt</td><td><strong>201.128</strong></td><td>ns/op</td><td>29.3 B/op</td></tr>
-        <tr><td>evo2MixedCase</td><td>avgt</td><td>169.060</td><td>ns/op</td><td>151.3 B/op</td></tr>
-        <tr><td><strong>inflectorMixedCase</strong></td><td>avgt</td><td><strong>267.856</strong></td><td>ns/op</td><td>50.8 B/op</td></tr>
-        <tr><td>evo2Count</td><td>avgt</td><td>170.932</td><td>ns/op</td><td>136.5 B/op</td></tr>
-        <tr><td><strong>inflectorCount</strong></td><td>avgt</td><td><strong>216.921</strong></td><td>ns/op</td><td>29.3 B/op</td></tr>
-        <tr><td>evo2AnalyzeEquivalent</td><td>avgt</td><td>269.945</td><td>ns/op</td><td>273.1 B/op</td></tr>
-        <tr><td><strong>inflectorAnalyze</strong></td><td>avgt</td><td><strong>321.475</strong></td><td>ns/op</td><td>234.9 B/op</td></tr>
-        <tr><td>inflectorRulesOnly</td><td>avgt</td><td>391.191</td><td>ns/op</td><td>77.0 B/op</td></tr>
+        <tr><th>Benchmark</th><th>Score ns/op</th><th>Alloc B/op</th></tr>
+        <tr><td>evo2LexicalHit</td><td>118.5</td><td>121.7</td></tr>
+        <tr><td><strong>inflectorLexicalHit</strong></td><td><strong>100.7</strong></td><td>65.7</td></tr>
+        <tr><td>evo2Compacted</td><td>104.7</td><td>80.6</td></tr>
+        <tr><td>inflectorCompacted</td><td>456.4</td><td>395.4</td></tr>
+        <tr><td>evo2Unknown</td><td>80.4</td><td>73.6</td></tr>
+        <tr><td>inflectorUnknown</td><td>906.1</td><td>392.8</td></tr>
+        <tr><td>evo2Uppercase</td><td>89.8</td><td>120.0</td></tr>
+        <tr><td>inflectorUppercase</td><td>711.4</td><td>163.6</td></tr>
+        <tr><td>evo2Compound</td><td>95.8</td><td>103.2</td></tr>
+        <tr><td>inflectorCompound</td><td>499.7</td><td>404.0</td></tr>
+        <tr><td>evo2Unsupported</td><td>78.6</td><td>113.1</td></tr>
+        <tr><td>inflectorUnsupported</td><td>384.3</td><td>377.1</td></tr>
+        <tr><td>evo2Repeated</td><td>110.9</td><td>104.8</td></tr>
+        <tr><td><strong>inflectorRepeated</strong></td><td><strong>81.4</strong></td><td>17.3</td></tr>
+        <tr><td>evo2AnalyzeEquivalent</td><td>327.7</td><td>269.6</td></tr>
+        <tr><td>inflectorAnalyze</td><td>387.4</td><td>236.7</td></tr>
+        <tr><td>inflectorRulesOnly</td><td>1,032.4</td><td>910.2</td></tr>
       </table></div>
-      <div class="callout"><strong>Measured claim:</strong> the fresh short run is faster on repeated lookup
-      (77.8 vs 81.5 ns), 1.38× slower on distinct-word lookup (226.0 vs 163.6 ns), and still
-      substantially more accurate. The table above is the historical profiled run; allocation
-      and retained-heap figures are from that run. No distinct-word speedup is claimed.</div>
+      <div class="callout warn"><strong>Measured claim:</strong> repeated lookup is 1.36× faster
+      (81.4 vs 110.9 ns) and exact lexical hits are 1.18× faster (100.7 vs 118.5 ns). Compacted,
+      unknown, uppercase, compound and unsupported paths are substantially slower — up to 11.3×
+      on unknown tokens. No general speedup is claimed.</div>
     </div>
     <div class="grid two">
       <div class="card">
-        <h3>Startup &amp; footprint</h3>
+        <h3>Startup, footprint, concurrency</h3>
         <div class="tw"><table class="data">
-          <tr><td>First call (load + first pluralize)</td><td>392–505 ms (median 426 ms)</td></tr>
-          <tr><td>50,000 cold miss-heavy calls</td><td>60.7–61.8 ms</td></tr>
-          <tr><td>Lexicon entries</td><td>147,193 (7.55 MB TSV, 1.18 MB gzip)</td></tr>
-          <tr><td>Retained heap after load</td><td><strong>~24–25 MB</strong> (was 55.5 MB)</td></tr>
+          <tr><td>Startup (load + first call)</td><td>718–726 ms</td></tr>
+          <tr><td>First pluralize after load</td><td>2.5–3.6 ms</td></tr>
+          <tr><td>Retained heap after GC</td><td><strong>~18.2 MiB</strong> (19.08 MB)</td></tr>
+          <tr><td>Cold 50k unseen-token calls</td><td>428–449 ms</td></tr>
+          <tr><td>lexicon entries</td><td>147,338</td></tr>
+          <tr><td>Concurrent throughput, 4 threads</td><td>4.82M vs evo2 20.91M ops/s (4.34× lower)</td></tr>
         </table></div>
-        <p class="small">Load is slower than the old map (426 vs 309 ms) — one-time column packing + index
-        build, not per-lookup cost. No model or native memory: the learning experiment was rejected.</p>
+        <p class="small">The instance is immutable and thread-safe, but concurrency throughput is
+        lower in the same run. Startup was slower than the historical 426 ms median; figures are
+        not mixed across runs.</p>
       </div>
       <div class="card">
         <h3>Reproduce</h3>
 <pre><code>./mvnw -q -pl inflector-benchmarks -am package
 java -jar inflector-benchmarks/target/benchmarks.jar \
-  -f 2 -wi 3 -i 5 -w 1s -r 1s -prof gc \
-  -rf json -rff results/benchmarks/jmh.json</code></pre>
-        <p class="small">Same-run ratios are the fair comparison; cross-run absolutes are noisy (the rules-only
-        control moved 476 → 391 ns between runs). The final run did not capture concurrent
-        benchmarks — no concurrency claim is made.</p>
+  -f 2 -wi 3 -i 5 -w 500ms -r 500ms -prof gc \
+  -rf json -rff results/release-1.2.0/benchmarks/jmh-workload-v1.json</code></pre>
+        <p class="small">The workload covers lexical hits, compacted regular words, unknown
+        inputs, uppercase inference, compounds and unsupported inputs. Historical corpus-only
+        runs are preserved but are not comparable to this fixed-category workload.</p>
       </div>
     </div>
   </section>

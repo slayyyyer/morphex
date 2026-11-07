@@ -1,0 +1,722 @@
+{
+  "source": "UD English EWT",
+  "source_url": "https://github.com/UniversalDependencies/UD_English-EWT",
+  "license": "CC BY-SA 4.0",
+  "lemmas": 2184,
+  "vocabulary": {
+    "path": "data/derived/nouns-v2.tsv.gz",
+    "lemmas": 340741,
+    "artifact_path": "inflector-core\\src\\main\\resources\\io\\github\\slayyyyer\\morphex\\inflector\\lexicon-v2.tsv",
+    "artifact_entries": 147337
+  },
+  "seen": 2148,
+  "unseen": 36,
+  "artifact_hit": 363,
+  "artifact_miss": 1821,
+  "family_mode": "lexical",
+  "families": 2184,
+  "family_seen": 2150,
+  "family_unseen": 34,
+  "artifact_family_hit": 984,
+  "artifact_family_miss": 1200,
+  "systems": {
+    "evo2": {
+      "overall": {
+        "accepted": 2143,
+        "total": 2184,
+        "accuracy": 0.9812271062271062,
+        "ci95": [
+          0.9748168498168498,
+          0.9867216117216118
+        ]
+      },
+      "seen": {
+        "accepted": 2110,
+        "total": 2148,
+        "accuracy": 0.9823091247672253,
+        "ci95": [
+          0.9767225325884544,
+          0.9874301675977654
+        ]
+      },
+      "unseen": {
+        "accepted": 33,
+        "total": 36,
+        "accuracy": 0.9166666666666666,
+        "ci95": [
+          0.8055555555555556,
+          1.0
+        ]
+      },
+      "family_seen": {
+        "accepted": 2112,
+        "total": 2150,
+        "accuracy": 0.9823255813953489,
+        "ci95": [
+          0.9767441860465116,
+          0.9874418604651163
+        ]
+      },
+      "family_unseen": {
+        "accepted": 31,
+        "total": 34,
+        "accuracy": 0.9117647058823529,
+        "ci95": [
+          0.8235294117647058,
+          1.0
+        ]
+      },
+      "artifact_hit": {
+        "accepted": 342,
+        "total": 363,
+        "accuracy": 0.9421487603305785,
+        "ci95": [
+          0.9173553719008265,
+          0.9641873278236914
+        ]
+      },
+      "artifact_miss": {
+        "accepted": 1801,
+        "total": 1821,
+        "accuracy": 0.9890170236133993,
+        "ci95": [
+          0.9840746842394289,
+          0.9934102141680395
+        ]
+      },
+      "artifact_family_hit": {
+        "accepted": 956,
+        "total": 984,
+        "accuracy": 0.9715447154471545,
+        "ci95": [
+          0.9603658536585366,
+          0.9817073170731707
+        ]
+      },
+      "artifact_family_miss": {
+        "accepted": 1187,
+        "total": 1200,
+        "accuracy": 0.9891666666666666,
+        "ci95": [
+          0.9825,
+          0.995
+        ]
+      },
+      "alternative_coverage": {
+        "accepted": 0,
+        "total": 2184,
+        "accuracy": 0.0,
+        "ci95": [
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "lexicon": {
+      "overall": {
+        "accepted": 2157,
+        "total": 2184,
+        "accuracy": 0.9876373626373627,
+        "ci95": [
+          0.9826007326007326,
+          0.9922161172161172
+        ]
+      },
+      "seen": {
+        "accepted": 2124,
+        "total": 2148,
+        "accuracy": 0.9888268156424581,
+        "ci95": [
+          0.984171322160149,
+          0.9930167597765364
+        ]
+      },
+      "unseen": {
+        "accepted": 33,
+        "total": 36,
+        "accuracy": 0.9166666666666666,
+        "ci95": [
+          0.8055555555555556,
+          1.0
+        ]
+      },
+      "family_seen": {
+        "accepted": 2126,
+        "total": 2150,
+        "accuracy": 0.9888372093023255,
+        "ci95": [
+          0.9841860465116279,
+          0.9930232558139535
+        ]
+      },
+      "family_unseen": {
+        "accepted": 31,
+        "total": 34,
+        "accuracy": 0.9117647058823529,
+        "ci95": [
+          0.8235294117647058,
+          1.0
+        ]
+      },
+      "artifact_hit": {
+        "accepted": 351,
+        "total": 363,
+        "accuracy": 0.9669421487603306,
+        "ci95": [
+          0.9476584022038568,
+          0.9834710743801653
+        ]
+      },
+      "artifact_miss": {
+        "accepted": 1806,
+        "total": 1821,
+        "accuracy": 0.9917627677100495,
+        "ci95": [
+          0.9873695771554091,
+          0.9956068094453597
+        ]
+      },
+      "artifact_family_hit": {
+        "accepted": 967,
+        "total": 984,
+        "accuracy": 0.9827235772357723,
+        "ci95": [
+          0.9745934959349594,
+          0.9898373983739838
+        ]
+      },
+      "artifact_family_miss": {
+        "accepted": 1190,
+        "total": 1200,
+        "accuracy": 0.9916666666666667,
+        "ci95": [
+          0.9858333333333333,
+          0.9966666666666667
+        ]
+      },
+      "alternative_coverage": {
+        "accepted": 2162,
+        "total": 2184,
+        "accuracy": 0.98992673992674,
+        "ci95": [
+          0.9853479853479854,
+          0.9940476190476191
+        ]
+      }
+    },
+    "rules": {
+      "overall": {
+        "accepted": 2146,
+        "total": 2184,
+        "accuracy": 0.9826007326007326,
+        "ci95": [
+          0.9766483516483516,
+          0.9876373626373627
+        ]
+      },
+      "seen": {
+        "accepted": 2113,
+        "total": 2148,
+        "accuracy": 0.9837057728119181,
+        "ci95": [
+          0.9781191806331471,
+          0.9888268156424581
+        ]
+      },
+      "unseen": {
+        "accepted": 33,
+        "total": 36,
+        "accuracy": 0.9166666666666666,
+        "ci95": [
+          0.8055555555555556,
+          1.0
+        ]
+      },
+      "family_seen": {
+        "accepted": 2115,
+        "total": 2150,
+        "accuracy": 0.9837209302325581,
+        "ci95": [
+          0.978139534883721,
+          0.9888372093023255
+        ]
+      },
+      "family_unseen": {
+        "accepted": 31,
+        "total": 34,
+        "accuracy": 0.9117647058823529,
+        "ci95": [
+          0.8235294117647058,
+          1.0
+        ]
+      },
+      "artifact_hit": {
+        "accepted": 340,
+        "total": 363,
+        "accuracy": 0.9366391184573003,
+        "ci95": [
+          0.9118457300275482,
+          0.9614325068870524
+        ]
+      },
+      "artifact_miss": {
+        "accepted": 1806,
+        "total": 1821,
+        "accuracy": 0.9917627677100495,
+        "ci95": [
+          0.9873695771554091,
+          0.9956068094453597
+        ]
+      },
+      "artifact_family_hit": {
+        "accepted": 956,
+        "total": 984,
+        "accuracy": 0.9715447154471545,
+        "ci95": [
+          0.9613821138211383,
+          0.9817073170731707
+        ]
+      },
+      "artifact_family_miss": {
+        "accepted": 1190,
+        "total": 1200,
+        "accuracy": 0.9916666666666667,
+        "ci95": [
+          0.9858333333333333,
+          0.9966666666666667
+        ]
+      },
+      "alternative_coverage": {
+        "accepted": 2146,
+        "total": 2184,
+        "accuracy": 0.9826007326007326,
+        "ci95": [
+          0.9766483516483516,
+          0.9876373626373627
+        ]
+      }
+    }
+  },
+  "lexicon_errors": [
+    {
+      "lemma": "alumnus",
+      "gold": [
+        "alumni"
+      ],
+      "selected": "alumnuses",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "alumnus",
+      "artifact_countability": "COUNTABLE",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "antipasto",
+      "gold": [
+        "antipasti"
+      ],
+      "selected": "antipastos",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "antipasto",
+      "artifact_countability": "COUNTABLE",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "aquarium",
+      "gold": [
+        "aquiriums"
+      ],
+      "selected": "aquariums",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "aquarium",
+      "artifact_countability": "COUNTABLE",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "atty",
+      "gold": [
+        "attys"
+      ],
+      "selected": "atties",
+      "source": "rule",
+      "seen": false,
+      "family_seen": false,
+      "artifact_hit": false,
+      "family": "atty",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "breeder",
+      "gold": [
+        "bredders"
+      ],
+      "selected": "breeders",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "breeder",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "burrito",
+      "gold": [
+        "borritos"
+      ],
+      "selected": "burritos",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "burrito",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "cpy",
+      "gold": [
+        "cpys"
+      ],
+      "selected": "cpies",
+      "source": "rule",
+      "seen": false,
+      "family_seen": false,
+      "artifact_hit": false,
+      "family": "cpy",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "dinosaur",
+      "gold": [
+        "dinasaurs"
+      ],
+      "selected": "dinosaurs",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "dinosaur",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "fish",
+      "gold": [
+        "fishes"
+      ],
+      "selected": "fish",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "fish",
+      "artifact_countability": "COUNTABLE",
+      "artifact_flags": "I",
+      "identity": true
+    },
+    {
+      "lemma": "gardnerus",
+      "gold": [
+        "gardneri"
+      ],
+      "selected": "gardneruses",
+      "source": "rule",
+      "seen": false,
+      "family_seen": false,
+      "artifact_hit": false,
+      "family": "gardnerus",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "index",
+      "gold": [
+        "indices"
+      ],
+      "selected": "indexes",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "index",
+      "artifact_countability": "COUNTABLE",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "laser",
+      "gold": [
+        "lazers"
+      ],
+      "selected": "lasers",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "laser",
+      "artifact_countability": "MIXED",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "luggage",
+      "gold": [
+        "luggages"
+      ],
+      "selected": "luggage",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "luggage",
+      "artifact_countability": "MASS",
+      "artifact_flags": "-",
+      "identity": true
+    },
+    {
+      "lemma": "mulla",
+      "gold": [
+        "mullahs"
+      ],
+      "selected": "mullas",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "mulla",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "off",
+      "gold": [
+        "offs"
+      ],
+      "selected": "off",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "off",
+      "artifact_countability": "MASS",
+      "artifact_flags": "I",
+      "identity": true
+    },
+    {
+      "lemma": "original",
+      "gold": [
+        "orginals"
+      ],
+      "selected": "originals",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "original",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "osteo",
+      "gold": [
+        "osteos"
+      ],
+      "selected": "osteo",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "osteo",
+      "artifact_countability": "MASS",
+      "artifact_flags": "I",
+      "identity": true
+    },
+    {
+      "lemma": "parade",
+      "gold": [
+        "paraded"
+      ],
+      "selected": "parades",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "parade",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "pedal",
+      "gold": [
+        "peddles"
+      ],
+      "selected": "pedals",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "pedal",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "person",
+      "gold": [
+        "persons"
+      ],
+      "selected": "people",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "person",
+      "artifact_countability": "COUNTABLE",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "pinscher",
+      "gold": [
+        "pinchers"
+      ],
+      "selected": "pinschers",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "pinscher",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "shyster",
+      "gold": [
+        "sheisters"
+      ],
+      "selected": "shysters",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "shyster",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "sussex",
+      "gold": [
+        "sussexs"
+      ],
+      "selected": "sussexes",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "sussex",
+      "artifact_countability": "COUNTABLE",
+      "artifact_flags": "C",
+      "identity": false
+    },
+    {
+      "lemma": "thank",
+      "gold": [
+        "thanx"
+      ],
+      "selected": "thanks",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "thank",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "tit",
+      "gold": [
+        "titts"
+      ],
+      "selected": "tits",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "tit",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "tomato",
+      "gold": [
+        "tomatos"
+      ],
+      "selected": "tomatoes",
+      "source": "lexicon",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": true,
+      "family": "tomato",
+      "artifact_countability": "COUNTABLE",
+      "artifact_flags": "-",
+      "identity": false
+    },
+    {
+      "lemma": "villain",
+      "gold": [
+        "villians"
+      ],
+      "selected": "villains",
+      "source": "rule",
+      "seen": true,
+      "family_seen": true,
+      "artifact_hit": false,
+      "family": "villain",
+      "artifact_countability": "NOT_IN_ARTIFACT",
+      "artifact_flags": "-",
+      "identity": false
+    }
+  ],
+  "error_diagnosis": {
+    "errors": 27,
+    "identity_returns": 4,
+    "identity_by_artifact_class": {
+      "MASS/I": 2,
+      "COUNTABLE/I": 1,
+      "MASS/-": 1
+    },
+    "vocabulary_seen": 24,
+    "artifact_hit": 12,
+    "by_source": {
+      "rule": 16,
+      "lexicon": 11
+    }
+  }
+}

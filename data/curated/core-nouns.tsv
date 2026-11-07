@@ -3,6 +3,9 @@
 # independently second-reviewed. Merged by tools/research/lexicon.py; curated rows win over extracted rows.
 # Columns: lemma, plural, classical, alternatives(comma), countability, flags(I=invariant,N=initialism,
 #          C=case-sensitive,A=ambiguous), source
+# 2026-11 source review: the pinned Kaikki record for "amenity" contains only uncountable
+# senses and no attested plural. Standard countable use (amenities) is recorded explicitly here
+# as a reviewed correction, rather than teaching the engine a misspelling or rewriting the source.
 lemma	plural	classical	alternatives	countability	flags	source
 child	children	-	-	COUNTABLE	-	curated:core-v1
 man	men	-	-	COUNTABLE	-	curated:core-v1
@@ -223,6 +226,7 @@ jack-in-the-box	jack-in-the-boxes	-	-	COUNTABLE	-	curated:core-v1
 man-of-war	men-of-war	-	-	COUNTABLE	-	curated:core-v1
 forget-me-not	forget-me-nots	-	-	COUNTABLE	-	curated:core-v1
 major general	major generals	-	-	COUNTABLE	-	curated:core-v1
+amenity	amenities	-	-	COUNTABLE	-	curated:review-2026-11
 cat	cats	-	-	COUNTABLE	-	curated:core-v1
 dog	dogs	-	-	COUNTABLE	-	curated:core-v1
 house	houses	-	-	COUNTABLE	-	curated:core-v1

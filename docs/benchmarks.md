@@ -1,18 +1,8 @@
 # Benchmarks
 
-JMH 1.37, independent forks, average time with GC profiler. Raw data for the packed
-implementation: `results/benchmarks/jmh-packed.json`. The previous
-object-graph run is `results/benchmarks/jmh.json`; the exploratory 0.3-load run is preserved
-as `jmh-packed-noisy.json` because its control benchmark showed the machine was loaded and
-its numbers are not used. Sources:
-`inflector-benchmarks/src/main/java/io/github/slayyyyer/morphex/inflector/bench/`.
-
-**Historical note.** The full table and allocation/startup figures below were recorded before
-the final compound, uppercase and backoff changes. A fresh one-iteration sanity run after
-those changes is saved as `results/benchmarks/jmh-final.json`: repeated 77.8 ns vs 81.5 ns
-for evo2, distinct 226.0 ns vs 163.6 ns (1.38x slower), mixed-case 309.1 ns vs 179.5 ns,
-count 231.5 ns vs 158.6 ns, and diagnostics 348.6 ns vs 298.2 ns. The short run did not use
-the GC profiler, so allocation claims remain historical.
+JMH 1.37, two independent forks, average time, GC profiler. The current run is
+`results/release-1.2.0/benchmarks/jmh-workload-v1.json`; the log is next to it. The fixed
+input is `inflector-benchmarks/src/main/resources/benchmark-workload-v1.tsv` (version 1).
 
 ## Setup
 
@@ -23,97 +13,110 @@ the GC profiler, so allocation claims remain historical.
 | OS | Windows 11 Home |
 | JDK | Eclipse Temurin 21.0.13+9-LTS |
 | Maven | 3.9.9 (checked-in wrapper) |
-| JMH | 1.37, `-f 2`, `-wi 3`, `-i 5`, `-w 1s`, `-r 1s`, `-prof gc` |
-| Compare | `org.atteo:evo-inflector:2.0` from Maven Central |
-
-Command:
+| JMH | 1.37, `-f 2 -wi 3 -i 5 -w 500ms -r 500ms -prof gc` |
+| Compare | `org.atteo:evo-inflector:2.0`, same JVM and inputs |
 
 ```bash
 ./mvnw -q -pl inflector-benchmarks -am package
-java -jar inflector-benchmarks/target/benchmarks.jar -f 2 -wi 3 -i 5 -w 1s -r 1s -prof gc \
-     -rf json -rff results/benchmarks/jmh-packed.json
+java -jar inflector-benchmarks/target/benchmarks.jar -f 2 -wi 3 -i 5 \
+  -w 500ms -r 500ms -prof gc -rf json \
+  -rff results/release-1.2.0/benchmarks/jmh-workload-v1.json
 ```
 
-Every benchmark consumes the returned string through a `Blackhole`; inputs are prepared
-outside the timed region. `inflectorRepeated` calls one already-warm word; `inflectorUnique`
-cycles the distinct lemma corpus, so it includes compound, initialism, Unicode and fallback
-paths rather than a pure map hit.
+The workload is fixed and versioned, not sampled at run time. Categories are lexical hits,
+compacted regular words (in the full vocabulary but absent from the exact artifact),
+unknown lowercase tokens, uppercase inference, compounds, and unsupported inputs. Every
+returned value is consumed through a `Blackhole`; setup is outside the timed region.
 
-## Results (arithmetic mean, JDK 21)
+## Results
 
-| benchmark | mode | score | unit | alloc B/op |
-| --- | --- | --- | --- | --- |
-| evo2Repeated | avgt | 98.211 | ns/op | 113.3 |
-| inflectorRepeated | avgt | 81.696 | ns/op | 35.3 |
-| evo2Unique | avgt | 150.706 | ns/op | 136.6 |
-| inflectorUnique | avgt | 201.128 | ns/op | 29.3 |
-| evo2MixedCase | avgt | 169.060 | ns/op | 151.3 |
-| inflectorMixedCase | avgt | 267.856 | ns/op | 50.8 |
-| evo2Count (`plural(w, 2)`) | avgt | 170.932 | ns/op | 136.5 |
-| inflectorCount (`pluralize(w, 2)`) | avgt | 216.921 | ns/op | 29.3 |
-| evo2AnalyzeEquivalent | avgt | 269.945 | ns/op | 273.1 |
-| inflectorAnalyze | avgt | 321.475 | ns/op | 234.9 |
-| inflectorRulesOnly | avgt | 391.191 | ns/op | 77.0 |
+`avgt` is arithmetic mean latency. Alloc is normalized GC allocation per operation.
 
-Historical packed-run artifact: 150,267 entries, 7,708,247 bytes raw TSV (1,212,308 bytes gzip);
-the current artifact is 147,193 entries / 7,545,760 bytes (1,176,616 bytes gzip). No
-runtime dependencies. The run did not capture the concurrent benchmarks; the
-earlier run measured 10.2M ops/s on four threads, but that number belongs to the previous
-artifact and is not claimed here.
+| benchmark | score ns/op | alloc B/op |
+| --- | ---: | ---: |
+| evo2LexicalHit | 118.495 | 121.7 |
+| **inflectorLexicalHit** | **100.733** | 65.7 |
+| evo2Compacted | 104.666 | 80.6 |
+| inflectorCompacted | 456.362 | 395.4 |
+| evo2Unknown | 80.420 | 73.6 |
+| inflectorUnknown | 906.080 | 392.8 |
+| evo2Uppercase | 89.823 | 120.0 |
+| inflectorUppercase | 711.409 | 163.6 |
+| evo2Compound | 95.773 | 103.2 |
+| inflectorCompound | 499.737 | 404.0 |
+| evo2Unsupported | 78.645 | 113.1 |
+| inflectorUnsupported | 384.329 | 377.1 |
+| evo2Count | 171.252 | 134.8 |
+| inflectorCount | 247.600 | 29.9 |
+| evo2MixedCase | 183.287 | 149.3 |
+| inflectorMixedCase | 434.602 | 87.8 |
+| evo2Unique | 180.011 | 134.8 |
+| inflectorUnique | 267.127 | 29.9 |
+| evo2Repeated | 110.879 | 104.8 |
+| **inflectorRepeated** | **81.372** | 17.3 |
+| evo2AnalyzeEquivalent | 327.661 | 269.6 |
+| **inflectorAnalyze** | **387.412** | 236.7 |
+| evo2AnalyzeWorkloadEquivalent | 222.395 | 248.4 |
+| inflectorDiagnosticsWorkload | 574.171 | 423.5 |
+| inflectorRulesOnly | 1,032.422 | 910.2 |
 
-## Interpretation
+Same-run ratios:
 
-* **Repeated lookup**: 81.7 ns vs 98.2 ns in the same run, i.e. 0.83× stock 2.0 (faster), and
-  essentially unchanged from the previous implementation (83.5 ns). This is the hot path for
-  an application pluralizing the same word.
-* **Distinct-word workload**: 201 ns vs 151 ns, i.e. **1.34× slower**. Before the packed
-  representation this gap was 2.4× (395 ns vs 163 ns). The corpus touches the full vocabulary
-  plus compound, initialism and Unicode paths; stock 2.0's compiled trie is still faster.
-* **Mixed case / count / diagnostics**: 268 ns (1.58× evo2), 217 ns (1.27×), and 321 ns
-  (1.19× the closest evo2 equivalent). All three improved materially against the previous
-  implementation (404, 380 and 481 ns respectively).
-* **Allocation**: 29-51 B/op versus 113-151 B/op for stock 2.0, but not zero: a changed string
-  is a new string. Identity results (`sheep`, `information`) return the source.
-* **Run-to-run variance**: the rules-only control moved from 476 ns to 391 ns between runs on
-  the same machine, so cross-run absolute numbers are noisy. Same-run ratios are the fair
-  comparison; the previous implementation's row is shown only as historical context.
-* **Packed layout**: keys are concatenated in one `char[]` with an `int[]` offset column, an
-  open-addressed `int[]` table stores entry indexes, and metadata lives in byte/short columns.
-  Full plural strings are retained only for the ~14k entries whose diagnostics can expose an
-  alternative or classical form. There is no per-entry object.
+| path | ratio to evo2 | reading |
+| --- | ---: | --- |
+| repeated lookup | 0.73× | 1.36× faster |
+| lexical hit | 0.85× | 1.18× faster |
+| count path | 1.45× | slower |
+| historical distinct corpus | 1.48× | slower |
+| mixed case | 2.37× | slower |
+| compacted regular | 4.36× | slower |
+| compound | 5.22× | slower |
+| unsupported | 4.89× | slower |
+| uppercase inference | 7.92× | slower |
+| unknown token | 11.27× | slower |
+| diagnostics | 1.18× | slower (evo2 has no equivalent API) |
 
-The measured claim is: faster than stock 2.0 on repeated lookup (0.95× in the fresh short
-run; 0.83× in the historical full run), 1.38× slower on distinct-word lookup, lower
-allocation in the historical profiled run, and a substantially smaller retained heap, with
-substantially higher accuracy (see `docs/evaluation.md`). No distinct-word speedup is claimed.
+The fixed workload changes the conclusion from the old corpus-only run: the library is faster
+only on repeated and exact lexical hits. Compacted, unknown, uppercase, compound and
+unsupported paths repeatedly fall through compound tables and allocate diagnostic/rule
+machinery even on the fast path. No general speedup is claimed.
+
+### Concurrency
+
+Four threads sharing one immutable instance, throughput over the mixed workload:
+
+| system | ops/ms | approx ops/s |
+| --- | ---: | ---: |
+| evo-inflector 2.0 | 20,912.800 | 20.9 M/s |
+| this library | 4,823.792 | 4.8 M/s |
+
+This is a **4.34× lower throughput** in the same run. The instance is thread-safe, but the
+current resolver does more allocation and table probing per call. The earlier “10.2M ops/s”
+number was from the previous artifact and is not claimed here.
 
 ## Startup and retained footprint
 
-`StartupFootprint` (same machine, JDK 21, three runs):
+`StartupFootprint`, fresh JVM with `-Xms256m -Xmx256m`, three runs:
 
-| metric | value |
+| metric | measured |
 | --- | --- |
-| first call (class load + artifact load + first pluralize) | 392-505 ms (median 426 ms) |
-| first `pluralize` call | 2.2-3.2 ms |
-| 50,000 cold calls with unseen tokens | 60.7-61.8 ms |
-| lexicon entries (historical run) | 150,267 (current: 147,193) |
-| retained heap after load | **24.1 MB** (25,316,272 bytes; remeasured with the current artifact) |
+| startup (class load + artifact load + first call) | 718-726 ms |
+| first `pluralize` after load | 2.5-3.6 ms |
+| retained heap after load (after GC) | 19,076,408-19,076,968 bytes (~18.2 MiB) |
+| cold 50,000 calls with unseen tokens | 427.7-448.8 ms |
+| lexicon entries | 147,338 |
+| shaded benchmark JAR | 11,898,219 bytes |
 
-The previous object-graph lexicon retained **55.5 MB**; the packed layout cuts that by ~57%
-(about 31 MB). Most of the remaining footprint is the key/plural character pools, the sparse
-diagnostic strings, the index table and the JVM baseline. Load is slower than the old map
-(426 ms vs 309 ms) because packing copies every column and builds the index; that is a
-one-time startup cost, not a per-lookup cost. The cold 50k loop is slower than the old map's
-34 ms because it is dominated by unknown-token misses and JIT warmup; JMH's warm hit paths are
-the representative latency numbers. The product ships no model and no native bridge; the
-research Java scorer lives in `inflector-eval` and is not on the consumer classpath.
+The core artifact JAR is 8,840,811 bytes. There are no runtime dependencies, no model and no
+native memory. Retained heap is lower than the historical packed measurement (~24 MB), but
+startup on this run was slower than the old 426 ms median. Both figures are kept as measured
+rather than mixing runs.
 
-## Known gaps and next steps
+## Known gaps
 
-* The distinct-word path is still 1.38× slower than stock 2.0 (1.34× historically). A packed UTF-8 key pool or a
-  trie/automaton over the same columns could close the rest without giving back the footprint
-  win.
-* 24.1 MB retained is much better than 55.5 MB but still larger than the 7.71 MB TSV; the
-  difference is Java array overhead, the index table and the sparse diagnostic strings.
-* `evo2Concurrent` did not appear in the recorded JSON; no comparative concurrency claim is
-  made.
+* The resolver is not competitive on cold/unknown/compound paths; profile-guided reuse of
+  compound parsing and avoiding diagnostic allocation on the plain fast path are the obvious
+  next steps.
+* Concurrency is 4.34× below evo2 in this run, despite immutability.
+* The previous historical corpus-only JMH numbers are preserved in `results/benchmarks/` but
+  are not comparable to the fixed-category workload and are not used for current claims.

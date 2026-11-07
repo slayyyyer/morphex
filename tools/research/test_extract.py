@@ -140,6 +140,63 @@ class NormalizeTest(unittest.TestCase):
         self.assertEqual(
             "MIXED", extract.reconcile_countability(["MIXED"], ["water", "waters"], "water", False))
 
+    def test_subordinate_plural_only_sense_does_not_mark_lemma(self):
+        # accent: ordinary countable senses plus accents, while one subordinate
+        # "expressions in general" sense is tagged plural-only.
+        record, reason = extract.normalize(noun(
+            "accent", "accent (countable and uncountable, plural accents)",
+            forms=[{"form": "accents", "tags": ["plural"]}],
+            senses=[{"id": "accent-noun-1", "tags": ["countable", "uncountable"]},
+                    {"id": "accent-noun-2", "tags": ["countable", "plural", "plural-only"]}]))
+        self.assertEqual("", reason)
+        self.assertEqual("MIXED", record.countability)
+        self.assertFalse(record.plural_only)
+        self.assertFalse(record.invariant)
+        self.assertEqual(["accents"], record.forms)
+
+    def test_work_like_subordinate_plural_only_sense_keeps_works(self):
+        record, reason = extract.normalize(noun(
+            "work", "work (countable and uncountable, plural works)",
+            forms=[{"form": "works", "tags": ["plural"]}],
+            senses=[{"id": "work-noun-1", "tags": ["countable", "uncountable"]},
+                    {"id": "work-noun-2", "tags": ["plural-only", "slang"]}]))
+        self.assertEqual("", reason)
+        self.assertEqual("MIXED", record.countability)
+        self.assertEqual(["works"], record.forms)
+
+    def test_secondary_head_template_plural_only_is_recognized(self):
+        # times: the first template is a bare noun-form head; the reviewed
+        # plural-only template is second. Both must be inspected.
+        obj = noun("times", "times", forms=[], senses=[{"id": "times-noun-1"}])
+        obj["head_templates"] = [
+            {"expansion": "times (en noun form)", "args": {"1": "en", "2": "noun form"}},
+            {"expansion": "times pl (plural only)", "args": {"1": "p"}},
+        ]
+        record, reason = extract.normalize(obj)
+        self.assertEqual("", reason)
+        self.assertEqual("PLURAL_ONLY", record.countability)
+        self.assertEqual(["times"], record.forms)
+
+    def test_sense_plural_only_without_attested_plural_is_kept(self):
+        # contents: a plural-form headword whose plural-only use has no separate
+        # plural; removing it would make the engine invent "contentses".
+        record, reason = extract.normalize(noun(
+            "contents", "contents", forms=[],
+            senses=[{"id": "contents-noun-1", "tags": ["plural-normally"]},
+                    {"id": "contents-noun-2", "tags": ["plural", "plural-only"]}]))
+        self.assertEqual("", reason)
+        self.assertEqual("PLURAL_ONLY", record.countability)
+        self.assertEqual(["contents"], record.forms)
+
+    def test_every_sense_plural_only_is_whole_lemma_evidence(self):
+        record, reason = extract.normalize(noun(
+            "trousers", "trousers", forms=[],
+            senses=[{"id": "trousers-noun-1", "tags": ["plural-only"]},
+                    {"id": "trousers-noun-2", "tags": ["plural-only"]}]))
+        self.assertEqual("", reason)
+        self.assertEqual("PLURAL_ONLY", record.countability)
+        self.assertEqual(["trousers"], record.forms)
+
     def test_plural_normally_sense_is_not_lemma_plural_only(self):
         # "book"/"bag": a sense normally used in the plural does not make the
         # whole lemma plural-only when a regular plural is attested.

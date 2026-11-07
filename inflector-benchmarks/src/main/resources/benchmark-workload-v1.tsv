@@ -1,0 +1,73 @@
+# morphex benchmark workload v1
+# Fixed 2026-11-07 for release 1.2.0. Inputs are never generated or sampled at run time.
+# category	input	note
+lexical	cat	exact lexical entry
+lexical	city	lexical entry with -y
+lexical	quiz	lexical entry with doubled consonant
+lexical	analysis	Greek lexical plural
+lexical	child	irregular lexical plural
+lexical	mouse	irregular lexical plural
+lexical	die	ambiguous lexical plural
+lexical	person	irregular lexical plural
+lexical	sheep	invariant lexical plural
+lexical	ox	irregular lexical plural
+lexical	wife	lexical f-to-ves plural
+lexical	information	mass noun identity
+lexical	scissors	plural-only identity
+lexical	UFO	lexical initialism
+lexical	SMS	lexical initialism with es
+lexical	API	lexical initialism
+lexical	G-PON	hyphenated lexical initialism
+lexical	cactus	classical/anglicized preference
+lexical	index	classical/anglicized preference
+lexical	formula	classical/anglicized preference
+compacted	camera	in vocabulary, absent from exact artifact, RULE path
+compacted	garden	in vocabulary, absent from exact artifact, RULE path
+compacted	window	in vocabulary, absent from exact artifact, RULE path
+compacted	teacher	in vocabulary, absent from exact artifact, RULE path
+compacted	button	in vocabulary, absent from exact artifact, RULE path
+compacted	pencil	in vocabulary, absent from exact artifact, RULE path
+compacted	guitar	in vocabulary, absent from exact artifact, RULE path
+compacted	pillow	in vocabulary, absent from exact artifact, RULE path
+compacted	rocket	in vocabulary, absent from exact artifact, RULE path
+compacted	kitten	in vocabulary, absent from exact artifact, RULE path
+compacted	ladder	in vocabulary, absent from exact artifact, RULE path
+compacted	church	in vocabulary, absent from exact artifact, sibilant RULE path
+compacted	baby	in vocabulary, absent from exact artifact, consonant-y RULE path
+compacted	box	in vocabulary, absent from exact artifact, sibilant RULE path
+unknown	flimb	unknown lowercase token
+unknown	plork	unknown lowercase token
+unknown	vunder	unknown lowercase token
+unknown	snarp	unknown lowercase token
+unknown	quellish	unknown lowercase token
+unknown	brint	unknown lowercase token
+unknown	glomp	unknown lowercase token
+unknown	zibbet	unknown lowercase token
+unknown	quorf	unknown lowercase token
+unknown	nurbex	unknown lowercase token
+uppercase	FLIMB	uppercase inference, 5 letters
+uppercase	PLORK	uppercase inference, 5 letters
+uppercase	VUNDER	uppercase inference, 6 letters
+uppercase	SNARP	uppercase inference, 5 letters
+uppercase	BRINT	uppercase inference, 5 letters
+uppercase	GLOMP	uppercase inference, 5 letters
+uppercase	ZIBBET	uppercase inference, 6 letters
+uppercase	QUORF	uppercase inference, 5 letters
+uppercase	NURBEX	uppercase inference, 6 letters
+compound	mother-in-law	exact lexical compound
+compound	passer-by	exact lexical compound
+compound	attorney general	space-separated postposed compound
+compound	credit-card	hyphen head-final compound
+compound	ice cream	space head-final compound
+compound	blue-card	hyphen head-final compound
+compound	court-martial	exact lexical postposed compound
+compound	poet laureate	exact lexical postposed compound
+compound	son-in-law	exact lexical compound
+compound	great-grandfather	exact lexical compound
+unsupported	user_id	identifier punctuation
+unsupported	3.14	numeric punctuation
+unsupported	red cat 	trailing whitespace
+unsupported	red  cat	repeated internal whitespace
+unsupported	日本	non-Latin letters
+unsupported	C++	symbol punctuation
+unsupported	don't	apostrophe

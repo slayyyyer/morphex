@@ -69,11 +69,11 @@ def run(folds: int = 5, out_dir: str = "results/learning/oof") -> dict:
                    if assignments[row["lemma"]]["family"] not in held_families}
         fold_dir = out / f"fold-{index}"
         fold_dir.mkdir(parents=True, exist_ok=True)
-        artifact = fold_dir / "lexicon-v1.tsv"
+        artifact = fold_dir / dataset.CORE_RESOURCE.name
         membership: set[str] = set()
         rows = lexicon.build("train", "compact", membership, allowed)
         lexicon.write(rows, artifact, "train", "compact", "oof-inner-fold")
-        lexicon.write_membership(fold_dir / "lexicon-membership-v1.bin", membership)
+        lexicon.write_membership(fold_dir / dataset.CORE_MEMBERSHIP.name, membership)
 
         records = fold_dir / "records.tsv"
         predictions = fold_dir / "predictions.tsv"

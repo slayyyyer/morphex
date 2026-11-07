@@ -75,9 +75,10 @@ In memory the lexicon is columnar, not an object graph:
 `append = plural.substring(prefix)`. Example: `mouse/mice` → cut 4, append `ice`;
 `child/children` → cut 0, append `ren`.
 
-That layout is the footprint win reported in `docs/benchmarks.md`: 55.5 MB retained as an
-object graph → **25.4 MB** packed (−54%), at the cost of slower one-time load (column
-packing + index build, ~426 ms median to first call). No per-entry object exists.
+That layout is the footprint win reported in `docs/benchmarks.md`: the historical object
+graph retained 55.5 MB; the packed artifact measured **19.08 MB** retained in the v1.2.0
+run after GC, at the cost of slower one-time load (column packing + index build, 718-726 ms
+to first call on that run). No per-entry object exists.
 
 ## Rules (`Rule.java`, `WordShape.java`)
 
@@ -173,8 +174,8 @@ by votes) and rerunning P1/P2; it was deliberately not tuned against the externa
 * Instances are immutable (`Map.copyOf` / `Set.copyOf` snapshots, `final` fields, no
   setters); the bundled `Lexicon` loads once into packed arrays and is shared via a holder.
   Safe to share across threads; there is no mutable global configuration.
-* Startup is one-time artifact load + index build (median ~426 ms to first call on the
-  measured machine); per-call lookup is lock-free array/hash access.
+* Startup is one-time artifact load + index build (718-726 ms to first call on the measured
+  v1.2.0 run); per-call lookup is lock-free array/hash access.
 * No model, no training dependency, no native bridge, no runtime download. The learning
   experiment (`docs/learning.md`) was rejected, so the shipped artifact is deterministic
   code + TSV only.
@@ -183,6 +184,7 @@ by votes) and rerunning P1/P2; it was deliberately not tuned against the externa
 
 Singularization, verb conjugation, sentence parsing, multilingual morphology, online
 learning, general multi-word rewriting. Unsupported input is returned unchanged and
-reported by `analyze`, not silently fixed. The rules-only build
-(`builder().withoutBundledLexicon()`) drops the Wiktionary data entirely for callers who
-want zero CC BY-SA surface.
+reported by `analyze`, not silently fixed. The rules-only runtime mode
+(`builder().withoutBundledLexicon()`) does not load the packaged Wiktionary data. The data
+still ships in the JAR, so the CC BY-SA 3.0 attribution and redistribution terms still
+apply; it is not a data-free build.

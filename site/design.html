@@ -32,7 +32,7 @@
         <li><strong>Caller override</strong> — exact, case-sensitive whole-input match.</li>
         <li><strong>Exact lexical entry</strong> — lower-cased lookup; <code>C</code>-flagged entries also require the exact caller spelling.</li>
         <li><strong>Caller-declared initialism</strong> — explicit metadata, never an uppercase guess.</li>
-        <li><strong>Supported compound</strong> — exact entries, free tails (<code>-in-law</code>, <code>-of-war</code>…), curated postposed heads; depth ≤ 1, heads use simple words only.</li>
+        <li><strong>Supported compound</strong> — exact entries, free tails (<code>-in-law</code>, <code>-of-war</code>…), curated postposed heads, guarded head-final and particle paths; nested depth is capped at 4. Heads retain provenance, so only unresolved rule results may be respelled.</li>
         <li><strong>Productive rule</strong> — one of three, only for plain Latin tokens.</li>
         <li><strong>Fallback</strong> — return input unchanged (<code>fallback:unsupported</code>), identified by <code>analyze</code>.</li>
       </ol>
@@ -68,7 +68,7 @@
         never invented. No numeric confidence, by decision D8: an unvalidated score is not a probability.</p>
         <h3>Deliberately out of scope</h3>
         <p class="small">Singularization, verbs, parsing, multilingual morphology, online learning, general
-        multi-word rewriting. The rules-only build drops the data entirely.</p>
+        multi-word rewriting. The rules-only runtime mode does not load the packaged data; the data remains in the JAR and its CC BY-SA terms still apply.</p>
       </div>
     </div>
   </section>

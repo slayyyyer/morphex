@@ -122,20 +122,35 @@ def classify_countability(expansion: str, sense_tags: list[list[str]],
     return "COUNTABLE"
 
 
-def is_plural_only(expansion: str, args: dict, sense_tags: list[list[str]]) -> bool:
-    low = expansion.lower()
-    if "plural only" in low or re.search(r"\bpl \(", low):
+def head_marks_plural_only(expansion: str, args: dict) -> bool:
+    """True when one head template describes the whole lemma as plural-only.
+
+    A record may carry several templates (for example a plain noun-form head plus a
+    reviewed ``... pl (plural only)`` head). Every template is evidence; inspecting only
+    the first one dropped legitimate plural-only headwords such as *times* and *skins*.
+    """
+    low = (expansion or "").lower()
+    if "plural only" in low or "plural-only" in low or re.search(r"\bpl\b", low):
         return True
-    if str(args.get("1", "")).strip().lower() == "p":
+    args = args or {}
+    return any(str(args.get(key, "")).strip().lower() == "p" for key in ("1", "g"))
+
+
+def is_plural_only(heads: list[dict], sense_tags: list[list[str]],
+                   has_attested_plural: bool) -> bool:
+    """Whole-lemma plural-only evidence, never a single subordinate sense.
+
+    A sense tagged ``plural-only`` (for example the "expressions in general" sense of
+    *accent*, or the drug-equipment sense of *work*) restricts that sense. It does not
+    make the lemma plural-only while an ordinary plural is attested. Head-level evidence
+    always wins; sense-level evidence is used only when no non-lemma plural exists.
+    """
+    if any(head_marks_plural_only(head.get("expansion", ""), head.get("args") or {})
+           for head in heads):
         return True
-    # "plural-normally" is a sense-level usage note (that sense is normally plural,
-    # e.g. "books" as financial records) and must never mark the whole lemma
-    # plural-only: "book" and "bag" attest regular plurals. Only the head-level
-    # "plural-only" marking counts here; genuine plural-only nouns (scissors,
-    # trousers) carry it at the head alongside args "p".
-    if any("plural-only" in tags for tags in sense_tags):
-        return True
-    return False
+    if has_attested_plural:
+        return False
+    return any("plural-only" in tags for tags in sense_tags)
 
 
 def reconcile_countability(votes: list[str], forms: list[str], lemma: str,
@@ -199,7 +214,7 @@ def normalize(obj: dict) -> tuple[Record | None, str]:
         if surface not in accepted:
             accepted.append(surface)
 
-    plural_only = is_plural_only(expansion, args, sense_tags)
+    plural_only = is_plural_only(heads, sense_tags, has_attested_plural=bool(accepted))
     countability = classify_countability(expansion, sense_tags,
                                          has_attested_plural=bool(accepted))
 

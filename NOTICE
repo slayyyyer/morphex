@@ -5,23 +5,24 @@ Source code: MIT (see LICENSE).
 
 Bundled lexical data
 --------------------
-The file
+The files
 
-    inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv
+    inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v2.tsv
+    inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-membership-v2.bin
 
-is generated from the English noun extract published by Kaikki.org, itself derived from
+are generated from the English noun extract published by Kaikki.org, itself derived from
 English Wiktionary by Wiktextract. That data is licensed under Creative Commons
 Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0):
 
     https://creativecommons.org/licenses/by-sa/3.0/
 
 Attribution: Wiktionary contributors, via Kaikki.org (Tatu Ylonen) and Wiktextract.
-See data/LICENSE-DATA.md for the exact snapshot, checksum and obligations.
+See data/LICENSE-DATA.md for the snapshot, checksum and obligations.
 
-The code and the data are separately licensed. The data file is distributed next to the
-code in the jar; it is not relicensed by the MIT license. Consumers who cannot accept
-CC BY-SA 3.0 for the data can build without it: the engine runs with the three productive
-rules only (see README, "Rules-only build").
+The code and the data are separately licensed. The data files are distributed inside the
+jar; they are not relicensed by the MIT license. `withoutBundledLexicon()` is a runtime
+mode that does not load the data. It does not remove the data from the jar and does not
+remove the CC BY-SA 3.0 attribution or redistribution obligations.
 
 Reference implementations and prior art
 ---------------------------------------

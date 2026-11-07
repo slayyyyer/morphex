@@ -50,4 +50,4 @@ jobs:
 
       - name: Run candidate and compaction tests
         run: |
-          python -m unittest tools.research.test_lexicon tools.research.test_learning tools.research.test_splits
+          python -m unittest tools.research.test_extract tools.research.test_lexicon tools.research.test_learning tools.research.test_splits tools.research.test_external_eval

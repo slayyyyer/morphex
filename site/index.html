@@ -23,33 +23,34 @@
 <div class="hero" id="top">
   <div class="eyebrow">english-inflector · Java 17+</div>
   <h1>Pluralize English nouns. <em>Deterministically.</em></h1>
-  <p class="lede">A Java library in the spirit of evo-inflector: predictable runtime behaviour, no dependencies, no network calls, no model downloads. A 147k-entry auditable lexicon, three productive rules, and a diagnostic API that says <i>why</i> a form was chosen.</p>
+  <p class="lede">A Java library in the spirit of evo-inflector: predictable runtime behaviour, no dependencies, no network calls, no model downloads. A 147,338-entry auditable lexicon, three productive rules, and a diagnostic API that says <i>why</i> a form was chosen.</p>
 
   <div class="demo">
     <div class="row">
-      <input id="w" value="mother-in-law" spellcheck="false" autocapitalize="off" aria-label="Singular noun">
+      <input id="w" value="mother-in-law" spellcheck="false" autocapitalize="off" aria-label="Search verified catalog examples" placeholder="Search verified examples…">
       <div class="out" id="o" aria-live="polite">—</div>
     </div>
     <div class="why" id="y"></div>
+    <div class="why" id="detail"></div>
     <div class="chips" id="chips"></div>
-    <div class="why" style="margin-top:14px">Browser sketch: three rules plus a few irregulars. The real engine is the Java library. Runs locally, nothing leaves the page.</div>
+    <div class="catalog-results" id="list" aria-label="Verified catalog matches"></div>
+    <div class="why catalog-note" id="catalog-note">Loading verified catalog…</div>
   </div>
 
   <div class="cta">
     <a class="btn p" href="#install">Get started</a>
     <a class="btn" href="./comparison.html">See comparisons</a>
     <a class="btn" href="https://github.com/slayyyyer/morphex">GitHub</a>
-  </div>
-  <div class="badges"><span>Java 17+</span><span>Zero runtime deps</span><span>MIT code · CC BY-SA 3.0 data</span><span>Thread-safe · immutable</span><span>Maven Central: 1.1.0</span></div>
+  </div>    <div class="badges"><span>Java 17+</span><span>Zero runtime deps</span><span>MIT code · CC BY-SA 3.0 data</span><span>Thread-safe · immutable</span><span>Maven Central: 1.2.0</span></div>
 </div>
 
 <section id="install">
   <h2>Install</h2>
-  <p class="sub">Available on Maven Central as <code>io.github.slayyyyer.morphex:english-inflector-core:1.1.0</code>. If your mirror hasn't synced yet, build from source.</p>
+  <p class="sub">Available on Maven Central as <code>io.github.slayyyyer.morphex:english-inflector-core:1.2.0</code>. If your mirror hasn't synced yet, build from source.</p>
   <div class="tabs" role="tablist" id="tabs"></div>
   <pre id="snip"></pre>
-  <p class="note"><b>Rules-only build</b> (no bundled Wiktionary data, no CC BY-SA obligation): <code>EnglishInflector.builder().withoutBundledLexicon().build()</code>. Three productive rules plus your overrides. It loses irregular forms by design.</p>
-  <p class="note"><b>New in 1.1.0:</b> a compact packed membership index, improved compound handling, explicit uppercase/initialism policies, and strict-family reports. The linear selector remains experimental and is not shipped.</p>
+  <p class="note"><b>Rules-only runtime mode:</b> <code>EnglishInflector.builder().withoutBundledLexicon().build()</code> disables loading the packaged lexicon and uses three productive rules plus your overrides. The lexical resources still ship inside the JAR, so the CC BY-SA 3.0 data attribution and distribution terms still apply.</p>
+  <p class="note"><b>New in 1.2.0:</b> provenance-aware compound heads, bounded recursion, coherent whole-compound casing, stable preferred plurals, corrected plural-only extraction, full-vocabulary membership labels, and a Java-generated site catalog. The linear selector remains experimental and is not shipped.</p>
 
   <h3 style="margin:34px 0 12px;font-size:24px">Quickstart</h3>
 <pre class="solo">EnglishInflector inflector = EnglishInflector.standard();
@@ -87,12 +88,12 @@ r.source();          // LEXICON — "lex:die"</pre>
   <h2>Measured, not claimed</h2>
   <p class="sub">JMH 1.37 on JDK 21, 2 forks, GC profiler.</p>
   <div class="stats">
-    <div class="stat"><b>100%</b><span>P1 frozen-lexicon accuracy (0/36,239 errors) vs 96.473% stock</span></div>
-    <div class="stat"><b>97.376%</b><span>P2 unseen-family accuracy (951/36,239 errors) vs 96.473% stock</span></div>
-    <div class="stat"><b>82 ns</b><span>repeated lookup vs 98 ns stock (0.83×, faster)</span></div>
-    <div class="stat"><b>226 ns</b><span>distinct-word lookup vs 164 ns stock (1.38× slower)</span></div>
+    <div class="stat"><b>100%</b><span>P1 frozen-lexicon accuracy (0/36,241 errors) vs 96.474% stock</span></div>
+    <div class="stat"><b>97.365%</b><span>P2 family-holdout accuracy (955/36,241 errors) vs 96.474% stock</span></div>
+    <div class="stat"><b>81 ns</b><span>repeated lookup vs 111 ns stock (1.36× faster)</span></div>
+    <div class="stat"><b>4.4×</b><span>slower on compacted regular words (456 vs 105 ns)</span></div>
   </div>
-  <p class="note">Packed lexicon retains ~25 MB. External UD English EWT selected-output check: 98.21% overall (evo2 98.12%), 93.48% on seen lemmas, 99.17% unseen; alternative coverage 98.76%. <a href="./comparison.html">Comparisons →</a></p>
+  <p class="note">Packed lexicon retains ~18.2 MiB. External UD English EWT selected-output check: <b>98.76%</b> overall (evo2 98.12%), <b>98.88%</b> on the 2,148 full-vocabulary-seen lemmas, 96.69% on 363 compact-artifact hits, and 91.67% on only 36 genuinely unseen lemmas; alternative coverage 98.99%. The old “99.17% unseen” label referred to artifact misses and is corrected. <a href="./comparison.html">Comparisons →</a></p>
 </section>
 
 <section>
@@ -120,7 +121,7 @@ r.source();          // LEXICON — "lex:die"</pre>
 </section>
 
 <footer>
-  <div><b>Code: MIT.</b> <b>Data: CC BY-SA 3.0</b> (Wiktionary contributors via Kaikki.org/Wiktextract). The lexicon ships as a separate redistributable file; the rules-only build avoids it entirely.</div>
+  <div><b>Code: MIT.</b> <b>Data: CC BY-SA 3.0</b> (Wiktionary contributors via Kaikki.org/Wiktextract). The lexicon ships as a separate redistributable file. <code>withoutBundledLexicon()</code> avoids loading it at runtime, but the resource remains in the JAR and the data terms still apply.</div>
   <div><a href="https://github.com/slayyyyer/morphex">GitHub</a> · <a href="./javadoc/">Javadoc</a> · <a href="https://github.com/slayyyyer/morphex/blob/main/NOTICE">Attribution</a></div>
 </footer>
 </div>

@@ -17,7 +17,7 @@ echo "== extract / splits / artifacts =="
 py -3 -m tools.research.cli extract
 py -3 -m tools.research.cli splits
 py -3 -m tools.research.cli artifact --split all --selection compact
-py -3 -m tools.research.cli artifact --split train --selection compact --out build/p2/lexicon-v1.tsv
+py -3 -m tools.research.cli artifact --split train --selection compact --out build/p2/lexicon-v2.tsv
 
 echo "== install evaluator =="
 $MVN -q -o -pl inflector-eval -am install -DskipTests
@@ -42,7 +42,7 @@ py -3 -m tools.research.cli evaluate \
 echo "== protocol P2 (family holdout, train-only artifact) =="
 for split in train dev test; do
   $MVN -q -o -pl inflector-eval exec:java \
-    -Denglish.inflector.lexicon="$(pwd)/build/p2/lexicon-v1.tsv" \
+    -Denglish.inflector.lexicon="$(pwd)/build/p2/lexicon-v2.tsv" \
     -Dexec.args="--input results/eval/p2-$split-records.tsv --out results/eval/p2-$split-preds-v4.tsv"
 done
 for split in dev test; do

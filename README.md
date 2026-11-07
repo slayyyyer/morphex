@@ -1,63 +1,51 @@
 # english-inflector
 
-Deterministic English noun pluralization for Java 17+, inspired by and built on the ideas of [evo-inflector](https://github.com/atteo/evo-inflector). It aims to keep evo-inflector's predictable, dependency-free runtime behaviour while extending coverage of irregular forms, compounds, and casing.
+Deterministic English noun pluralization for Java 17+, inspired by and built on the ideas of [evo-inflector](https://github.com/atteo/evo-inflector). It keeps evo-inflector's predictable, dependency-free runtime behaviour while extending coverage of irregular forms, compounds, and casing.
 
 - No runtime dependencies, no network calls, no model downloads.
 - Immutable per-instance configuration; thread-safe by construction.
-- A 147,193-entry lexical artifact (7.5 MB TSV, 1.18 MB gzip) plus three productive rules, documented backoffs, and a bounded compound resolver.
-- A diagnostic API (`analyze`) that says *why* a form was chosen.
-- Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **100.000%** vs **96.473%** accepted-form accuracy. On the leakage-free family-holdout protocol this library scores **97.376%** vs **96.473%** (see `docs/evaluation.md`).
-- A corrected out-of-fold selector investigation was run. Its dependency-free Java mirror reproduces the result exactly, but the selector misses the offline gain gate by 0.0005 pp and fails the strict-default p99/init gates; it is **not shipped** (`docs/learning.md`).
+- A **147,338-entry** lexical artifact (7,553,688-byte TSV) plus three productive rules, documented backoffs, and a bounded compound resolver.
+- A diagnostic API (`analyze`) that says *why* a form was chosen, including which compound constituent supplied the head.
+- Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **100.000%** vs **96.474%** accepted-form accuracy. On the family-holdout protocol this library scores **97.365%** vs **96.474%** (see `docs/evaluation.md`).
+- The linear-selector investigation remains rejected and **not shipped** (`docs/learning.md`).
 
-Status: `1.1.0` on Maven Central: `io.github.slayyyyer.morphex:english-inflector-core:1.1.0`.
+Status: `1.2.0` on Maven Central: `io.github.slayyyyer.morphex:english-inflector-core:1.2.0`.
 
 Website: https://slayyyyer.github.io/morphex/ (install, quickstart, comparison, benchmarks, design, Javadoc).
 
-## What's new in 1.1.0
+## What's new in 1.2.0
 
-This is a backwards-compatible minor release. It keeps the 1.0 API and zero-runtime-dependency constraints while tightening the runtime and evaluation story:
-
-- a compact packed membership index, improved compound handling, and explicit uppercase/initialism policies;
-- a supplementary strict derivational-family evaluation (`split-v2`); the headline `split-v1` protocol is unchanged;
-- a dependency-free Java evaluator for the linear selector, which remains experimental and is **not** shipped;
-- refreshed benchmarks, external validation, and reproducible reports.
-
-## Why
-
-evo-inflector is a compact, well-loved library, and this project grew out of wanting a few more edge cases covered: mixed and upper-case input, hyphenated compounds, and irregulars that share a suffix with regular words. `docs/upstream-probe.md` lists the specific inputs we compared (for example `German`, `blouse`, `UFO`, `mother-in-law`, `CHILD`).
-
-Two design choices handle most of those cases:
-
-1. lookup normalization is kept separate from output case restoration;
-2. lexical exceptions are stored as whole-word edits rather than suffix rules, so `carp` cannot affect `scarp` and `louse` cannot affect `blouse`.
-
-Those choices trade a larger data file for fewer surprises. evo-inflector's rule-based approach is smaller and simpler, and may be the better fit if you don't need the extra coverage.
+- **Runtime-correct compounds.** Compound heads retain provenance (override, lexical, nested compound, inferred initialism, rule, fallback). Only unresolved rule heads may be respelled; lexical, invariant, mass and override results are never rewritten. Recursion is bounded at depth 4, and padded/repeated whitespace is explicitly unsupported and returned unchanged.
+- **Coherent casing.** Configured `LOWERCASE`/`UPPERCASE` is applied once to the whole reconstructed compound. Caller overrides remain literal exact replacements.
+- **Stable preferred plurals.** Preferences are case-consistent: a lowercase lemma prefers lowercase productive forms, while an uppercase lemma prefers exact `lemma+s`/`lemma+es` then identity.
+- **Corrected dataset generation.** Extraction v3 inspects every head template for plural-only evidence and only treats a sense as plural-only when no non-lemma plural exists. Dataset `nouns-v2` adds 178 plural-only lemmas, removes `PADS` and `PL`, and reclassifies `accent` and `work` as `MIXED`.
+- **Full-vocabulary external labels.** EWT “seen” now means present in the full permitted vocabulary, not absent from the compact artifact. Artifact-hit/miss is reported separately.
+- **Verified website catalog.** `site/catalog.json` is generated by the Java `SiteCatalog`; the browser only searches those rows and never pluralizes arbitrary input.
+- **Refreshed evidence.** New P1/P2 reports, external reports, a fixed benchmark workload, and a checksum manifest under `results/release-1.2.0/`.
 
 ## Install
-
-From Maven Central:
 
 ```xml
 <dependency>
   <groupId>io.github.slayyyyer.morphex</groupId>
   <artifactId>english-inflector-core</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 
 From this repository:
 
-```
+```bash
 ./mvnw install          # JDK 17+; the wrapper pins Maven 3.9.9
 ```
 
-Rules-only build (no bundled Wiktionary data, no CC BY-SA obligation):
+Rules-only **runtime mode**:
 
 ```java
 EnglishInflector rulesOnly = EnglishInflector.builder().withoutBundledLexicon().build();
 ```
 
-That instance uses only the three productive rules and caller overrides. It loses irregular forms by design.
+That instance does not load the bundled lexicon and uses only the three productive rules and caller overrides. It loses irregular forms by design. The lexical resources still ship inside the JAR, so the CC BY-SA 3.0 attribution and distribution terms still apply.
 
 ## API
 
@@ -75,9 +63,9 @@ Inflection result = inflector.analyze("die");
 result.plural();          // "dice"
 result.alternatives();    // ["dies"]
 result.ambiguous();       // true
-result.source();           // LEXICON
-result.id();               // "lex:die"
-result.countability();     // COUNTABLE
+result.source();          // LEXICON
+result.id();              // "lex:die"
+result.countability();    // COUNTABLE
 ```
 
 Configuration is immutable and per instance:
@@ -95,14 +83,14 @@ EnglishInflector custom = EnglishInflector.builder()
 
 ### Contract
 
-| input                                                                           | behaviour                                               |
-|---------------------------------------------------------------------------------|---------------------------------------------------------|
-| `""`                                                                            | returns `""`                                            |
-| `null`                                                                          | `NullPointerException` with a message                   |
-| unsupported shape (identifier, digits, possessive, non-Latin, unmatched hyphen) | returned unchanged, `analyze(...).source() == FALLBACK` |
-| `count == 1`                                                                    | the exact source instance, unmodified                   |
-| any other `count`                                                               | plural behaviour                                        |
-| already-plural / mass / invariant                                               | documented policy; see below                            |
+| input | behaviour |
+| --- | --- |
+| `""` | returns `""` |
+| `null` | `NullPointerException` with a message |
+| unsupported shape (identifier, digits, possessive, non-Latin, unmatched hyphen, padded/repeated whitespace) | returned unchanged, `analyze(...).source() == FALLBACK` |
+| `count == 1` | the exact source instance, unmodified |
+| any other `count` | plural behaviour |
+| already-plural / mass / invariant | documented policy; see below |
 
 No trimming, case folding or rewriting of the caller's input happens beyond the selected output.
 
@@ -110,7 +98,7 @@ No trimming, case folding or rewriting of the caller's input happens beyond the 
 
 ### Precedence
 
-1. caller override (exact, case-sensitive spelling)
+1. caller override (exact, case-sensitive spelling; literal replacement)
 2. exact lexical entry (case-insensitive lookup, with case-sensitive entries where needed)
 3. supported compound
 4. productive spelling rule
@@ -120,38 +108,34 @@ No trimming, case folding or rewriting of the caller's input happens beyond the 
 
 Three productive rules, plus documented backoffs for known weak suffix families:
 
-| id                     | condition                                       | change      |
-|------------------------|-------------------------------------------------|-------------|
-| `rule:sibilant-es`     | ends `s`, `x`, `z`, `ch`, `sh`                  | append `es` |
-| `rule:consonant-y-ies` | consonant before final `y` (including `qu + y`) | `y -> ies`  |
-| `rule:default-s`       | otherwise                                       | append `s`  |
-
-Everything else irregular is lexical. Adding a word to the lexicon cannot change an unrelated word that shares its suffix.
+| id | condition | change |
+| --- | --- | --- |
+| `rule:sibilant-es` | ends `s`, `x`, `z`, `ch`, `sh` | append `es` |
+| `rule:consonant-y-ies` | consonant before final `y` | `y -> ies` |
+| `rule:default-s` | otherwise | append `s` |
 
 | backoff | condition | change |
 | --- | --- | --- |
 | `backoff:woman->women` | ends `woman` | `woman -> women` |
 | `backoff:wife->wives` | ends `wife` | `wife -> wives` |
-| `backoff:man->men` | lower-case noun+`man`, length >= 6, not in the author-reviewed exception set | `man -> men` |
+| `backoff:man->men` | lower-case noun+`man`, length >= 6, not in the reviewed exception set | `man -> men` |
 | `backoff:greek-sis` | ends `sis`, length >= 5 | `sis -> ses` |
 
 ### Casing
 
-`CasePolicy.PRESERVE` (default) restores the input's shape: `CHILD -> CHILDREN`, `Child -> Children`, `iPhone -> iPhones`. `LOWERCASE` and `UPPERCASE` force the output shape.
+`CasePolicy.PRESERVE` (default) restores the input's shape: `CHILD -> CHILDREN`, `Child -> Children`, `iPhone -> iPhones`. `LOWERCASE` and `UPPERCASE` force the output shape and apply once to a whole compound. Overrides are literal and are not re-cased.
 
-Explicit metadata and caller configuration always win. A lexical entry is flagged when its attested plural is exactly `lemma + s`/`lemma + es` and then appends that suffix without whole-token re-casing (`UFO -> UFOs`, `SMS -> SMSes`). For an unknown 2-6 letter upper-case Latin token that is not in the membership table, the default `UppercasePolicy.INFER_INITIALISM` infers an initialism and appends lower-case `s` (`API -> APIs`). `builder().uppercasePolicy(UppercasePolicy.LITERAL)` restores literal rendering (`API -> APIS`); ordinary uppercase nouns and overrides are unaffected. Declare explicit initialisms with `builder().initialism("XYZ")`.
+Explicit initialism metadata wins over inference. An unknown 2-6 letter upper-case Latin token that is not in the membership table gets the inferred initialism policy and appends lower-case `s` (`API -> APIs`). `UppercasePolicy.LITERAL` restores literal rendering (`API -> APIS`). Declare explicit initialisms with `builder().initialism("XYZ")`.
 
 ### Countability
 
-Kept separate from singular→plural accuracy:
-
-| status        | returned                                   | example           |
-|---------------|--------------------------------------------|-------------------|
-| `MASS`        | the lemma unchanged                        | `information`     |
-| `PLURAL_ONLY` | the lemma unchanged                        | `scissors`        |
-| invariant     | the lemma unchanged, `invariant() == true` | `sheep`           |
-| `MIXED`       | the countable plural                       | `water -> waters` |
-| `COUNTABLE`   | the plural                                 | `cat -> cats`     |
+| status | returned | example |
+| --- | --- | --- |
+| `MASS` | the lemma unchanged | `information` |
+| `PLURAL_ONLY` | the lemma unchanged | `scissors` |
+| invariant | the lemma unchanged, `invariant() == true` | `sheep` |
+| `MIXED` | the countable plural | `water -> waters` |
+| `COUNTABLE` | the plural | `cat -> cats` |
 
 `analyze` reports the status and a note. Alternatives are preserved: `person` prefers `people` and accepts `persons`; `die` prefers `dice` and reports `dies` as an alternative with `ambiguous() == true`.
 
@@ -164,13 +148,13 @@ Bounded and tested, not suffix-guessed:
 - postposed modifiers only after curated heads: `attorney general`, `court-martial`, `heir apparent`, `governor-elect`;
 - guarded head-final nouns, including multi-hyphen chains and productive head respellings: `credit-card -> credit-cards`, `great-great-grandfather -> great-great-grandfathers`, `ice-shelf -> ice-shelves`, `on-ramp -> on-ramps`;
 - verb-particle nouns: `bake-off -> bake-offs`, `blow-in -> blow-ins`, `warm-up -> warm-ups`;
-- space-separated compounds inflect the final token, unless the input contains a preposition (`jack in the box` is returned unchanged rather than guessed).
+- space-separated compounds inflect the final noun token, unless a preposition appears (`jack in the box` is returned unchanged rather than guessed).
 
-The head inherits irregular forms: `child-in-law -> children-in-law`, `man-of-war -> men-of-war`.
+A compound head is respelled only when its provenance is an unresolved productive-rule result and it is absent from the membership table. Lexical, invariant, mass and caller-override heads keep their resolved spelling. Nested compounds are allowed to a maximum depth of 4.
 
 ### Modes
 
-`Mode.ANGLICIZED` (default) prefers `indexes`, `cactuses`, `formulas`; `Mode.CLASSICAL` prefers the attested classical form (`indices`, `cacti`, `formulae`). Classicism is never invented by a rule, so an unseen `blouse` can never become `blice`.
+`Mode.ANGLICIZED` (default) prefers `indexes`, `cactuses`, `formulas`; `Mode.CLASSICAL` prefers the attested classical form (`indices`, `cacti`, `formulae`). Classicism is never invented by a rule.
 
 ## What is not supported
 
@@ -182,69 +166,67 @@ The lexical artifact is generated offline from a pinned Kaikki/Wiktionary dump (
 
 - **Code**: MIT (`LICENSE`).
 - **Data**: CC BY-SA 3.0 (Wiktionary contributors, via Kaikki.org and Wiktextract); see `NOTICE` and `data/LICENSE-DATA.md`.
-- The data is a separate, redistributable file; the rules-only build avoids it entirely.
+- The data is packaged in the JAR. The rules-only runtime mode does not load it, but it does not remove the data or its license obligations.
 
 ## Evidence
 
-| document                 | contents                                                                    |
-|--------------------------|-----------------------------------------------------------------------------|
-| `docs/evaluation.md`     | protocols P1/P2, fixed labels/denominators, actual results, residual errors |
-| `docs/upstream-probe.md` | evo-inflector 2.0 outputs reproduced on JDK 21                              |
-| `docs/benchmarks.md`     | JMH methodology, raw numbers, honest interpretation                         |
-| `docs/learning.md`       | candidate-oracle ceiling, learners, routing, seeds, decision                |
-| `docs/compatibility.md`  | differences from evo-inflector, intentional changes, migration recipe       |
-| `docs/python-baseline.md`  | PyPI `inflect` 7.6.0 scored on the same frozen P1 protocol                   |
-| `docs/design.md`         | engine architecture, precedence, lexicon layout, casing, compounds           |
-| `docs/comparison.md`     | head-to-head vs evo-inflector 2.0, with qualifications                      |
+Current results are under `results/release-1.2.0/`; historical audited results remain separate.
+
+| document | contents |
+| --- | --- |
+| `docs/evaluation.md` | P1/P2, denominators, external full-vocabulary labels, residual errors |
+| `docs/benchmarks.md` | fixed workload, JMH results, startup/memory/concurrency |
+| `docs/learning.md` | rejected selector investigation |
+| `docs/compatibility.md` | differences from evo-inflector and migration |
+| `docs/design.md` | engine architecture and compound provenance |
+| `results/release-1.2.0/EVIDENCE.md` | commands and checksum manifest |
 
 Headline numbers (JDK 21, recorded runs):
 
-- P1 frozen lexicon: **100.000%** accepted-form accuracy (0/36,239 errors) vs evo-inflector 2.0 at **96.473%**; paired +3.5266 pp, 95% CI `[+3.3323, +3.7159]`. Most of the gain comes from the bundled lexicon, so this measures dictionary coverage more than a fundamental difference in approach.
-- P2 family holdout: **97.376%** (951/36,239 errors) vs evo-inflector 2.0 at **96.473%**; paired gain +0.9023 pp, 95% CI `[+0.7309, +1.0718]`, 540 corrections and 213 regressions.
-- Strict-family sensitivity check (`split-v2`, supplementary): P2 test **97.238%** (1,036/37,507) vs **96.379%** (1,358/37,507); external family-unseen **98.82%** (501/507) vs **98.22%** (498/507). The stemmer is approximate and the changed denominators make this non-comparable to the default `split-v1` row above.
-- External check (UD English EWT, CC BY-SA 4.0; 2,184 lemmas, no retraining): **98.21% selected-output accuracy** overall, **93.48%** on lemmas present in the shipped lexicon, **99.17%** on unseen lemmas, with **98.76% alternative-set coverage**; evo-inflector 2.0 selects 98.12% overall. Remaining errors are mostly EWT annotation noise plus disputed subordinate uses — see `docs/evaluation.md` and `results/external-v2/ewt-report.md`.
-- JMH fresh short run: 77.8 ns/op repeated (vs 81.5 evo-inflector), 226.0 ns/op distinct-word (vs 163.6; 1.38× slower); the older full run's allocation and retained-heap figures remain historical. Concurrent throughput was not captured.
+- P1 frozen lexicon: **100.000%** accepted-form accuracy (0/36,241 primary, 0/50,978 overall) vs evo-inflector 2.0 at **96.474%**; paired +3.5264 pp, 95% CI `[+3.3318, +3.7132]`. This measures dictionary coverage, not generalization.
+- P2 family holdout: **97.365%** (955/36,241 errors) vs evo-inflector 2.0 at **96.474%** (1,278); paired gain +0.8913 pp, 95% CI `[+0.7355, +1.0531]`, 538 corrections and 215 regressions. The previous v1 measurement was 951 errors on 36,239 records; v2 is **4 errors above that baseline**, with 303 net fewer errors than evo2.
+- P2 dev: **97.382%** (955/36,473) vs evo2 96.400% (1,313).
+- External EWT (2,184 lemmas, no retraining): **98.76%** selected overall vs evo2 98.12%. Of the 2,148 lemmas in the full permitted vocabulary, **98.88%** are selected correctly; the genuinely unseen slice is only **36 lemmas** (91.67%, tied with both baselines). Compact-artifact hit is 363 lemmas at 96.69%; artifact miss is 1,821 at 99.18%. Alternative coverage is **98.99%**.
+- Benchmarks: see `docs/benchmarks.md` for the fixed workload and same-run comparisons. No speedup is claimed without the recorded numbers.
 
 ## Reproduce
 
-```
+```bash
 # build + all unit/regression tests (offline, no corpus)
 ./mvnw verify
 
 # the consumer example
 ./mvnw -q -pl inflector-example exec:java
 
-# offline data pipeline (requires data/raw dump; see docs/evaluation.md)
+# website catalog from the live engine
+./mvnw -q -pl inflector-example -am compile
+java -cp "inflector-core/target/classes;inflector-example/target/classes" \
+  io.github.slayyyyer.morphex.inflector.example.SiteCatalog site/catalog.json
+
+# offline data pipeline (requires the pinned dump; see docs/evaluation.md)
 py -3 -m tools.research.cli extract
 py -3 -m tools.research.cli splits
 py -3 -m tools.research.cli artifact --split all --selection compact
 
-# evaluation
-./mvnw -q -pl inflector-eval -am install -DskipTests
-./mvnw -q -pl inflector-eval exec:java \
-  -Dexec.args="--input results/eval/test-records.tsv --out results/eval/p1-test-preds.tsv"
-py -3 -m tools.research.cli evaluate \
-  --gold results/eval/test-gold.tsv --predictions results/eval/p1-test-preds.tsv \
-  --out results/eval/p1-report.json --split test --lexicon-split all
-
-# benchmarks
+# benchmarks (fixed workload)
 ./mvnw -q -pl inflector-benchmarks -am package
-java -jar inflector-benchmarks/target/benchmarks.jar -f 2 -wi 3 -i 5 -prof gc \
-     -rf json -rff results/benchmarks/jmh.json
+java -jar inflector-benchmarks/target/benchmarks.jar -f 2 -wi 3 -i 5 \
+  -w 500ms -r 500ms -prof gc -rf json \
+  -rff results/release-1.2.0/benchmarks/jmh-workload-v1.json
 ```
 
-The normal test run uses only `data/regression/nouns-regression.tsv` and the shipped artifact; it never downloads a corpus. `data/raw/` is gitignored and its absence makes the corpus evaluation unavailable, never silently passing.
+The normal test run uses only `data/regression/nouns-regression.tsv` and the shipped artifact; it never downloads a corpus. `data/raw/` is gitignored and its absence makes corpus evaluation unavailable, never silently passing.
 
 ## Layout
 
 ```
 inflector-core        published library (no runtime dependencies)
-inflector-example     runnable consumer example
-inflector-eval        baselines (evo-inflector 2.0, rules, lexicon) and upstream probe
-inflector-benchmarks  JMH benchmarks; evo-inflector is benchmark-scope only
+inflector-example     runnable consumer example and SiteCatalog generator
+inflector-eval        baselines and upstream probes
+inflector-benchmarks  JMH fixed workload; evo-inflector is benchmark-scope only
 tools/research        stdlib-only Python pipeline, evaluator and learning experiment
 data/                 curated table, regression suite, derived manifests
-results/              recorded evaluation, benchmark and learning outputs
+results/              recorded evaluation, benchmark and release evidence
 docs/                 evaluation, benchmarks, learning, compatibility, provenance
 ```
 

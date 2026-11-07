@@ -29,6 +29,12 @@ h1 em{font-style:italic;font-weight:400;color:var(--acc)}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .chip{border:1px solid var(--line);background:transparent;color:var(--ink);padding:5px 11px;border-radius:99px;font-size:13px;cursor:pointer}
 .chip:hover{border-color:var(--acc);color:var(--acc)}
+.catalog-results{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.case-btn{border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:7px 10px;border-radius:8px;font:12px 'JetBrains Mono',monospace;cursor:pointer;text-align:left}
+.case-btn:hover{border-color:var(--acc);color:var(--acc)}
+.case-btn[aria-pressed="true"]{border-color:var(--acc);background:var(--code);color:var(--codeink)}
+.catalog-empty{font:13px 'JetBrains Mono',monospace;color:var(--mute);padding:8px 0}
+.catalog-note{margin-top:14px;max-width:75ch}
 .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
 .btn{font:600 14px 'JetBrains Mono',monospace;padding:12px 20px;border-radius:10px;text-decoration:none;border:1px solid var(--ink)}
 .btn.p{background:var(--ink);color:var(--bg)}

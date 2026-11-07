@@ -6,34 +6,33 @@ Nothing below is projected. Historical audited-commit results are labelled separ
 | evidence | location |
 | --- | --- |
 | stock outputs | `docs/upstream-probe.md`, `results/upstream-probe.tsv` |
-| P1/P2 results | `docs/evaluation.md`, `results/eval/*-final.json` |
-| external EWT | `results/external-v2/ewt-report.md` |
-| latency / footprint | `docs/benchmarks.md`, `results/benchmarks/` |
+| P1/P2 results | `docs/evaluation.md`, `results/release-1.2.0/eval/` |
+| external EWT | `results/release-1.2.0/external/ewt-report.md` |
+| latency / footprint | `docs/benchmarks.md`, `results/release-1.2.0/benchmarks/` |
 | API and migration | `docs/compatibility.md` |
 
 ## Headline numbers
 
 | dimension | stock evo-inflector 2.0 | this library |
 | --- | --- | --- |
-| P1 primary accepted-form accuracy (36,239) | 96.473% (1,278) | **100.000%** (0) |
-| P1 overall (50,938) | 68.882% (15,851) | **100.000%** (0) |
-| P1 paired gain | - | **+3.5266 pp** `[+3.3323, +3.7159]`, 1,278/0 |
-| P2 family-holdout primary (36,239) | 96.473% (1,278) | **97.376%** (951) |
-| P2 paired gain | - | **+0.9023 pp** `[+0.7309, +1.0718]`, 540/213 |
-| External EWT selected output (2,184) | 98.12% | **98.21%** |
-| External EWT alternative coverage | n/a | **98.76%** |
-| P2 strict-family test (37,507) | 96.379% (1,358) | **97.238%** (1,036) |
-| External EWT strict-family unseen (507) | 98.22% (498) | **98.82%** (501) |
-| Lexicon artifact | small built-in table | 147,193 entries, 7.5 MB TSV, 1.18 MB gzip |
-| Retained lexicon heap | n/a | 24-25 MB (packed) |
+| P1 primary accepted-form accuracy (36,241) | 96.474% (1,278) | **100.000%** (0) |
+| P1 overall (50,978) | 68.832% (15,889) | **100.000%** (0) |
+| P1 paired gain | - | **+3.5264 pp** `[+3.3318, +3.7132]`, 1,278/0 |
+| P2 family-holdout primary (36,241) | 96.474% (1,278) | **97.365%** (955) |
+| P2 paired gain | - | **+0.8913 pp** `[+0.7355, +1.0531]`, 538/215 |
+| External EWT selected overall (2,184) | 98.12% | **98.76%** |
+| External EWT full-vocab seen (2,148) | 98.23% | **98.88%** |
+| External EWT artifact hit (363) | 94.21% | **96.69%** |
+| External EWT alternative coverage | n/a | **98.99%** |
+| Lexicon artifact | small built-in table | 147,338 entries, 7.55 MB TSV, 1.18 MB gzip |
+| Retained lexicon heap | n/a | ~18.2 MiB (19.08 MB, packed) |
 | Runtime dependencies | none | none |
 
 P1 is dictionary coverage, not generalization. P2 is the leakage-free measurement and is
-now ahead of evo2 despite forbidding test families from the artifact.
-
-The two strict-family rows are a supplementary robustness check using `split-v2`; its
-derivational grouping changes the P2 denominators, so they are not directly comparable to
-the `split-v1` rows above. The default protocol and headline remain `split-v1`.
+ahead of evo2 despite forbidding test families from the artifact. Current P2 is **4 errors
+above the historical v1 measurement** (955 vs 951) on two more primary records; that change
+is reported rather than hidden. The strict-family sensitivity experiment is historical and
+is not part of the current headline.
 
 ## Why the difference
 
@@ -85,12 +84,15 @@ lookup from rendering and stores exceptions as whole-word entries. It also adds:
 * **P2 is still a dictionary-lemma protocol.** It is not application-call accuracy.
 * **P1 is coverage.** The 100% is not evidence that unseen compounds or irregulars are
   solved; P2 is the generalization number.
-* **External seen subset is mixed.** Lexicon selected accuracy is 93.48% on 368 lemmas;
-  rules are 93.75% and evo2 94.29%. Overall selected accuracy is 98.21% vs 98.12%, a small
-  lead, while alternative coverage is 98.76%.
-* **Distinct-word latency remains slower than stock** (about 1.38x in the fresh JMH run;
-  1.34x in the earlier profiled run).
-  Repeated-word lookup is faster; retained heap is lower.
+* **External labels were corrected.** The old 368/1,816 split was compact-artifact presence,
+  not vocabulary membership. Full-vocabulary membership gives 2,148 seen lemmas (98.88% for
+  the lexicon) and only 36 genuinely unseen lemmas (91.67%, tied with both baselines).
+  Compact-artifact hit is 363 lemmas at 96.69%. Overall selected accuracy is 98.76% vs
+  98.12%; alternative coverage is 98.99%.
+* **Latency is mixed, not universally improved.** Repeated and exact lexical lookups are
+  faster in the fixed-workload run, but compacted, unknown, compound, uppercase and unsupported
+  paths are slower (up to 11.3x on unknown tokens), and four-thread throughput is 4.34x lower.
+  Retained heap is lower.
 * **Unknown-uppercase inference is a default policy change.** It applies only after lexical
   lookup, only to 2-6 upper-case Latin letters, and can be disabled with
   `UppercasePolicy.LITERAL`.
@@ -100,10 +102,11 @@ lookup from rendering and stores exceptions as whole-word entries. It also adds:
 ```bash
 ./mvnw -q -o -pl inflector-eval -am install -DskipTests
 ./mvnw -q -o -pl inflector-eval exec:java \
-  -Dexec.args="--input results/eval/test-records.tsv --out results/eval/p1-test-preds-v4.tsv"
+  -Dexec.args="--input results/release-1.2.0/eval/p1-test-records.tsv --out results/release-1.2.0/eval/p1-test-preds.tsv"
 py -3 -m tools.research.cli evaluate \
-  --gold results/eval/test-gold.tsv --predictions results/eval/p1-test-preds-v4.tsv \
-  --out results/eval/p1-report-final.json --split test --lexicon-split all --iterations 2000
+  --gold results/release-1.2.0/eval/p1-test-gold.tsv \
+  --predictions results/release-1.2.0/eval/p1-test-preds.tsv \
+  --out results/release-1.2.0/eval/p1-report.json --split test --lexicon-split all --iterations 2000
 ```
 
 See `docs/evaluation.md` for P2, external validation and the full driver.
