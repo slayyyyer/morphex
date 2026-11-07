@@ -9,7 +9,7 @@ Deterministic English noun pluralization for Java 17+, inspired by and built on 
 - Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **100.000%** vs **96.473%** accepted-form accuracy, mostly from the added lexicon. On the leakage-free family-holdout protocol this library scores **88.714%** (see `docs/evaluation.md`).
 - A neural-selector investigation was run and **not adopted** based on measured gates; the shipped artifact contains no model and no training dependency (`docs/learning.md`).
 
-Status: `0.1.0-SNAPSHOT`. Publication coordinates are provisional: `io.github.slayyyyer.morphex:english-inflector:0.1.0-SNAPSHOT` (not published to Maven Central).
+Status: `1.0.0` on Maven Central: `io.github.slayyyyer.morphex:english-inflector-core:1.0.0`.
 
 Website: https://slayyyyer.github.io/morphex/ (install, quickstart, comparison, benchmarks, design, Javadoc).
 
@@ -26,20 +26,20 @@ Those choices trade a larger data file for fewer surprises. evo-inflector's rule
 
 ## Install
 
-From this repository:
-
-```
-./mvnw install          # JDK 17+; the wrapper pins Maven 3.9.9
-```
-
-Consumer dependency (after `install`):
+From Maven Central:
 
 ```xml
 <dependency>
   <groupId>io.github.slayyyyer.morphex</groupId>
-  <artifactId>inflector-core</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <artifactId>english-inflector-core</artifactId>
+  <version>1.0.0</version>
 </dependency>
+```
+
+From this repository:
+
+```
+./mvnw install          # JDK 17+; the wrapper pins Maven 3.9.9
 ```
 
 Rules-only build (no bundled Wiktionary data, no CC BY-SA obligation):

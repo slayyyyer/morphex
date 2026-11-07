@@ -7,11 +7,12 @@
   <parent>
     <groupId>io.github.slayyyyer.morphex</groupId>
     <artifactId>english-inflector-parent</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
   </parent>
 
   <artifactId>english-inflector-core</artifactId>
-  <name>english-inflector core</name>
+  <name>morphex core</name>
+  <description>Deterministic English noun pluralizer: auditable lexicon, three productive rules, diagnostic API. Zero runtime dependencies.</description>
 
   <dependencies>
     <dependency>

@@ -6,10 +6,10 @@
 
   <groupId>io.github.slayyyyer.morphex</groupId>
   <artifactId>english-inflector-parent</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
-  <name>english-inflector (working title)</name>
+  <name>morphex</name>
   <description>Embedded deterministic English noun pluralization with an auditable lexicon.</description>
   <url>https://github.com/slayyyyer/morphex</url>
 
@@ -20,6 +20,19 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <developers>
+    <developer>
+      <name>Justin Baker</name>
+      <email>justinbaker577@gmail.com</email>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:https://github.com/slayyyyer/morphex.git</connection>
+    <developerConnection>scm:git:https://github.com/slayyyyer/morphex.git</developerConnection>
+    <url>https://github.com/slayyyyer/morphex</url>
+  </scm>
 
   <modules>
     <module>inflector-core</module>
@@ -82,7 +95,94 @@
           <artifactId>exec-maven-plugin</artifactId>
           <version>3.2.0</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>3.11.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>3.2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.7.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <!-- Release to Maven Central: sources + javadoc jars, GPG signatures,
+         publish via the Central Portal. Deploy with:
+           ./mvnw -B -pl .,inflector-core -Prelease deploy
+         Credentials: ~/.m2/settings.xml servers `central` (Portal token)
+         and `gpg.passphrase`. Only the parent POM and core ship; the
+         example/eval/benchmark modules are never published. -->
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <configuration>
+              <!-- Dedicated passphrase-less release key; override on the
+                   command line if a passphrase is ever added. -->
+              <keyname>B9951971DB6AB565</keyname>
+            </configuration>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <autoPublish>true</autoPublish>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
