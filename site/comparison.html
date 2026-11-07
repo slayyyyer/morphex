@@ -29,7 +29,7 @@
       starting point this project builds on — smaller and simpler, and the better fit when you
       don't need the extra coverage below. Full detail in
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/comparison.md">docs/comparison.md</a>.</p>
-      <table class="data">
+      <div class="tw"><table class="data">
         <tr><th>Dimension</th><th>evo-inflector 2.0</th><th>This library</th></tr>
         <tr><td>P1 frozen-lexicon accuracy (36,239 records)</td><td>96.473% (1,278 errors)</td><td><strong>100.000%</strong> (0 errors)</td></tr>
         <tr><td>P1 paired gain (95% CI)</td><td>—</td><td><strong>+3.5266 pp</strong> [+3.3323, +3.7159], 1,278 fixes, 0 regressions</td></tr>
@@ -38,7 +38,7 @@
         <tr><td>Repeated lookup (fresh short run)</td><td>81.5 ns/op</td><td><strong>77.8 ns/op</strong> (0.95×)</td></tr>
         <tr><td>Distinct-word lookup (fresh short run)</td><td>163.6 ns/op</td><td>226.0 ns/op (1.38× slower)</td></tr>
         <tr><td>Runtime dependencies</td><td>none</td><td>none</td></tr>
-      </table>
+      </table></div>
     </div>
     <div class="card">
       <h3>Where the differences come from</h3>
@@ -51,7 +51,7 @@
     <div class="grid two">
       <div class="card">
         <h3>Outputs that differ</h3>
-        <table class="data">
+        <div class="tw"><table class="data">
           <tr><th>Input</th><th>2.0</th><th>Here</th></tr>
           <tr><td><code>German</code></td><td><code>Germen</code></td><td><code>Germans</code></td></tr>
           <tr><td><code>blouse</code></td><td><code>blice</code></td><td><code>blouses</code></td></tr>
@@ -62,18 +62,18 @@
           <tr><td><code>CHILD / CITY</code></td><td><code>CHILDren / CITIes</code></td><td><code>CHILDREN / CITIES</code></td></tr>
           <tr><td><code>drive-by</code></td><td><code>drive-bies</code></td><td><code>drive-bys</code></td></tr>
           <tr><td><code>attorney general</code></td><td><code>attorney generals</code></td><td><code>attorneys general</code></td></tr>
-        </table>
+        </table></div>
       </div>
       <div class="card">
         <h3>Intentional policy differences</h3>
-        <table class="data">
+        <div class="tw"><table class="data">
           <tr><th>Input</th><th>Here</th><th>Reason</th></tr>
           <tr><td><code>information</code></td><td>unchanged</td><td>mass-noun policy (<code>MASS</code>)</td></tr>
           <tr><td><code>person</code></td><td><code>people</code> (accepts <code>persons</code>)</td><td>preferred form modelled</td></tr>
           <tr><td><code>die</code></td><td><code>dice</code> (accepts <code>dies</code>)</td><td>ambiguous sense flagged</td></tr>
           <tr><td><code>user_id</code>, <code>3.14</code></td><td>unchanged (<code>FALLBACK</code>)</td><td>out of scope, reported</td></tr>
           <tr><td><code>well-known</code></td><td>unchanged</td><td>unmatched compounds not guessed</td></tr>
-        </table>
+        </table></div>
         <div class="callout warn"><strong>Qualifications:</strong> P1 is dictionary coverage, not generalization. External selected accuracy is only slightly ahead (98.21% vs 98.12%) and the seen subset is lower; alternative coverage is 98.76%. Remaining errors are mostly EWT annotation noise. Distinct-word lookup is 1.38× slower than stock.</div>
       </div>
     </div>
@@ -97,13 +97,13 @@ String plural = INFLECTOR.pluralize(word);</code></pre>
       <p class="small">The most widely used Python pluralization engine, scored on the same frozen P1
       protocol (50,938 records, default modern mode). Full write-up in
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/python-baseline.md">docs/python-baseline.md</a>.</p>
-      <table class="data">
+      <div class="tw"><table class="data">
         <tr><th>System</th><th>P1 primary</th><th>Errors</th></tr>
         <tr><td>This library</td><td><strong>100.000%</strong></td><td>0 (36,239 records)</td></tr>
         <tr><td>evo-inflector 2.0</td><td>96.473%</td><td>1,278</td></tr>
         <tr><td>PyPI <code>inflect</code></td><td>94.169%</td><td>2,113</td></tr>
         <tr><td>Repaired rules only</td><td>95.168%</td><td>1,751</td></tr>
-      </table>
+      </table></div>
       <p class="small"><code>inflect</code> agrees on the headline irregulars (<code>German</code>,
       <code>blouse</code>, <code>person → people</code>, <code>die → dice</code>) and shares the
       <code>passer-by → passer-bies</code> weakness. Its misses concentrate in initialism casing

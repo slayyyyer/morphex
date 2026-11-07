@@ -40,12 +40,12 @@
     <div class="grid two">
       <div class="card">
         <h3>Three productive rules plus bounded backoffs</h3>
-        <table class="data">
+        <div class="tw"><table class="data">
           <tr><th>ID</th><th>Condition</th><th>Edit</th></tr>
           <tr><td><code>rule:sibilant-es</code></td><td>ends <code>s x z ch sh</code></td><td>append <code>es</code></td></tr>
           <tr><td><code>rule:consonant-y-ies</code></td><td>consonant + <code>y</code> (incl. <code>qu+y</code>)</td><td><code>y → ies</code></td></tr>
           <tr><td><code>rule:default-s</code></td><td>otherwise</td><td>append <code>s</code></td></tr>
-        </table>
+        </table></div>
         <p class="small">Nothing word-specific is expressible as a rule — so <code>carp</code> can't cover <code>scarp</code> and <code>louse</code> can't reach <code>blouse</code>, unlike the stock 2.0 behaviour documented in the comparisons page.</p>
         <h3>Casing</h3>
         <p class="small">Lookup normalization and output restoration are separate operations (stock 2.0 combines them, hence <code>CHILD → CHILDren</code>). <code>PRESERVE</code> (default) maps

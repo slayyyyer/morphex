@@ -79,3 +79,20 @@ table.data{border-collapse:collapse;width:100%;min-width:480px;font-size:15px}
 .report-grid{display:grid;gap:14px}
 @media (min-width:760px){.report-grid{grid-template-columns:1fr 1fr}}
 .report-card .kicker{font-family:'JetBrains Mono',monospace;color:var(--acc2);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em}
+
+/* Sub-page rhythm (comparison / benchmarks / design) */
+.block>h2{margin-bottom:10px}
+.block>.card+.card,.block>.card+.grid,.block>.grid+.card,.block>.grid+.grid{margin-top:14px}
+.block .card h3{margin:0 0 8px}
+.block .card p.small{max-width:70ch}
+.card ol{margin:12px 0 0;padding-left:22px;display:grid;gap:10px}
+.card ol li{line-height:1.55}
+.card ol li::marker{color:var(--acc2);font-weight:600}
+.card .tw{margin-top:16px}
+.card .tw+.tw{margin-top:14px}
+.block .card h3:not(:first-child){margin-top:20px}
+.card pre{margin-top:14px;border-radius:10px}
+.card pre code{font:inherit;color:inherit;background:none;padding:0}
+.card .callout{margin-top:16px}
+.card .callout p{margin:.4em 0}
+@media (max-width:640px){.block{padding:36px 0}section .card,main .card{padding:16px}th,td{padding:10px 12px}table.data{font-size:14px}}
