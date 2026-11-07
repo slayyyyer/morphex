@@ -7,7 +7,7 @@ Bundled lexical data
 --------------------
 The file
 
-    inflector-core/src/main/resources/io/github/morphex/inflector/lexicon-v1.tsv
+    inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv
 
 is generated from the English noun extract published by Kaikki.org, itself derived from
 English Wiktionary by Wiktextract. That data is licensed under Creative Commons

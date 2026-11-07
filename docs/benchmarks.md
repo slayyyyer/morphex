@@ -5,7 +5,7 @@ implementation: `results/benchmarks/jmh-packed.json`. The previous
 object-graph run is `results/benchmarks/jmh.json`; the exploratory 0.3-load run is preserved
 as `jmh-packed-noisy.json` because its control benchmark showed the machine was loaded and
 its numbers are not used. Sources:
-`inflector-benchmarks/src/main/java/io/github/morphex/inflector/bench/`.
+`inflector-benchmarks/src/main/java/io/github/slayyyyer/morphex/inflector/bench/`.
 
 ## Setup
 

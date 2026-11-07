@@ -1,7 +1,7 @@
 # Design
 
 How `inflector-core` is put together, why it looks that way, and what was deliberately
-left out. Code references are to `inflector-core/src/main/java/io/github/morphex/inflector/`.
+left out. Code references are to `inflector-core/src/main/java/io/github/slayyyyer/morphex/inflector/`.
 
 ## Goals and constraints
 

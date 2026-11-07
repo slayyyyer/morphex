@@ -5,9 +5,9 @@ Reproduced in this repository, not copied from a review.
 * Artifact: `org.atteo:evo-inflector:2.0` resolved from Maven Central to
   `~/.m2/repository/org/atteo/evo-inflector/2.0/evo-inflector-2.0.jar`
 * JDK: Eclipse Temurin 21.0.13 (21.0.13+9-LTS)
-* Source: `inflector-eval/src/main/java/io/github/morphex/inflector/eval/UpstreamProbe.java`
+* Source: `inflector-eval/src/main/java/io/github/slayyyyer/morphex/inflector/eval/UpstreamProbe.java`
 * Command:
-  `./mvnw -q -pl inflector-eval -am install -DskipTests && ./mvnw -q -pl inflector-eval exec:java -Dexec.mainClass=io.github.morphex.inflector.eval.UpstreamProbe`
+  `./mvnw -q -pl inflector-eval -am install -DskipTests && ./mvnw -q -pl inflector-eval exec:java -Dexec.mainClass=io.github.slayyyyer.morphex.inflector.eval.UpstreamProbe`
 * Raw output: `results/upstream-probe.tsv` (captured from the run below)
 
 ## Results

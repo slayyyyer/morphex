@@ -10,7 +10,7 @@ Usage:
       --out-dir results/external
   py -3 tools/research/external_eval.py score --gold results/external/ewt-gold.tsv \
       --predictions results/external/ewt-predictions.tsv \
-      --lexicon inflector-core/src/main/resources/io/github/morphex/inflector/lexicon-v1.tsv \
+      --lexicon inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv \
       --out-dir results/external
 """
 

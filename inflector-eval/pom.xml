@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>io.github.morphex</groupId>
+    <groupId>io.github.slayyyyer.morphex</groupId>
     <artifactId>english-inflector-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
@@ -15,12 +15,12 @@
   <description>Offline evaluator: stock evo-inflector 2.0, rules-only and rules+lexicon predictions.</description>
 
   <properties>
-    <exec.mainClass>io.github.morphex.inflector.eval.EvalCli</exec.mainClass>
+    <exec.mainClass>io.github.slayyyyer.morphex.inflector.eval.EvalCli</exec.mainClass>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>io.github.morphex</groupId>
+      <groupId>io.github.slayyyyer.morphex</groupId>
       <artifactId>english-inflector-core</artifactId>
       <version>${project.version}</version>
     </dependency>

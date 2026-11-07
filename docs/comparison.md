@@ -116,7 +116,7 @@ of the same API on the benchmark classpath.
 ```bash
 # stock probe
 ./mvnw -q -pl inflector-eval exec:java \
-  -Dexec.mainClass=io.github.morphex.inflector.eval.UpstreamProbe
+  -Dexec.mainClass=io.github.slayyyyer.morphex.inflector.eval.UpstreamProbe
 
 # accuracy (offline from the pinned dump; see docs/evaluation.md)
 ./mvnw -q -pl inflector-eval -am install -DskipTests

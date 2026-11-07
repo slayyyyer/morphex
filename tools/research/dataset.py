@@ -16,7 +16,7 @@ CURATED = DATA / "curated"
 REGRESSION = DATA / "regression"
 RESULTS = ROOT / "results"
 
-CORE_RESOURCE = ROOT / "inflector-core/src/main/resources/io/github/morphex/inflector/lexicon-v1.tsv"
+CORE_RESOURCE = ROOT / "inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv"
 
 DATASET_VERSION = "nouns-v1"
 EXTRACTION_VERSION = "extract-v1"

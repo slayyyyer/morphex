@@ -160,11 +160,11 @@ py -3 tools/research/external_eval.py prepare --conllu-dir build/external/ud-ewt
   --out-dir results/external
 ./mvnw -q -pl inflector-eval -am package -DskipTests
 ./mvnw -q -pl inflector-eval exec:java \
-  -Dexec.mainClass=io.github.morphex.inflector.eval.ExternalEval \
+  -Dexec.mainClass=io.github.slayyyyer.morphex.inflector.eval.ExternalEval \
   -Dexec.args="--gold results/external/ewt-gold.tsv --out results/external/ewt-predictions.tsv"
 py -3 tools/research/external_eval.py score --gold results/external/ewt-gold.tsv \
   --predictions results/external/ewt-predictions.tsv \
-  --lexicon inflector-core/src/main/resources/io/github/morphex/inflector/lexicon-v1.tsv \
+  --lexicon inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv \
   --out-dir results/external
 ```
 
