@@ -11,9 +11,24 @@ only supplies reviewed preferences and countability that the source does not exp
 
 from __future__ import annotations
 
+import struct
 import sys
+from pathlib import Path
 
 from . import dataset
+
+MEMBERSHIP_MAGIC = b"MORPHEX1"
+FNV_OFFSET = 0xCBF29CE484222325
+FNV_PRIME = 0x100000001B3
+MASK64 = (1 << 64) - 1
+
+# Must stay in sync with CompoundTable.manExceptions and EnglishInflector.RULES.
+MAN_EXCEPTIONS = {
+    "human", "german", "roman", "shaman", "talisman", "caiman", "ottoman", "brahman", "atman",
+    "liman", "chroman", "hooman", "kundiman", "laraman", "oralman", "abhuman", "metahuman",
+    "paleohuman", "parahuman", "dragoman", "firman", "harman", "tarman", "turkman", "touman",
+    "tramman", "vataman", "velociman", "zygentoman",
+}
 
 FLAGS_ORDER = "INCA"
 CLASSICAL_SUFFIXES = (
@@ -27,8 +42,22 @@ CLASSICAL_SUFFIXES = (
 
 
 def productive_form(lemma: str) -> str:
-    """Mirror of the three productive rules in the Java engine (documented in docs/compatibility.md)."""
+    """Mirror of the final spelling path in the Java engine, including its two documented backoffs.
+
+    Compaction is only safe when this function still reproduces the attested form: the artifact deliberately
+    omits regular words, so a later rule change must not silently alter an omitted word. Keeping this mirror in
+    the same order as ``EnglishInflector.RULES`` is what prevents that class of P1 regression.
+    """
     low = lemma.lower()
+    if low.endswith("woman"):
+        return lemma[:-5] + "women"
+    if low.endswith("wife"):
+        return lemma[:-4] + "wives"
+    if (len(low) >= 6 and low.endswith("man") and not low.endswith("woman")
+            and low not in MAN_EXCEPTIONS and not low.endswith("human")):
+        return lemma[:-3] + "men"
+    if len(low) >= 5 and low.endswith("sis"):
+        return lemma[:-2] + "es"
     if low.endswith(("s", "x", "z", "ch", "sh")):
         return lemma + "es"
     if len(low) >= 2 and low.endswith("y"):
@@ -86,7 +115,7 @@ def read_curated(path=None) -> dict[str, dict[str, str]]:
 
 
 def is_rule_reproducible(lemma: str, forms: list[str]) -> bool:
-    """True when the engine's productive rules already produce the preferred form.
+    """True when the engine's final spelling path already produces the preferred form.
 
     Hyphenated lemmas are never rule-reproducible: the engine deliberately refuses to guess morpheme
     boundaries, so dropping them would turn every compound into the unchanged-input fallback.
@@ -98,9 +127,41 @@ def is_rule_reproducible(lemma: str, forms: list[str]) -> bool:
             and lemma == lemma.lower())
 
 
-def build(split_filter: str = "all", selection: str = "compact") -> list[list[str]]:
+def membership_hash(value: str) -> int:
+    """FNV-1a 64 over UTF-8, matching Membership.hash in the Java runtime."""
+    result = FNV_OFFSET
+    for byte in value.encode("utf-8"):
+        result ^= byte
+        result = (result * FNV_PRIME) & MASK64
+    return result
+
+
+def _signed(value: int) -> int:
+    return value - (1 << 64) if value >= (1 << 63) else value
+
+
+def write_membership(path, lemmas) -> None:
+    """Write the sorted 64-bit membership table consumed by Membership.load.
+
+    The table is generated from every lemma in the permitted corpus scope, not from the compact rows, so
+    regular words omitted by compaction still count as ordinary words for the uppercase policy.
+    """
+    hashes = sorted({_signed(membership_hash(lemma.lower())) for lemma in lemmas if lemma})
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("wb") as handle:
+        handle.write(MEMBERSHIP_MAGIC)
+        handle.write(struct.pack(">i", len(hashes)))
+        for value in hashes:
+            handle.write(struct.pack(">q", value))
+
+
+def build(split_filter: str = "all", selection: str = "compact",
+          membership: set[str] | None = None,
+          allowed_lemmas: set[str] | None = None,
+          splits_path=None) -> list[list[str]]:
     curated = read_curated()
-    assignments = {row["lemma"]: row for row in dataset.read_tsv(dataset.SPLITS)} if split_filter != "all" else {}
+    assignments = {row["lemma"]: row for row in dataset.read_tsv(Path(splits_path or dataset.SPLITS))} \
+        if split_filter != "all" else {}
 
     rows: list[list[str]] = []
     seen: set[str] = set()
@@ -108,6 +169,10 @@ def build(split_filter: str = "all", selection: str = "compact") -> list[list[st
     for key, row in sorted(curated.items()):
         if split_filter != "all" and not _split_allowed(row["lemma"], split_filter, assignments):
             continue
+        if allowed_lemmas is not None and row["lemma"] not in allowed_lemmas:
+            continue
+        if membership is not None:
+            membership.add(row["lemma"].lower())
         rows.append([
             row["lemma"],
             row["plural"],
@@ -136,6 +201,10 @@ def build(split_filter: str = "all", selection: str = "compact") -> list[list[st
             continue
         if split_filter != "all" and not _split_allowed(lemma, split_filter, assignments):
             continue
+        if allowed_lemmas is not None and lemma not in allowed_lemmas:
+            continue
+        if membership is not None:
+            membership.add(lemma.lower())
         forms = [form for form in record["forms"].split(",") if form]
         countability = record["countability"]
         invariant = record["invariant"] == "1"
@@ -208,11 +277,14 @@ def write(rows: list[list[str]], target, split_filter: str, selection: str, data
     )
 
 
-def run(split_filter: str = "all", target=None, selection: str = "compact") -> dict:
+def run(split_filter: str = "all", target=None, selection: str = "compact", splits_path=None) -> dict:
     target = target or dataset.CORE_RESOURCE
-    rows = build(split_filter, selection)
+    membership: set[str] = set()
+    rows = build(split_filter, selection, membership, splits_path=splits_path)
     normalized_sha = dataset.sha256_file(dataset.NORMALIZED) if dataset.NORMALIZED.exists() else "missing"
     write(rows, target, split_filter, selection, normalized_sha)
+    target_membership = target.parent / "lexicon-membership-v1.bin"
+    write_membership(target_membership, membership)
     if split_filter == "all":
         dataset.write_tsv(
             dataset.ARTIFACT,
@@ -223,16 +295,21 @@ def run(split_filter: str = "all", target=None, selection: str = "compact") -> d
                 f"runtime copy: {dataset.rel(dataset.CORE_RESOURCE)}",
             ],
         )
+        write_membership(dataset.MEMBERSHIP, membership)
     manifest = dataset.load_manifest()
     checks = manifest.setdefault("checksums", {})
     checks[dataset.rel(target)] = dataset.sha256_file(target)
+    checks[dataset.rel(target_membership)] = dataset.sha256_file(target_membership)
     if split_filter == "all":
         checks[dataset.rel(dataset.ARTIFACT)] = dataset.sha256_file(dataset.ARTIFACT)
+        checks[dataset.rel(dataset.MEMBERSHIP)] = dataset.sha256_file(dataset.MEMBERSHIP)
     manifest["artifact"] = {
         "version": dataset.ARTIFACT_VERSION,
         "split": split_filter,
         "selection": selection,
         "entries": len(rows),
+        "membership_entries": len(membership),
+        "membership_bytes": target_membership.stat().st_size,
         "bytes": target.stat().st_size,
     }
     dataset.save_manifest(manifest)

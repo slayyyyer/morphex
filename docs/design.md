@@ -43,10 +43,10 @@ Fixed precedence, in order:
    among the three rules wins.
 6. **Documented fallback** — return the input unchanged, `fallback:unsupported`.
 
-`MAX_COMPOUND_DEPTH = 1`: a compound head is pluralized with simple words only
-(`pluralizeHead` calls `resolve(head, null, depth + 1)`), never a nested compound.
-Heads therefore use only lexical entries and the three rules — no recursion into
-compound handling, no unbounded recursion.
+`MAX_COMPOUND_DEPTH = 1`: ordinary compound heads are pluralized with simple words only
+(`pluralizeHead` calls `resolve(head, null, depth + 1)`). The trailing free-tail path may
+inflect a hyphenated prefix as a whole (`great-grandfather-in-law`), but the depth guard
+keeps that bounded; there is no unbounded recursion.
 
 The fast `pluralize` path allocates nothing for identity results and never builds
 diagnostic collections. `analyze` runs the same `resolve` with a `Sink` that records
@@ -81,7 +81,8 @@ packing + index build, ~426 ms median to first call). No per-entry object exists
 
 ## Rules (`Rule.java`, `WordShape.java`)
 
-Exactly three productive rules, in order:
+Three productive rules, with documented backoffs for known weak suffix families (the
+backoffs are bounded lexical fallbacks, not general suffix rules):
 
 | id | condition on the lower-cased token | edit |
 | --- | --- | --- |
@@ -127,19 +128,27 @@ boundary:
 * **Exact entries** (whole-compound → whole-plural): `passer-by`, `stand-in`, `drive-by`,
   `hanger-on`, `runner-up`, `close-up`, `go-between`, `jack-in-the-box`, `man-of-war`,
   `major general`, and a handful more.
-* **Free tails** (cannot themselves be a noun, so any head is safe): `-in-law`, `-in-chief`,
-  `-of-war`, `-at-arms`, `-at-law`, `-of-arms`. The head inherits irregularity
-  (`child-in-law → children-in-law`, `man-of-war → men-of-war`).
+* **Free tails** (cannot themselves be a noun, so any head is safe): `-in-law`, `-in-arms`,
+  `-in-aid`, `-in-kind`, `-in-chief`, `-of-war`, `-of-arms`, `-of-spring`, `-of-all-trades`,
+  `-out-law`, `-at-arms`, `-at-law`, `-in-crime`. The head inherits irregularity and may
+  itself be hyphenated (`child-in-law → children-in-law`, `man-of-war → men-of-war`,
+  `great-grandfather-in-law → great-grandfathers-in-law`).
 * **Postposed modifiers** only after curated heads: `general`, `elect`, `apparent`,
   `martial`, … after `attorney`, `court`, `heir`, `governor`, … (`attorneys general`).
   `major general → major generals` is the counterexample that forces the head allow-list.
+* **Head-final nouns**: inflect the final token when it is a plain head and neither a
+  preposition, coordinator, free tail nor documented non-noun head. Heads that are absent
+  or unchanged get productive respelling (`ice-shelf → ice-shelves`, `non-life → non-lives`),
+  multi-hyphen chains are bounded (`great-great-grandfather → great-great-grandfathers`), and
+  reviewed `on-` prefixes are allowed (`on-ramp → on-ramps`). Short initial prefixes keep a
+  lower-case suffix (`G-PON → G-PONs`, `LV-ROM → LV-ROMs`).
 * **Space-separated rule**: inflect the final token only when no preposition is present and
   the final token is a plain Latin token (`ice cream → ice creams`); `jack in the box` is
   returned unchanged rather than guessed.
 
 Counterexamples are pinned as regression tests: `stand-in → stand-ins` (not `stands-in`),
 `drive-by → drive-bys`, unmatched hyphenated tokens (`well-known`) fall through to the
-fallback.
+fallback, and `CREDIT-CARD → CREDIT-CARDS` retains upper-case casing.
 
 ## Countability and alternatives
 

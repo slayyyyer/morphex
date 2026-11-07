@@ -37,7 +37,28 @@ public final class EnglishInflector {
     private static final Rule DEFAULT = new Rule(
             "rule:default-s", "default appends s", 0, "s", lower -> true);
 
-    private static final List<Rule> RULES = List.of(SIBILANT, CONSONANT_Y, DEFAULT);
+    /**
+     * Bounded morphological backoff for two suffix families whose ordinary spelling is not the productive
+     * default. Both are measured on development data (see docs/evaluation.md) and only ever see dictionary
+     * misses; the shipped lexical artifact retains every attested irregular.
+     */
+    private static final Rule WOMAN = new Rule(
+            "backoff:woman->women", "documented -woman -> -women backoff", 5, "women",
+            lower -> lower.endsWith("woman"));
+    private static final Rule WIFE = new Rule(
+            "backoff:wife->wives", "documented -wife -> -wives backoff", 4, "wives",
+            lower -> lower.endsWith("wife"));
+    private static final Rule MAN = new Rule(
+            "backoff:man->men", "documented noun + man -> men backoff", 3, "men",
+            lower -> lower.length() >= 6 && lower.endsWith("man")
+                    && !lower.endsWith("woman")
+                    && !CompoundTable.INSTANCE.isManException(lower),
+            true);
+    private static final Rule GREEK_SIS = new Rule(
+            "backoff:sis->ses", "documented Greek -sis -> -ses backoff", 2, "es",
+            lower -> lower.length() >= 5 && lower.endsWith("sis"));
+
+    private static final List<Rule> RULES = List.of(WOMAN, WIFE, MAN, GREEK_SIS, SIBILANT, CONSONANT_Y, DEFAULT);
 
     /** Head pluralization inside a compound may use simple words only, never another compound. */
     private static final int MAX_COMPOUND_DEPTH = 1;
@@ -48,6 +69,7 @@ public final class EnglishInflector {
     private final CasePolicy casePolicy;
     private final Map<String, String> overrides;
     private final Set<String> initialisms;
+    private final UppercasePolicy uppercasePolicy;
     private final Lexicon lexicon;
     private final CompoundTable compounds = CompoundTable.INSTANCE;
 
@@ -56,6 +78,7 @@ public final class EnglishInflector {
         this.casePolicy = builder.casePolicy;
         this.overrides = builder.overrides.isEmpty() ? Map.of() : Map.copyOf(builder.overrides);
         this.initialisms = builder.initialisms.isEmpty() ? Set.of() : Set.copyOf(builder.initialisms);
+        this.uppercasePolicy = builder.uppercasePolicy;
         this.lexicon = builder.bundledLexicon ? Lexicon.bundled() : Lexicon.EMPTY;
     }
 
@@ -78,6 +101,10 @@ public final class EnglishInflector {
 
     public CasePolicy casePolicy() {
         return casePolicy;
+    }
+
+    public UppercasePolicy uppercasePolicy() {
+        return uppercasePolicy;
     }
 
     /** Number of lexical entries visible to this instance (0 when built without the bundled lexicon). */
@@ -154,6 +181,25 @@ public final class EnglishInflector {
             return renderInitialism(noun, lower, initialismSuffix(lower));
         }
 
+        // Unknown all-uppercase token: a bounded initialism policy, not an assumption that every
+        // uppercase spelling is an acronym. Ordinary-word membership in the runtime lexicon is checked
+        // first, and the policy is disabled for a rules-only instance because it has no membership table.
+        if (uppercasePolicy == UppercasePolicy.INFER_INITIALISM
+                && lexicon.size() > 0
+                && lexicon.hasMembership()
+                && WordShape.isAllUpperLatinToken(noun)
+                && WordShape.codePointLength(noun) >= 2
+                && WordShape.codePointLength(noun) <= 6
+                && !lexicon.isOrdinaryWord(lower)) {
+            if (sink != null) {
+                sink.set(DecisionSource.INFERRED, "inferred:uppercase-initialism", Countability.UNKNOWN,
+                        false, false, null,
+                        "unknown all-upper-case token of 2-6 Latin letters: appended lower-case s; "
+                                + "lexical membership was checked first");
+            }
+            return renderInitialism(noun, lower, "s");
+        }
+
         if (depth < MAX_COMPOUND_DEPTH) {
             String compound = resolveCompound(noun, lower, depth, sink);
             if (compound != null) {
@@ -163,7 +209,7 @@ public final class EnglishInflector {
 
         if (WordShape.isPlainLatinToken(noun)) {
             for (Rule rule : RULES) {
-                if (rule.applies(lower)) {
+                if (rule.applies(lower) && (!rule.lowercaseOnly() || noun.equals(lower))) {
                     if (sink != null) {
                         sink.set(DecisionSource.RULE, rule.id(), Countability.UNKNOWN,
                                 false, false, null, rule.description());
@@ -257,6 +303,20 @@ public final class EnglishInflector {
             return renderFull(noun, lower, exact);
         }
 
+        int freeSuffix = compounds.freeTailSuffix(lower);
+        if (freeSuffix > 0) {
+            String head = noun.substring(0, freeSuffix);
+            String headPlural = pluralizeCompoundPrefix(head, depth);
+            if (headPlural != null) {
+                if (sink != null) {
+                    sink.set(DecisionSource.COMPOUND, "compound:hyphen:free-tail-suffix", Countability.UNKNOWN,
+                            false, false, null,
+                            "documented trailing free tail: head before the suffix is inflected");
+                }
+                return headPlural + noun.substring(freeSuffix);
+            }
+        }
+
         int hyphen = noun.indexOf('-');
         if (hyphen > 0 && hyphen < noun.length() - 1) {
             String head = noun.substring(0, hyphen);
@@ -271,6 +331,40 @@ public final class EnglishInflector {
                                 false, false, null, "documented hyphenated compound pattern '" + tail + "'");
                     }
                     return headPlural + noun.substring(hyphen);
+                }
+            }
+            if (isParticleCompound(noun, hyphen, tail)) {
+                if (sink != null) {
+                    sink.set(DecisionSource.COMPOUND, "compound:hyphen:particle", Countability.UNKNOWN,
+                            false, false, null,
+                            "verb-particle hyphenated noun: whole expression takes s");
+                }
+                return render(noun, lower, 0, "s");
+            }
+            if (isHeadFinalCompound(noun, hyphen, tail)) {
+                String tailPlural = pluralizeCompoundHead(noun.substring(hyphen + 1), depth, true,
+                        WordShape.casingOf(noun) != WordShape.Casing.UPPER || hasInitialismPrefix(noun));
+                if (tailPlural != null) {
+                    if (sink != null) {
+                        sink.set(DecisionSource.COMPOUND, "compound:hyphen:head-final", Countability.UNKNOWN,
+                                false, false, null,
+                                "head-final hyphenated compound: final noun head inflected");
+                    }
+                    return noun.substring(0, hyphen + 1) + tailPlural;
+                }
+            }
+            int lastHyphen = noun.lastIndexOf('-');
+            if (lastHyphen > hyphen && isMultiHeadFinalCompound(noun)) {
+                String multiTail = noun.substring(lastHyphen + 1);
+                String tailPlural = pluralizeCompoundHead(multiTail, depth, true,
+                        WordShape.casingOf(noun) != WordShape.Casing.UPPER || hasInitialismPrefix(noun));
+                if (tailPlural != null) {
+                    if (sink != null) {
+                        sink.set(DecisionSource.COMPOUND, "compound:hyphen:multi-head-final", Countability.UNKNOWN,
+                                false, false, null,
+                                "multi-hyphen head-final noun without a function word: final head inflected");
+                    }
+                    return noun.substring(0, lastHyphen + 1) + tailPlural;
                 }
             }
             return null;
@@ -337,6 +431,142 @@ public final class EnglishInflector {
             return null;
         }
         return resolve(head, null, depth + 1);
+    }
+
+    /**
+     * A final head may have an unchanged lexical result because the artifact stored a mass/plural-only sense or
+     * because the held-out family is absent. In a compound the productive spelling is the safer fallback; true
+     * invariant plurals stay untouched. The upper-case suffix is kept lower-case for initialism-like heads.
+     */
+    private String pluralizeCompoundHead(String head, int depth, boolean respellUnchanged,
+            boolean lowerUpperSuffix) {
+        String result = pluralizeHead(head, depth);
+        if (result == null) {
+            return null;
+        }
+        if (respellUnchanged && (result.equals(head)
+                || lexicon.find(WordShape.lower(head)) < 0)
+                && !compounds.isInvariantHead(WordShape.lower(head))) {
+            result = spellHead(head);
+        }
+        if (lowerUpperSuffix && WordShape.isAllUpperLatinToken(head) && result != null
+                && result.startsWith(head)) {
+            String suffix = result.substring(head.length());
+            if (suffix.equalsIgnoreCase("s") || suffix.equalsIgnoreCase("es")) {
+                return head + suffix.toLowerCase(Locale.ROOT);
+            }
+        }
+        return result;
+    }
+
+    /** Applies the productive spelling rules without consulting the lexicon. */
+    private String spellHead(String head) {
+        if (!WordShape.isPlainLatinToken(head)) {
+            return null;
+        }
+        String lower = WordShape.lower(head);
+        if (lower.endsWith("child")) {
+            return render(head, lower, 5, "children");
+        }
+        String[][] fToVes = {
+                {"life", "lives"}, {"shelf", "shelves"}, {"half", "halves"}, {"staff", "staves"},
+                {"wolf", "wolves"}, {"leaf", "leaves"}, {"loaf", "loaves"}, {"calf", "calves"},
+                {"elf", "elves"}, {"self", "selves"}, {"thief", "thieves"}, {"sheaf", "sheaves"},
+                {"hoof", "hooves"}
+        };
+        for (String[] pair : fToVes) {
+            if (lower.endsWith(pair[0])) {
+                return render(head, lower, pair[0].length(), pair[1]);
+            }
+        }
+        for (Rule rule : RULES) {
+            if (rule.applies(lower) && (!rule.lowercaseOnly() || head.equals(lower))) {
+                return render(head, lower, rule.cut(), rule.append());
+            }
+        }
+        return head + "s";
+    }
+
+    /** Inflects a prefix that may itself be a hyphenated compound ({@code great-grandfather}). */
+    private String pluralizeCompoundPrefix(String head, int depth) {
+        if (depth >= MAX_COMPOUND_DEPTH) {
+            return null;
+        }
+        return resolve(head, null, depth);
+    }
+
+    /** A short initial prefix keeps the plural suffix lower-case ({@code G-PONs}, {@code LV-ROMs}). */
+    private static boolean hasInitialismPrefix(String noun) {
+        int hyphen = noun.indexOf('-');
+        if (hyphen <= 0) {
+            return false;
+        }
+        String prefix = noun.substring(0, hyphen);
+        if (prefix.length() == 1) {
+            return Character.isUpperCase(prefix.charAt(0));
+        }
+        return prefix.length() <= 3 && WordShape.isAllUpperLatinToken(prefix);
+    }
+
+    /**
+     * Admission policy for the generic head-final hyphenated compound path. Exactly one separator, both
+     * tokens plain Latin words, a multi-letter final token, no preposition, and a documented non-noun head
+     * exclusion. The final token's lexical membership is <em>not</em> required: P2 removes held-out families
+     * from the artifact, and requiring membership would collapse the path back to the old behaviour.
+     */
+    private boolean isHeadFinalCompound(String noun, int hyphen, String tailLower) {
+        if (hyphen != noun.lastIndexOf('-')) {
+            return false;
+        }
+        String head = noun.substring(0, hyphen);
+        String tail = noun.substring(hyphen + 1);
+        if (!WordShape.isPlainLatinToken(head) || !WordShape.isPlainLatinToken(tail)) {
+            return false;
+        }
+        if (WordShape.codePointLength(head) < 1 || WordShape.codePointLength(tail) < 2) {
+            return false;
+        }
+        if (compounds.isNonNounHead(tailLower)
+                || (compounds.isPreposition(WordShape.lower(head))
+                        && !compounds.isCompoundPrefix(WordShape.lower(head)))
+                || compounds.isPreposition(tailLower)
+                || compounds.isFreeTail(tailLower)) {
+            return false;
+        }
+        return true;
+    }
+
+    /** Multi-hyphen modifier chains ending in a noun head, with no preposition/coordinator in the prefix. */
+    private boolean isMultiHeadFinalCompound(String noun) {
+        String[] tokens = noun.split("-");
+        if (tokens.length < 3) {
+            return false;
+        }
+        for (String token : tokens) {
+            if (!WordShape.isPlainLatinToken(token) || WordShape.codePointLength(token) < 1) {
+                return false;
+            }
+        }
+        for (int i = 0; i < tokens.length - 1; i++) {
+            String tokenLower = WordShape.lower(tokens[i]);
+            if (compounds.isPreposition(tokenLower) || compounds.isCoordinator(tokenLower)) {
+                return false;
+            }
+        }
+        String tailLower = WordShape.lower(tokens[tokens.length - 1]);
+        return !compounds.isPreposition(tailLower) && !compounds.isNonNounHead(tailLower)
+                && !compounds.isCoordinator(tailLower);
+    }
+
+    /** A single-hyphen verb-particle noun such as {@code bake-off} or {@code blow-in}. */
+    private boolean isParticleCompound(String noun, int hyphen, String tailLower) {
+        if (hyphen != noun.lastIndexOf('-') || !compounds.isParticle(tailLower)) {
+            return false;
+        }
+        String head = noun.substring(0, hyphen);
+        String tail = noun.substring(hyphen + 1);
+        return WordShape.isPlainLatinToken(head) && WordShape.isPlainLatinToken(tail)
+                && WordShape.codePointLength(head) >= 1 && WordShape.codePointLength(tail) >= 2;
     }
 
     // ------------------------------------------------------------------ rendering
@@ -448,6 +678,7 @@ public final class EnglishInflector {
         private CasePolicy casePolicy = CasePolicy.PRESERVE;
         private final Map<String, String> overrides = new LinkedHashMap<>();
         private final Set<String> initialisms = new LinkedHashSet<>();
+        private UppercasePolicy uppercasePolicy = UppercasePolicy.INFER_INITIALISM;
         private boolean bundledLexicon = true;
 
         private Builder() {
@@ -460,6 +691,12 @@ public final class EnglishInflector {
 
         public Builder casePolicy(CasePolicy casePolicy) {
             this.casePolicy = Objects.requireNonNull(casePolicy, "casePolicy must not be null");
+            return this;
+        }
+
+        /** Selects how unknown all-uppercase tokens are interpreted; defaults to {@link UppercasePolicy#INFER_INITIALISM}. */
+        public Builder uppercasePolicy(UppercasePolicy uppercasePolicy) {
+            this.uppercasePolicy = Objects.requireNonNull(uppercasePolicy, "uppercasePolicy must not be null");
             return this;
         }
 

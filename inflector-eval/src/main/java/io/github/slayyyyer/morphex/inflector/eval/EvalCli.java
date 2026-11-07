@@ -11,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Offline prediction CLI. Reads a TSV of {@code id<TAB>lemma} records and writes
@@ -67,6 +69,9 @@ public final class EvalCli {
             out.write("id\tsystem\tprediction\tsource\n");
             String line;
             int lineNo = 0;
+            boolean headerSeen = false;
+            Set<String> ids = new HashSet<>();
+            int records = 0;
             while ((line = buffered.readLine()) != null) {
                 lineNo++;
                 if (line.isEmpty() || line.startsWith("#")) {
@@ -76,8 +81,18 @@ public final class EvalCli {
                 if (columns.length < 2) {
                     throw new IllegalArgumentException("input line " + lineNo + " needs id<TAB>lemma");
                 }
+                if (!headerSeen) {
+                    headerSeen = true;
+                    if (columns[0].equals("id") && columns[1].equals("lemma")) {
+                        continue;
+                    }
+                }
                 String id = columns[0];
                 String lemma = columns[1];
+                if (!ids.add(id)) {
+                    throw new IllegalArgumentException("duplicate record id '" + id + "' at line " + lineNo);
+                }
+                records++;
                 for (Map.Entry<String, Predictor> entry : selected.entrySet()) {
                     String prediction;
                     String source;
@@ -99,6 +114,7 @@ public final class EvalCli {
                     out.write('\n');
                 }
             }
+            System.err.println("records=" + records + " systems=" + selected.keySet());
         }
         out.flush();
         if (output != null) {

@@ -1,0 +1,70 @@
+{
+  "model": "results/learning/linear-v1.bin",
+  "model_bytes": 16412,
+  "gate": {
+    "p99_us": 10.0,
+    "size_kib": 32.0,
+    "init_ms": 10.0
+  },
+  "runs": 5,
+  "jvm_args": "-Xms256m -Xmx256m",
+  "median": {
+    "load_ms": 12.062,
+    "first_call_ms": 1.382,
+    "init_ms": 14.709,
+    "p50_us": 2.8,
+    "p99_us": 14.1,
+    "p999_us": 66.1,
+    "mean_us": 3.976,
+    "model_bytes": 16412.0
+  },
+  "ranges": {
+    "load_ms": [
+      10.462,
+      18.103
+    ],
+    "first_call_ms": [
+      0.943,
+      2.647
+    ],
+    "init_ms": [
+      11.844,
+      19.326
+    ],
+    "p50_us": [
+      2.8,
+      2.9
+    ],
+    "p99_us": [
+      13.2,
+      17.7
+    ],
+    "p999_us": [
+      53.7,
+      69.5
+    ],
+    "mean_us": [
+      3.89,
+      4.114
+    ],
+    "model_bytes": [
+      16412.0,
+      16412.0
+    ]
+  },
+  "accuracy": {
+    "records": 36239,
+    "errors": 801,
+    "accuracy": 0.9778967410800519,
+    "corrections": 310,
+    "regressions": 110,
+    "overrides": 537
+  },
+  "verdict": {
+    "latency": false,
+    "size": true,
+    "initialization": false
+  },
+  "overall_pass": false,
+  "note": "No numeric gate values were recorded in the checkout; these are the explicit runner defaults and are CLI-overridable."
+}

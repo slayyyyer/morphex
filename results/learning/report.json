@@ -1,715 +1,570 @@
 {
-  "generated": "2026-11-07T06:28:59+00:00",
+  "generated": "2026-11-07T15:53:56+00:00",
   "split": "test",
-  "protocol": "P2 family holdout; lexicon built from train families only",
+  "protocol": "P2 family holdout; inner-fold OOF training; outer dev threshold selection; test scored once. Primary selector = COUNTABLE/MIXED, non-invariant.",
   "budget": {
     "epochs": 3,
-    "train_records": 6000,
-    "available_train_records": 172014,
-    "seeds": 3
+    "train_records": 20000,
+    "available_train_records": 156825,
+    "seeds": 3,
+    "folds": 5
+  },
+  "training": {
+    "records": 170695,
+    "gated": 156825,
+    "base_accuracy": 0.9717625003661502,
+    "base_wrong": 4820,
+    "sources": {
+      "lexicon:rule": 156240,
+      "lexicon:compound": 10184,
+      "lexicon:inferred": 3686,
+      "lexicon:fallback": 585
+    },
+    "manifest": "results\\learning\\oof\\manifest.json"
   },
   "oracle": {
-    "records": 36505,
-    "base_accuracy": 0.8813587179838378,
-    "base_errors": 4331,
-    "oracle_accuracy": 0.9917271606629229,
-    "oracle_gain_pp": 11.036844267908508,
-    "required_gain_pp": 2.372825640323244,
+    "records": 36239,
+    "gated_records": 33554,
+    "base_wrong_records": 1001,
+    "candidate_coverage": 0.9923011120615911,
+    "base_accuracy": 0.972377824995171,
+    "base_errors": 1001,
+    "oracle_accuracy": 0.9923011120615911,
+    "oracle_gain_pp": 1.9923287066420103,
+    "required_gain_pp": 0.552443500096581,
     "ceiling_clears_required_gain": true,
     "oracle_hits_by_edit": {
-      "base:s": 29181,
-      "s": 2651,
-      "base:other": 1774,
-      "base:es": 1181,
-      "man->men": 293,
-      "is->es": 285,
-      "um->a": 236,
-      "lemma": 186,
-      "es": 115,
-      "us->i": 97,
+      "base:s": 31639,
+      "base:ies": 1808,
+      "base:es": 1246,
+      "base:man-men": 278,
+      "base:is-es": 230,
+      "s": 202,
+      "um->a": 186,
+      "us->i": 111,
       "a->ae": 51,
-      "ies": 46,
-      "base:same": 38,
-      "ix->ices": 18,
-      "fe->ves": 18,
-      "ves": 14,
-      "child->ren": 8,
-      "mouse->ice": 6,
+      "es": 50,
+      "lemma": 35,
+      "base:other": 34,
+      "is->es": 28,
+      "man->men": 15,
+      "ix->ices": 14,
+      "ves": 12,
+      "child->ren": 4,
+      "fe->ves": 3,
+      "mouse->ice": 3,
+      "ies": 3,
       "person->people": 3,
-      "quiz->zzes": 2
+      "base:same": 2,
+      "quiz->zzes": 2,
+      "base:us-i": 1
     },
     "by_bucket": {
       "compound": {
-        "hits": 2004,
-        "total": 2043,
-        "accuracy": 0.9809104258443465
+        "hits": 1982,
+        "total": 2018,
+        "accuracy": 0.9821605550049554
       },
       "initialism": {
-        "hits": 808,
-        "total": 808,
+        "hits": 806,
+        "total": 806,
         "accuracy": 1.0
       },
       "simple": {
-        "hits": 33122,
-        "total": 33377,
-        "accuracy": 0.9923600083890104
+        "hits": 32913,
+        "total": 33147,
+        "accuracy": 0.9929405376052132
       },
       "unicode": {
-        "hits": 269,
-        "total": 277,
-        "accuracy": 0.9711191335740073
+        "hits": 259,
+        "total": 268,
+        "accuracy": 0.9664179104477612
       }
     }
   },
   "oracle_dev": {
-    "records": 36754,
-    "base_accuracy": 0.8804483865701692,
-    "base_errors": 4394,
-    "oracle_accuracy": 0.9918104151929041,
-    "oracle_gain_pp": 11.136202862273493,
-    "required_gain_pp": 2.3910322685966157,
+    "records": 36470,
+    "gated_records": 33785,
+    "base_wrong_records": 1034,
+    "candidate_coverage": 0.9921030984370716,
+    "base_accuracy": 0.9716479298053194,
+    "base_errors": 1034,
+    "oracle_accuracy": 0.9921030984370716,
+    "oracle_gain_pp": 2.045516863175212,
+    "required_gain_pp": 0.5670414038936112,
     "ceiling_clears_required_gain": true,
     "oracle_hits_by_edit": {
-      "base:s": 29327,
-      "s": 2647,
-      "base:other": 1866,
-      "base:es": 1138,
-      "is->es": 293,
-      "man->men": 282,
-      "um->a": 245,
-      "lemma": 224,
-      "es": 92,
-      "us->i": 90,
-      "a->ae": 78,
-      "ies": 76,
-      "base:same": 29,
-      "ix->ices": 19,
-      "ves": 15,
-      "fe->ves": 12,
-      "child->ren": 10,
+      "base:s": 31775,
+      "base:ies": 1932,
+      "base:es": 1189,
+      "base:man-men": 274,
+      "base:is-es": 240,
+      "s": 201,
+      "um->a": 193,
+      "us->i": 122,
+      "a->ae": 76,
+      "es": 39,
+      "lemma": 32,
+      "is->es": 25,
+      "base:other": 20,
+      "man->men": 13,
+      "ves": 13,
+      "ix->ices": 10,
+      "child->ren": 7,
+      "base:same": 6,
       "quiz->zzes": 5,
-      "mouse->ice": 4,
+      "fe->ves": 5,
+      "mouse->ice": 2,
+      "ies": 2,
       "person->people": 1
     },
     "by_bucket": {
       "compound": {
-        "hits": 2022,
-        "total": 2055,
-        "accuracy": 0.983941605839416
+        "hits": 2007,
+        "total": 2040,
+        "accuracy": 0.9838235294117647
       },
       "initialism": {
-        "hits": 783,
-        "total": 783,
+        "hits": 780,
+        "total": 780,
         "accuracy": 1.0
       },
       "simple": {
-        "hits": 33392,
-        "total": 33655,
-        "accuracy": 0.9921854107859159
+        "hits": 33143,
+        "total": 33393,
+        "accuracy": 0.9925134010121882
       },
       "unicode": {
-        "hits": 256,
-        "total": 261,
-        "accuracy": 0.9808429118773946
+        "hits": 252,
+        "total": 257,
+        "accuracy": 0.980544747081712
       }
     }
   },
   "base": {
-    "test_accuracy": 0.8813587179838378,
-    "base_errors": 4331
+    "test_accuracy": 0.972377824995171,
+    "base_errors": 1001
+  },
+  "selector_input": "results\\learning\\java-test-input.tsv",
+  "runtime": {
+    "model": "results/learning/linear-v1.bin",
+    "model_bytes": 16412,
+    "gate": {
+      "p99_us": 10.0,
+      "size_kib": 32.0,
+      "init_ms": 10.0
+    },
+    "runs": 5,
+    "jvm_args": "-Xms256m -Xmx256m",
+    "median": {
+      "load_ms": 12.062,
+      "first_call_ms": 1.382,
+      "init_ms": 14.709,
+      "p50_us": 2.8,
+      "p99_us": 14.1,
+      "p999_us": 66.1,
+      "mean_us": 3.976,
+      "model_bytes": 16412.0
+    },
+    "ranges": {
+      "load_ms": [
+        10.462,
+        18.103
+      ],
+      "first_call_ms": [
+        0.943,
+        2.647
+      ],
+      "init_ms": [
+        11.844,
+        19.326
+      ],
+      "p50_us": [
+        2.8,
+        2.9
+      ],
+      "p99_us": [
+        13.2,
+        17.7
+      ],
+      "p999_us": [
+        53.7,
+        69.5
+      ],
+      "mean_us": [
+        3.89,
+        4.114
+      ],
+      "model_bytes": [
+        16412.0,
+        16412.0
+      ]
+    },
+    "accuracy": {
+      "records": 36239,
+      "errors": 801,
+      "accuracy": 0.9778967410800519,
+      "corrections": 310,
+      "regressions": 110,
+      "overrides": 537
+    },
+    "verdict": {
+      "latency": false,
+      "size": true,
+      "initialization": false
+    },
+    "overall_pass": false,
+    "note": "No numeric gate values were recorded in the checkout; these are the explicit runner defaults and are CLI-overridable."
   },
   "selectors": {
+    "keep_base": {
+      "seed": 0,
+      "parameters": 0,
+      "threshold": 1.0,
+      "dev": {
+        "accuracy": 0.9716479298053194,
+        "errors": 1034,
+        "corrections": 0,
+        "regressions": 0,
+        "net_corrections": 0,
+        "relative_error_reduction": 0.0,
+        "ci95_pp": [
+          0.0,
+          0.0
+        ],
+        "by_bucket": {
+          "compound": {
+            "corrections": 0,
+            "regressions": 0
+          },
+          "initialism": {
+            "corrections": 0,
+            "regressions": 0
+          },
+          "simple": {
+            "corrections": 0,
+            "regressions": 0
+          },
+          "unicode": {
+            "corrections": 0,
+            "regressions": 0
+          }
+        },
+        "overrides": 0
+      },
+      "test": {
+        "accuracy": 0.972377824995171,
+        "errors": 1001,
+        "corrections": 0,
+        "regressions": 0,
+        "net_corrections": 0,
+        "relative_error_reduction": 0.0,
+        "ci95_pp": [
+          0.0,
+          0.0
+        ],
+        "by_bucket": {
+          "initialism": {
+            "corrections": 0,
+            "regressions": 0
+          },
+          "simple": {
+            "corrections": 0,
+            "regressions": 0
+          },
+          "compound": {
+            "corrections": 0,
+            "regressions": 0
+          },
+          "unicode": {
+            "corrections": 0,
+            "regressions": 0
+          }
+        }
+      }
+    },
     "linear": {
       "seed": 0,
       "parameters": 4096,
-      "artifact_bytes_estimate": 16384,
-      "train_seconds": 3.0979270935058594,
-      "threshold": 0.3,
+      "artifact_bytes": 16412,
+      "model": "results\\learning\\linear-v1.bin",
+      "train_seconds": 3.6118452548980713,
+      "threshold": 0.9,
       "dev_trials": [
         {
           "threshold": 0.0,
-          "accuracy": 0.881074168797954,
-          "overrides": 119
+          "accuracy": 0.9502879078694818,
+          "overrides": 2254
         },
         {
           "threshold": 0.05,
-          "accuracy": 0.881074168797954,
-          "overrides": 119
+          "accuracy": 0.9502879078694818,
+          "overrides": 2254
         },
         {
           "threshold": 0.1,
-          "accuracy": 0.881074168797954,
-          "overrides": 119
+          "accuracy": 0.9502879078694818,
+          "overrides": 2254
         },
         {
           "threshold": 0.15,
-          "accuracy": 0.881074168797954,
-          "overrides": 119
+          "accuracy": 0.9502879078694818,
+          "overrides": 2254
         },
         {
           "threshold": 0.2,
-          "accuracy": 0.881074168797954,
-          "overrides": 119
+          "accuracy": 0.9502879078694818,
+          "overrides": 2254
         },
         {
           "threshold": 0.25,
-          "accuracy": 0.881074168797954,
-          "overrides": 119
+          "accuracy": 0.9502879078694818,
+          "overrides": 2254
         },
         {
           "threshold": 0.3,
-          "accuracy": 0.881074168797954,
-          "overrides": 117
+          "accuracy": 0.9504250068549492,
+          "overrides": 2249
         },
         {
           "threshold": 0.35,
-          "accuracy": 0.881074168797954,
-          "overrides": 117
+          "accuracy": 0.9510556621880998,
+          "overrides": 2221
         },
         {
           "threshold": 0.4,
-          "accuracy": 0.881074168797954,
-          "overrides": 117
+          "accuracy": 0.953687962709076,
+          "overrides": 2079
         },
         {
           "threshold": 0.45,
-          "accuracy": 0.881074168797954,
-          "overrides": 117
+          "accuracy": 0.9574444749108857,
+          "overrides": 1904
         },
         {
           "threshold": 0.5,
-          "accuracy": 0.8810197529520596,
-          "overrides": 102
+          "accuracy": 0.9603235536057033,
+          "overrides": 1721
         },
         {
           "threshold": 0.55,
-          "accuracy": 0.8807748816455352,
-          "overrides": 67
+          "accuracy": 0.9640526460104195,
+          "overrides": 1542
         },
         {
           "threshold": 0.6,
-          "accuracy": 0.8808020895684824,
-          "overrides": 62
+          "accuracy": 0.9656429942418426,
+          "overrides": 1373
         },
         {
           "threshold": 0.65,
-          "accuracy": 0.8803667628013278,
-          "overrides": 34
+          "accuracy": 0.9680559363860708,
+          "overrides": 1255
         },
         {
           "threshold": 0.7,
-          "accuracy": 0.8803123469554334,
-          "overrides": 26
+          "accuracy": 0.9708527556896079,
+          "overrides": 1108
         },
         {
           "threshold": 0.75,
-          "accuracy": 0.8802851390324863,
-          "overrides": 17
+          "accuracy": 0.9730189196599945,
+          "overrides": 961
         },
         {
           "threshold": 0.8,
-          "accuracy": 0.8802851390324863,
-          "overrides": 14
+          "accuracy": 0.9749108856594462,
+          "overrides": 824
         },
         {
           "threshold": 0.85,
-          "accuracy": 0.880421178647222,
-          "overrides": 5
+          "accuracy": 0.9763092953112147,
+          "overrides": 719
         },
         {
           "threshold": 0.9,
-          "accuracy": 0.880421178647222,
-          "overrides": 5
+          "accuracy": 0.9770222100356457,
+          "overrides": 545
         },
         {
           "threshold": 0.95,
-          "accuracy": 0.8804755944931164,
-          "overrides": 1
-        }
-      ],
-      "test": {
-        "accuracy": 0.8821805232159978,
-        "errors": 4301,
-        "corrections": 48,
-        "regressions": 18,
-        "delta_accuracy_pp": 0.08218052321599781,
-        "ci95_pp": [
-          0.037990827928685786,
-          0.12793293048070117
-        ],
-        "relative_error_reduction": 0.45454545454545453,
-        "iterations": 2000,
-        "families": 34567,
-        "invoked": 36493,
-        "invocation_rate": 0.9996712779071361,
-        "overrides": 116,
-        "override_rate": 0.003178691803907599
-      },
-      "calibration": [
-        {
-          "ece": 0.2083907602269935,
-          "bins": [
-            {
-              "bin": 0.2,
-              "count": 3,
-              "mean_confidence": 0.2802001009334884,
-              "accuracy": 0.0
-            },
-            {
-              "bin": 0.3,
-              "count": 6,
-              "mean_confidence": 0.3645279037752463,
-              "accuracy": 0.16666666666666666
-            },
-            {
-              "bin": 0.4,
-              "count": 34,
-              "mean_confidence": 0.4809035238459641,
-              "accuracy": 0.29411764705882354
-            },
-            {
-              "bin": 0.5,
-              "count": 27,
-              "mean_confidence": 0.5350892639572615,
-              "accuracy": 0.7037037037037037
-            },
-            {
-              "bin": 0.6,
-              "count": 32,
-              "mean_confidence": 0.6442121337497566,
-              "accuracy": 0.71875
-            },
-            {
-              "bin": 0.7,
-              "count": 10,
-              "mean_confidence": 0.7384125921641831,
-              "accuracy": 0.2
-            },
-            {
-              "bin": 0.8,
-              "count": 4,
-              "mean_confidence": 0.8291883867096194,
-              "accuracy": 0.25
-            },
-            {
-              "bin": 0.9,
-              "count": 3,
-              "mean_confidence": 0.9271106230518229,
-              "accuracy": 0.3333333333333333
-            }
-          ]
-        }
-      ]
-    },
-    "mlp-seed0": {
-      "seed": 0,
-      "parameters": 12589,
-      "artifact_bytes_estimate": 50356,
-      "train_seconds": 9.356840372085571,
-      "threshold": 0.0,
-      "dev_trials": [
-        {
-          "threshold": 0.0,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
+          "accuracy": 0.9749108856594462,
+          "overrides": 253
         },
         {
-          "threshold": 0.05,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.1,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.15,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.2,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.25,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.3,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.35,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.4,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.45,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.5,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.55,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.6,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.65,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.7,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.75,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.8,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.85,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.9,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.95,
-          "accuracy": 0.8804483865701692,
+          "threshold": 1.0,
+          "accuracy": 0.9716479298053194,
           "overrides": 0
         }
       ],
-      "test": {
-        "accuracy": 0.8813587179838378,
-        "errors": 4331,
-        "corrections": 0,
-        "regressions": 0,
-        "delta_accuracy_pp": 0.0,
+      "dev": {
+        "accuracy": 0.9770222100356457,
+        "errors": 838,
+        "corrections": 323,
+        "regressions": 127,
+        "net_corrections": 196,
+        "relative_error_reduction": 0.1895551257253385,
         "ci95_pp": [
-          0.0,
-          0.0
+          0.3847210772190162,
+          0.7028859670883982
         ],
-        "relative_error_reduction": 0.0,
-        "iterations": 2000,
-        "families": 34567,
-        "invoked": 36493,
-        "invocation_rate": 0.9996712779071361,
-        "overrides": 0,
-        "override_rate": 0.0
+        "by_bucket": {
+          "compound": {
+            "corrections": 101,
+            "regressions": 0
+          },
+          "initialism": {
+            "corrections": 0,
+            "regressions": 0
+          },
+          "simple": {
+            "corrections": 218,
+            "regressions": 127
+          },
+          "unicode": {
+            "corrections": 4,
+            "regressions": 0
+          }
+        },
+        "invoked": 33785,
+        "invocation_rate": 0.9263778448039485,
+        "overrides": 545,
+        "override_rate": 0.01613141926890632
       },
-      "calibration": [
-        {
-          "ece": 0.0,
-          "bins": []
-        }
-      ]
-    },
-    "mlp-seed1": {
-      "seed": 1,
-      "parameters": 12589,
-      "artifact_bytes_estimate": 50356,
-      "train_seconds": 9.240843296051025,
-      "threshold": 0.0,
-      "dev_trials": [
-        {
-          "threshold": 0.0,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.05,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.1,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.15,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.2,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.25,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.3,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.35,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.4,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.45,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.5,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.55,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.6,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.65,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.7,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.75,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.8,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.85,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.9,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.95,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        }
-      ],
       "test": {
-        "accuracy": 0.8813587179838378,
-        "errors": 4331,
-        "corrections": 0,
-        "regressions": 0,
-        "delta_accuracy_pp": 0.0,
+        "accuracy": 0.9778967410800519,
+        "errors": 801,
+        "corrections": 310,
+        "regressions": 110,
+        "net_corrections": 200,
+        "relative_error_reduction": 0.1998001998001998,
         "ci95_pp": [
-          0.0,
-          0.0
+          0.4282241131616753,
+          0.676945181255526
         ],
-        "relative_error_reduction": 0.0,
-        "iterations": 2000,
-        "families": 34567,
-        "invoked": 36493,
-        "invocation_rate": 0.9996712779071361,
-        "overrides": 0,
-        "override_rate": 0.0
+        "by_bucket": {
+          "initialism": {
+            "corrections": 0,
+            "regressions": 0
+          },
+          "simple": {
+            "corrections": 215,
+            "regressions": 109
+          },
+          "compound": {
+            "corrections": 92,
+            "regressions": 0
+          },
+          "unicode": {
+            "corrections": 3,
+            "regressions": 1
+          }
+        },
+        "invoked": 33554,
+        "invocation_rate": 0.9259085515604735,
+        "overrides": 537,
+        "override_rate": 0.01600405316802766
       },
-      "calibration": [
-        {
-          "ece": 0.0,
-          "bins": []
-        }
-      ]
-    },
-    "mlp-seed2": {
-      "seed": 2,
-      "parameters": 12589,
-      "artifact_bytes_estimate": 50356,
-      "train_seconds": 9.173647403717041,
-      "threshold": 0.0,
-      "dev_trials": [
-        {
-          "threshold": 0.0,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.05,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.1,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.15,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.2,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.25,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.3,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.35,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.4,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.45,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.5,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.55,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.6,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.65,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.7,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.75,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.8,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.85,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.9,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        },
-        {
-          "threshold": 0.95,
-          "accuracy": 0.8804483865701692,
-          "overrides": 0
-        }
-      ],
-      "test": {
-        "accuracy": 0.8813587179838378,
-        "errors": 4331,
-        "corrections": 0,
-        "regressions": 0,
-        "delta_accuracy_pp": 0.0,
-        "ci95_pp": [
-          0.0,
-          0.0
-        ],
-        "relative_error_reduction": 0.0,
-        "iterations": 2000,
-        "families": 34567,
-        "invoked": 36493,
-        "invocation_rate": 0.9996712779071361,
-        "overrides": 0,
-        "override_rate": 0.0
-      },
-      "calibration": [
-        {
-          "ece": 0.0,
-          "bins": []
-        }
-      ]
+      "calibration": {
+        "ece": 0.334069056515827,
+        "bins": [
+          {
+            "bin": 0.2,
+            "count": 6,
+            "mean_confidence": 0.27333182080483404,
+            "accuracy": 0.0
+          },
+          {
+            "bin": 0.3,
+            "count": 155,
+            "mean_confidence": 0.3662733525038883,
+            "accuracy": 0.2129032258064516
+          },
+          {
+            "bin": 0.4,
+            "count": 363,
+            "mean_confidence": 0.4473251750627117,
+            "accuracy": 0.15426997245179064
+          },
+          {
+            "bin": 0.5,
+            "count": 302,
+            "mean_confidence": 0.5504831037745337,
+            "accuracy": 0.25496688741721857
+          },
+          {
+            "bin": 0.6,
+            "count": 247,
+            "mean_confidence": 0.6468951656062092,
+            "accuracy": 0.19433198380566802
+          },
+          {
+            "bin": 0.7,
+            "count": 310,
+            "mean_confidence": 0.7490959359536935,
+            "accuracy": 0.2032258064516129
+          },
+          {
+            "bin": 0.8,
+            "count": 269,
+            "mean_confidence": 0.8561374610420728,
+            "accuracy": 0.36059479553903345
+          },
+          {
+            "bin": 0.9,
+            "count": 537,
+            "mean_confidence": 0.9421527843423536,
+            "accuracy": 0.7635009310986964
+          }
+        ]
+      }
     }
   },
+  "selected_on_dev": "linear",
   "decision": {
     "decision": "reject",
     "headline": "learned selector did not clear the frozen gates; deterministic library ships",
+    "selected_on_dev": "linear",
     "reasons": [
-      "gain 0.0822pp below required 2.3728pp",
-      "residual errors reduced by only 0.7% (need 20%)",
-      "runtime microsecond/size gates require a Java scorer and were not demonstrated"
+      "test gain 0.5519pp below required 0.5524pp",
+      "residual errors reduced by only 20.0% (need 20%)",
+      "runtime gates failed: p99=False, size=True, init=False"
     ],
-    "measured_gain_pp": 0.08218052321600222,
-    "required_gain_pp": 2.372825640323244
+    "measured_gain_pp": 0.5518916084880865,
+    "required_gain_pp": 0.552443500096581,
+    "test": {
+      "accuracy": 0.9778967410800519,
+      "errors": 801,
+      "corrections": 310,
+      "regressions": 110,
+      "net_corrections": 200,
+      "relative_error_reduction": 0.1998001998001998,
+      "ci95_pp": [
+        0.4282241131616753,
+        0.676945181255526
+      ],
+      "by_bucket": {
+        "initialism": {
+          "corrections": 0,
+          "regressions": 0
+        },
+        "simple": {
+          "corrections": 215,
+          "regressions": 109
+        },
+        "compound": {
+          "corrections": 92,
+          "regressions": 0
+        },
+        "unicode": {
+          "corrections": 3,
+          "regressions": 1
+        }
+      },
+      "invoked": 33554,
+      "invocation_rate": 0.9259085515604735,
+      "overrides": 537,
+      "override_rate": 0.01600405316802766
+    }
   }
 }

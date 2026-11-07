@@ -7,6 +7,13 @@ as `jmh-packed-noisy.json` because its control benchmark showed the machine was 
 its numbers are not used. Sources:
 `inflector-benchmarks/src/main/java/io/github/slayyyyer/morphex/inflector/bench/`.
 
+**Historical note.** The full table and allocation/startup figures below were recorded before
+the final compound, uppercase and backoff changes. A fresh one-iteration sanity run after
+those changes is saved as `results/benchmarks/jmh-final.json`: repeated 77.8 ns vs 81.5 ns
+for evo2, distinct 226.0 ns vs 163.6 ns (1.38x slower), mixed-case 309.1 ns vs 179.5 ns,
+count 231.5 ns vs 158.6 ns, and diagnostics 348.6 ns vs 298.2 ns. The short run did not use
+the GC profiler, so allocation claims remain historical.
+
 ## Setup
 
 | field | value |
@@ -48,8 +55,9 @@ paths rather than a pure map hit.
 | inflectorAnalyze | avgt | 321.475 | ns/op | 234.9 |
 | inflectorRulesOnly | avgt | 391.191 | ns/op | 77.0 |
 
-Artifact: 150,267 entries, 7,708,247 bytes raw TSV (1,212,308 bytes gzip) in the jar; no
-runtime dependencies. The final JMH run did not capture the concurrent benchmarks; the
+Historical packed-run artifact: 150,267 entries, 7,708,247 bytes raw TSV (1,212,308 bytes gzip);
+the current artifact is 147,193 entries / 7,545,760 bytes (1,176,616 bytes gzip). No
+runtime dependencies. The run did not capture the concurrent benchmarks; the
 earlier run measured 10.2M ops/s on four threads, but that number belongs to the previous
 artifact and is not claimed here.
 
@@ -74,10 +82,10 @@ artifact and is not claimed here.
   Full plural strings are retained only for the ~14k entries whose diagnostics can expose an
   alternative or classical form. There is no per-entry object.
 
-The measured claim is: faster than stock 2.0 on repeated lookup (0.83×), 1.34× slower on
-distinct-word lookup, lower allocation, and a ~57% smaller retained heap, with substantially
-higher accuracy (see `docs/evaluation.md`). No distinct-word speedup is claimed. Per-op
-latencies were measured with the larger pre-fix artifact; the engine code is unchanged.
+The measured claim is: faster than stock 2.0 on repeated lookup (0.95× in the fresh short
+run; 0.83× in the historical full run), 1.38× slower on distinct-word lookup, lower
+allocation in the historical profiled run, and a substantially smaller retained heap, with
+substantially higher accuracy (see `docs/evaluation.md`). No distinct-word speedup is claimed.
 
 ## Startup and retained footprint
 
@@ -88,7 +96,7 @@ latencies were measured with the larger pre-fix artifact; the engine code is unc
 | first call (class load + artifact load + first pluralize) | 392-505 ms (median 426 ms) |
 | first `pluralize` call | 2.2-3.2 ms |
 | 50,000 cold calls with unseen tokens | 60.7-61.8 ms |
-| lexicon entries | 150,267 |
+| lexicon entries (historical run) | 150,267 (current: 147,193) |
 | retained heap after load | **24.1 MB** (25,316,272 bytes; remeasured with the current artifact) |
 
 The previous object-graph lexicon retained **55.5 MB**; the packed layout cuts that by ~57%
@@ -97,12 +105,12 @@ diagnostic strings, the index table and the JVM baseline. Load is slower than th
 (426 ms vs 309 ms) because packing copies every column and builds the index; that is a
 one-time startup cost, not a per-lookup cost. The cold 50k loop is slower than the old map's
 34 ms because it is dominated by unknown-token misses and JIT warmup; JMH's warm hit paths are
-the representative latency numbers. No native or model memory is involved: the learning
-experiment was rejected, so the product has no model and no native bridge.
+the representative latency numbers. The product ships no model and no native bridge; the
+research Java scorer lives in `inflector-eval` and is not on the consumer classpath.
 
 ## Known gaps and next steps
 
-* The distinct-word path is still 1.34× slower than stock 2.0. A packed UTF-8 key pool or a
+* The distinct-word path is still 1.38× slower than stock 2.0 (1.34× historically). A packed UTF-8 key pool or a
   trie/automaton over the same columns could close the rest without giving back the footprint
   win.
 * 24.1 MB retained is much better than 55.5 MB but still larger than the 7.71 MB TSV; the

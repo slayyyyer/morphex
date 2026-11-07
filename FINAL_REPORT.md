@@ -1,192 +1,170 @@
 # Final report
 
-Date: 2026-11-07. All numbers below come from runs recorded in this repository; nothing is
-projected.
+Date: 2026-11-07. Every number below comes from a recorded run in this repository. Historical
+audited-commit results are labelled separately and are not mixed into the current tables.
 
 ## What shipped
 
 | item | state |
 | --- | --- |
-| `inflector-core` | working Java 17 library, no runtime dependencies, immutable, thread-safe |
-| API | `builder()`, `mode()`, `casePolicy()`, `overrides()`, `initialisms()`, `build()`, `pluralize(String)`, `pluralize(String,int)`, `analyze(String)` |
-| lexical artifact | 157,344 entries / 8,053,686 bytes TSV (1,253,478 bytes gzip), generated offline |
-| rules | exactly three productive rules; all other irregularity is lexical |
-| compounds | bounded exact entries, free tails, curated postposed heads, guarded space rule |
-| diagnostics | immutable `Inflection` with source, id, countability, alternatives, ambiguity, note; no fake confidence |
-| tests | 87 tests green on JDK 21 and JDK 17, including the pinned 100-row regression suite |
-| offline pipeline | pinned dump → validated normalized data → splits → runtime artifact, stdlib Python |
-| evaluator | three systems, fixed gold, paired family-clustered bootstrap, P1/P2 protocols |
-| benchmarks | JMH suite with forks and GC profiler; packed-run raw JSON in `results/benchmarks/` |
-| learning experiment | candidate ceiling, linear + compact MLP selectors, calibration, seeds, explicit reject decision |
-| example | runnable consumer (`inflector-example`) with recorded output |
-| docs | README, compatibility/migration, data provenance/licensing, evaluation, benchmarks, learning, upstream probe |
+| `inflector-core` | Java 17+, immutable, thread-safe, no runtime dependencies |
+| lexical artifact | 147,193 entries / 7,545,760 bytes TSV (1,176,616 bytes gzip) |
+| membership table | 340,565 entries / 2,724,532 bytes, exact FNV-1a hashes |
+| rules | three productive rules plus documented woman/wife/man/sis backoffs |
+| compounds | exact entries, extended free tails, curated postposed heads, guarded head-final and verb-particle paths, multi-hyphen chains |
+| uppercase | explicit metadata and overrides first; bounded inference for unknown 2-6 letter uppercase tokens |
+| diagnostics | immutable `Inflection` with source, id, countability, alternatives, ambiguity, note |
+| evaluation | eval-v2, exact ids, one primary selector, family-clustered boostrap, 2,000 iterations |
+| offline pipeline | pinned dump -> validated data -> splits -> artifacts/membership -> predictions -> reports |
+| learning | corrected five-fold OOF experiment; offline result rejected for runtime |
+| example | runnable consumer in `inflector-example` |
 
-Publication coordinates are provisional (`io.github.morphex:english-inflector:0.1.0-SNAPSHOT`)
-and nothing was published.
+No model, training dependency or network call is in the shipped runtime.
 
-## What was measured
+## P1 - frozen shipped lexicon
 
-### Correctness (protocol P1, frozen shipped lexicon, 34,933 primary records)
+| system | primary (36,239) | overall (50,938) |
+| --- | ---: | ---: |
+| stock evo-inflector 2.0 | 96.473% (1,278 errors) | 68.882% (15,851) |
+| this library | **100.000% (0)** | **100.000% (0)** |
+| rules only | 95.168% (1,751) | 67.851% (16,376) |
 
-| system | accepted-form accuracy | errors |
-| --- | --- | --- |
-| stock evo-inflector 2.0 | 96.502% | 1,222 |
-| repaired rules only | 88.618% | 3,976 |
-| repaired rules + curated + Wiktionary artifact | **99.997%** | **1** |
+Paired evo2 -> library: **+3.5266 pp**, 95% CI `[+3.3323, +3.7159]`, 1,278 corrections,
+0 regressions. Source usage: 7,244 `lexicon:lexicon`, 28,995 `lexicon:rule`. P1 is
+dictionary coverage, not generalization.
 
-Paired family-clustered bootstrap, evo2 → this library: **+4.1481 pp**, 95% CI
-`[+3.9231, +4.3629]`, 1,461 corrections, 1 regression. Overall (including mass and
-plural-only records) the library reaches 99.996% (2/50,938 errors); stock 2.0 reaches
-68.825% because it pluralizes mass nouns. The two residual errors are both the documented
-40-character lexical cap, not wrong morphology.
+Historical audited-commit P1 was also 100% (0/36,239 primary, 0/50,938 overall), but with a
+150,267-entry artifact and rules-only 88.714% (4,090). The old evaluator counted the TSV
+header; current prediction files contain exactly 50,938 records.
 
-### Generalization (protocol P2, family holdout, train-only artifact)
+## P2 - family holdout
 
-88.618% for both rules and train-only lexicon, identical by construction: held-out families
-have almost no lexical entries. This is the honest unseen-family number and is worse than
-stock 2.0, which carries its exception table everywhere. No leakage: test families never
-enter the artifact, training, threshold selection or feature design.
+| system | test primary (36,239) | dev primary (36,470) |
+| --- | ---: | ---: |
+| stock evo-inflector 2.0 | 96.473% (1,278) | 96.397% (1,314) |
+| this library, train-only artifact | **97.376% (951)** | **97.398% (949)** |
+| rules only | 95.168% (1,751) | 95.281% (1,721) |
 
-### External validation (UD English EWT)
+Test paired gain: **+0.9023 pp** `[+0.7309, +1.0718]`, 540 corrections, 213 regressions,
+**25.587%** relative error reduction. The historical parity target (<=1,278 errors) is
+cleared by 327 errors. The compound slice fell from 180 to 130 test errors (50 corrected,
+0 regressed) and from 177 to 92 dev errors (85 corrected, 0 regressed).
 
-2,184 single-token alphabetic lemma→plural pairs from [UD English EWT](https://github.com/UniversalDependencies/UD_English-EWT)
-(CC BY-SA 4.0), scored with the unchanged artifact; 454 lemmas are present in the lexicon
-and 1,730 are unseen.
+Test primary buckets:
 
-| system | overall | seen | unseen |
-| --- | --- | --- | --- |
-| evo 2.0 | 98.12% | 95.37% | 98.84% |
-| shipped lexicon | **94.55%** | **77.09%** | **99.13%** |
-| repaired rules | 97.71% | 92.29% | 99.13% |
+| bucket | records | correct | errors | accuracy |
+| --- | ---: | ---: | ---: | ---: |
+| compound | 2,018 | 1,888 | 130 | 93.558% |
+| initialism | 806 | 783 | 23 | 97.146% |
+| simple | 33,147 | 32,364 | 783 | 97.638% |
+| unicode | 268 | 253 | 15 | 94.403% |
 
-The seen-subset failure is a data defect: 100 of 119 lexicon errors are identity returns for
-common count nouns stored as `MASS`/`PLURAL_ONLY` (`book`, `bag`, `account`). P1's overall
-accepted-form slice counts those identities as correct and its primary slice excludes them,
-so P1 reported dictionary coverage rather than practical accuracy. Fixing this needs a
-corrected extraction and a full P1/P2 rerun; it was not tuned on the external set.
+Decision sources: `lexicon:compound` 27/1,915 errors; `lexicon:rule` 798/33,415;
+`lexicon:inferred` 23/806; `lexicon:fallback` 103/103. Fallback records are unsupported
+shapes, not silently rewritten.
 
-### Candidate ceiling and learning
+Historical audited P2 was **88.714%** (4,090 errors), with 31,876/33,147 simple
+non-invariant correct (96.166%) and 273/3,092 in the remainder (8.829%). Those numbers are
+retained in `results/eval/p2-report.json` and are not comparable to the current engine,
+artifact and contract.
 
-| quantity | measured |
-| --- | --- |
-| candidate-oracle accuracy | 99.182% vs 88.022% base (+11.16 pp) |
-| required gain | 2.396 pp (clears the ceiling test) |
-| linear selector (D) | 88.110%, 42 corrections, 11 regressions, +0.088 pp |
-| compact MLP (E, 3 seeds) | 88.022%, 0 overrides, 0 corrections |
-| decision | **reject runtime neural inference** |
+## Artifact preservation
 
-The ceiling says the inventory is sufficient; the trained selectors do not capture it. D
-finds a few real corrections but misses the required gain by an order of magnitude. E
-collapses to the deterministic base action in all three seeds and both screened
-configurations. Runtime microsecond/memory/size gates were therefore not demonstrated. The
-deterministic core ships; no model or training dependency is in the artifact.
+The compact artifact omits a known entry only when the final resolver reproduces its
+required output and no lexical metadata is needed. A Python mirror is checked by the Java
+`ArtifactAuditTest` over the full P1 evaluation, including policy cases. Current P1 is
+0 primary and 0 overall errors; the audit fixture is green.
 
-### Performance (JDK 21, i5-12500H, JMH 1.37, 2 forks)
+## External validation
 
-| workload | evo 2.0 | this library | allocation |
-| --- | --- | --- | --- |
-| repeated word | 98.2 ns/op | 81.7 ns/op | 35 B/op (vs 113) |
-| distinct words | 150.7 ns/op | 201.1 ns/op | 29 B/op (vs 137) |
-| mixed case | 169.1 ns/op | 267.9 ns/op | 51 B/op (vs 151) |
-| count overload | 170.9 ns/op | 216.9 ns/op | 29 B/op (vs 137) |
-| diagnostics | 269.9 ns/op (equivalent) | 321.5 ns/op | 235 B/op |
+UD English EWT, CC BY-SA 4.0, 2,184 lemmas / 2,221 forms; 368 lemmas present in the shipped
+artifact, 1,816 unseen. Selected-output accuracy and alternative-set coverage are separate
+metrics.
 
-Repeated lookup is 0.83× (faster); distinct-word lookup is 1.34× slower (down from 2.4×
-before packing). The lexicon is now columnar: concatenated `char[]` keys, an open-addressed
-`int[]` index and primitive metadata columns, with full strings retained only for entries
-whose diagnostics expose them. That cut retained heap from 55.5 MB to **25.4 MB** (−54%) at
-the cost of slower loading. The final run did not capture the concurrent benchmarks, so no
-concurrency number is claimed.
+| system | selected overall | selected seen | selected unseen | alternative coverage |
+| --- | ---: | ---: | ---: | ---: |
+| stock evo-inflector 2.0 | 98.12% | 94.29% | 98.90% | n/a |
+| shipped lexicon | **98.21%** | 93.48% | **99.17%** | **98.76%** |
+| rules only | **98.26%** | 93.75% | **99.17%** | 98.26% |
 
-`StartupFootprint` (JDK 21, three runs) measured 392-505 ms to the first call (median 426 ms,
-vs 309 ms for the old map), 2.2-3.2 ms for the first pluralize, 60.7-61.8 ms for 50k cold
-miss-heavy calls, and **25.4 MB retained heap** for 157,344 entries.
+The 39 remaining lexicon errors include disputed countability identity returns, EWT typos
+and rule limits. Nothing was tuned on this corpus. Full list:
+`results/external-v2/ewt-report.md`.
 
-### Toolchain validation
+## Strict-family sensitivity check
 
-* `./mvnw verify` green on Temurin **21.0.13** and **17.0.21**.
-* Example consumer runs and its output is recorded in `results/example-run.txt`.
-* The normal test run is offline: it reads the pinned regression TSV from
-  `data/regression/` and the bundled artifact only.
+A supplementary `split-v2` run groups conservative derivational relatives before splitting
+(for example `teacher`/`teaching`/`teach` and `runner`/`running`/`run`). The stem key is an
+approximation, not a lemmatizer. The strict train-only artifact has 102,273 entries, and the
+P2 primary denominators change to 36,520 dev and 37,507 test; these results are not
+directly comparable to the primary `split-v1` table.
 
-## What remains hypothetical or blocked
+| split | evo-inflector 2.0 | this library |
+| --- | ---: | ---: |
+| P2 dev strict families (36,520) | 96.358% (1,330) | **97.125% (1,050)** |
+| P2 test strict families (37,507) | 96.379% (1,358) | **97.238% (1,036)** |
+| EWT family seen (1,677) | **98.09% (1,645)** | 98.03% (1,644) |
+| EWT family unseen (507) | 98.22% (498) | **98.82% (501)** |
 
-* **Unseen-family accuracy**: 88.618%. P1's 99.997% is dictionary coverage, not
-  generalization; the README says so.
-* **Countability data defect**: external UD EWT found 77.09% accuracy on lemmas present in
-  the artifact, because common count nouns are misclassified as `MASS`/`PLURAL_ONLY`. The
-  shipped lexicon is not production-ready until extraction is corrected and P1/P2 rerun.
-* **Runtime neural inference**: no Java scorer, so latency/memory/artifact/init gates are
-  undemonstrated. Rejected, not merely deferred.
-* **Offline export**: not attempted, because there is no validated neural gain to export.
-* **Performance parity on distinct-word workloads**: 1.34× slower than stock 2.0 (improved
-  from 2.4×), and 25.4 MB retained (improved from 55.5 MB); better, not closed.
-* **Human review**: no records were externally adjudicated and no human reviewed the
-  expectations; the docs say "author-reviewed", never "human-reviewed".
-* **Corpus evaluation**: requires the 298 MB pinned dump, which is gitignored. Its absence
-  makes that evaluation unavailable, never silently successful.
-* **Git history**: the repository is published at
-  https://github.com/slayyyyer/morphex; the packed-lexicon and external-validation changes
-  are part of this commit.
+The strict test paired gain is +0.8585 pp `[+0.6868, +1.0287]`, with 536 corrections and
+214 regressions. The default `split-v1` results remain the headline evaluation; full
+details are in `results/strict-family-report.md`.
 
-## Exact commands executed
+## Learning experiment
 
-```bash
-# toolchain (checked-in wrapper uses the bootstrapped Maven)
-export JAVA_HOME="$(pwd)/.tools/jdk-21.0.13+9"; export PATH="$JAVA_HOME/bin:$PATH"
-./mvnw -q verify
-./mvnw -q -pl inflector-example exec:java
+The corrected experiment uses five inner folds: each training family is predicted by an
+artifact built without it, then the outer dev threshold is selected and test is scored once.
+The OOF set has 238,810 records (170,695 primary, 156,825 eligible).
 
-# data pipeline (offline from the pinned dump)
-py -3 -m tools.research.cli extract
-py -3 -m tools.research.cli splits
-py -3 -m tools.research.cli artifact --split all --selection compact
-py -3 -m tools.research.cli artifact --split train --selection compact --out build/p2/lexicon-v1.tsv
+| quantity | value |
+| --- | ---: |
+| base accuracy (pre-compound run) | 97.238% (1,001 errors) |
+| candidate-oracle accuracy | 99.230% |
+| oracle gain | +1.992 pp |
+| required gain | 0.552 pp |
+| corrected linear selector | 97.790% (801 errors, 310 corrections / 110 regressions) |
+| screening MLP | 97.243% (2 corrections, 0 regressions) |
+| decision | **reject runtime inference** |
 
-# evaluation
-./mvnw -q -pl inflector-eval -am install -DskipTests
-./mvnw -q -pl inflector-eval exec:java \
-  -Dexec.args="--input results/eval/test-records.tsv --out results/eval/p1-test-preds.tsv"
-py -3 -m tools.research.cli evaluate \
-  --gold results/eval/test-gold.tsv --predictions results/eval/p1-test-preds.tsv \
-  --out results/eval/p1-report.json --split test --lexicon-split all
+The linear selector misses the offline +0.5524 pp gain gate by 0.0005 pp. A dependency-free
+Java scorer in `inflector-eval` now reproduces the selector exactly (0 prediction
+mismatches; 801 errors, 310 corrections, 110 regressions). Against the strict-default
+runtime gates, its 16,412-byte artifact passes size, but p99 latency (14.1 µs vs 10 µs) and
+cold initialization (14.709 ms vs 10 ms) fail. The learning artifacts predate the compound
+resolver changes; the selector was not re-fit, and the rejection decision is unchanged. The deterministic library ships. The original train-on-lexicon experiment
+(linear 88.218%, MLP zero overrides) is preserved as historical evidence in
+`docs/learning.md`.
 
-# stock probe
-./mvnw -q -pl inflector-eval exec:java \
-  -Dexec.mainClass=io.github.morphex.inflector.eval.UpstreamProbe
+## Validation
 
-# benchmarks
-./mvnw -q -pl inflector-benchmarks -am package
-java -jar inflector-benchmarks/target/benchmarks.jar -f 2 -wi 3 -i 5 -w 1s -r 1s -prof gc \
-     -rf json -rff results/benchmarks/jmh-packed.json
+* `mvn verify` is the required JDK 17/21 gate; Java and Python regression tests cover
+  parsing, casing, countability, compounds, uppercase inference, membership, candidate
+  renderers and compaction.
+* P1 and P2 reports use the frozen gold files and 2,000-iteration family bootstrap.
+* `scripts/rebuild-and-evaluate.sh` reproduces the full pipeline, including `oof`.
+* `data/raw/` is gitignored; without the pinned dump, corpus evaluation is unavailable and
+  is never reported as passing.
+* The recorded JMH run is kept in `docs/benchmarks.md`; it predates the final rule additions
+  and is not claimed as a fresh benchmark.
+* No full 20,000-record, three-epoch learning run completed in the available window; the
+  bounded OOF run is reported as such.
 
-# external validation (network: UD English EWT, CC BY-SA 4.0)
-git clone --depth 1 https://github.com/UniversalDependencies/UD_English-EWT.git \
-  build/external/ewt-repo
-mkdir -p build/external/ud-ewt
-cp build/external/ewt-repo/*.conllu build/external/ud-ewt/
-py -3 tools/research/external_eval.py prepare --conllu-dir build/external/ud-ewt --out-dir results/external
-./mvnw -q -pl inflector-eval -am package -DskipTests
-./mvnw -q -pl inflector-eval exec:java \
-  -Dexec.mainClass=io.github.morphex.inflector.eval.ExternalEval \
-  -Dexec.args="--gold results/external/ewt-gold.tsv --out results/external/ewt-predictions.tsv"
-py -3 tools/research/external_eval.py score --gold results/external/ewt-gold.tsv \
-  --predictions results/external/ewt-predictions.tsv \
-  --lexicon inflector-core/src/main/resources/io/github/morphex/inflector/lexicon-v1.tsv \
-  --out-dir results/external
+## Limitations
 
-# learning
-py -3 -m tools.research.cli learn --split test --out results/learning
-```
+* P2 remains dictionary-lemma generalization, not application-call accuracy.
+* 103 P2 fallback records are unsupported and returned unchanged.
+* External selected accuracy is only 0.09 pp ahead of evo2; the seen subset is lower.
+* Distinct-word latency remains slower than stock; retained heap is higher than a small
+  built-in table but lower than the earlier packed map.
+* The default unknown-uppercase inference is a policy change; `UppercasePolicy.LITERAL`
+  restores literal rendering.
+* No human adjudication was performed.
 
 ## Bottom line
 
-A correct, compact, dependency-free pluralizer ships with a reproducible data pipeline and
-measured evidence: 99.997% on frozen-lexicon coverage versus 96.502% for stock 2.0, and
-88.618% honest unseen-family accuracy. The neural selector investigation is reproducible and
-negative within its budget; the deterministic library is the deliverable, not a fallback.
-
-The external UD EWT check qualifies the headline: 94.55% overall and only 77.09% on lemmas
-present in the artifact, because countability is over-classified as `MASS`/`PLURAL_ONLY`.
-That is a data defect with a concrete fix, not a morphology limit; it is the first thing to
-correct before treating the library as production-ready.
+The deterministic library preserves P1 at 100% and improves P2 from 88.714% to **97.376%**
+(951 errors), clearing the 1,278-error parity target by 327 errors and beating evo2 by
+0.902 pp with a CI excluding zero. The corrected learning experiment shows additional offline headroom but
+does not justify a runtime model. The main remaining gaps are unsupported fallback shapes,
+head-final compounds with non-productive heads, and a small external-validation deficit on
+seen lemmas.

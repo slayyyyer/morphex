@@ -9,8 +9,14 @@ from __future__ import annotations
 import math
 import random
 import zlib
+import struct
+from pathlib import Path
 
-from .candidates import EDIT_INDEX, candidates
+from .candidates import EDIT_INDEX, Candidate, base_edit_id, candidates
+
+
+MODEL_MAGIC = b"MORPHEX-LINEAR1\x00"
+MODEL_VERSION = 1
 
 
 def bucket(key: str, dims: int) -> int:
@@ -26,17 +32,31 @@ class LinearRanker:
         self.l2 = l2
         self.weights = [0.0] * dims
 
-    def features(self, lemma: str, edit_id: str) -> list[int]:
+    def features(self, lemma: str, candidate: Candidate, base: str = "", source: str = "") -> list[int]:
         low = lemma.lower()
-        out = [bucket(f"e:{edit_id}", self.dims)]
+        edit_id = candidate.edit_id
+        out = [
+            bucket(f"e:{edit_id}", self.dims),
+            bucket(f"origin:{candidate.origin}", self.dims),
+            bucket(f"base:{base_edit_id(lemma, base)}", self.dims),
+            bucket(f"source:{source}", self.dims),
+            bucket(f"edit:{edit_id}:cut{candidate.cut}:app{candidate.append}", self.dims),
+        ]
         for size in (1, 2, 3):
             if len(low) >= size:
                 out.append(bucket(f"s{size}:{low[-size:]}|e:{edit_id}", self.dims))
         out.append(bucket(f"len:{min(len(low) // 3, 5)}|e:{edit_id}", self.dims))
+        if "-" in low or " " in low:
+            separator = "-" if "-" in low else " "
+            parts = low.split(separator)
+            out.append(bucket(f"sep:{separator}:{len(parts)}|e:{edit_id}", self.dims))
+            out.append(bucket(f"head:{parts[-1][-4:]}|e:{edit_id}", self.dims))
+        if any(ch.isupper() for ch in lemma):
+            out.append(bucket(f"upper:{edit_id}", self.dims))
         return out
 
-    def score(self, lemma: str, edit_id: str) -> float:
-        return sum(self.weights[index] for index in self.features(lemma, edit_id))
+    def score(self, lemma: str, candidate: Candidate, base: str = "", source: str = "") -> float:
+        return sum(self.weights[index] for index in self.features(lemma, candidate, base, source))
 
     def train(self, records: list[dict], epochs: int, seed: int) -> None:
         rng = random.Random(seed)
@@ -45,34 +65,47 @@ class LinearRanker:
             rng.shuffle(order)
             for record in order:
                 pairs = candidates(record["lemma"], record["base"])
-                scores = [self.score(record["lemma"], edit_id) for edit_id, _ in pairs]
-                positives = [index for index, (_, form) in enumerate(pairs)
-                             if form in record["accepted_set"]]
+                scores = [self.score(record["lemma"], candidate, record["base"], record.get("source", ""))
+                          for candidate in pairs]
+                positives = [index for index, candidate in enumerate(pairs)
+                             if candidate.form in record["accepted_set"]]
                 if not positives:
                     continue
                 maximum = max(scores)
                 exponentials = [math.exp(value - maximum) for value in scores]
                 total = sum(exponentials)
-                for index, (edit_id, _) in enumerate(pairs):
+                for index, candidate in enumerate(pairs):
                     probability = exponentials[index] / total
                     target = 1.0 / len(positives) if index in positives else 0.0
                     gradient = probability - target
                     if abs(gradient) < 1e-7:
                         continue
-                    for feature in self.features(record["lemma"], edit_id):
+                    for feature in self.features(record["lemma"], candidate, record["base"],
+                                                 record.get("source", "")):
                         self.weights[feature] -= self.learning_rate * gradient
                         self.weights[feature] *= 1.0 - self.learning_rate * self.l2
 
-    def predict_all(self, lemma: str, base: str) -> list[tuple[str, str, float]]:
+    def predict_all(self, lemma: str, base: str, source: str = "") -> list[tuple[str, str, float]]:
         pairs = candidates(lemma, base)
-        scores = [self.score(lemma, edit_id) for edit_id, _ in pairs]
+        scores = [self.score(lemma, candidate, base, source) for candidate in pairs]
         maximum = max(scores)
         exponentials = [math.exp(value - maximum) for value in scores]
         total = sum(exponentials)
-        return [(edit_id, form, exponentials[index] / total) for index, (edit_id, form) in enumerate(pairs)]
+        return [(candidate.edit_id, candidate.form, exponentials[index] / total)
+                for index, candidate in enumerate(pairs)]
 
     def parameters(self) -> int:
         return len(self.weights)
+
+    def save(self, path: Path, threshold: float) -> Path:
+        """Write the compact scorer artifact consumed by the dependency-free Java scorer."""
+        target = Path(path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("wb") as handle:
+            handle.write(MODEL_MAGIC)
+            handle.write(struct.pack("<IIf", MODEL_VERSION, self.dims, threshold))
+            handle.write(struct.pack(f"<{self.dims}f", *self.weights))
+        return target
 
 
 class MlpRanker:
@@ -112,8 +145,8 @@ class MlpRanker:
     def scores(self, lemma: str, pairs: list[tuple[str, str]]) -> list[tuple[list[float], list[float], float]]:
         grams = self.grams(lemma)
         out = []
-        for edit_id, _ in pairs:
-            hidden, pre = self._hidden(grams, edit_id)
+        for candidate in pairs:
+            hidden, pre = self._hidden(grams, candidate.edit_id)
             score = self.b2 + sum(self.w2[j] * hidden[j] for j in range(self.width))
             out.append((hidden, pre, score))
         return out
@@ -129,8 +162,8 @@ class MlpRanker:
                 grams = self.grams(record["lemma"])
                 computed = self.scores(record["lemma"], pairs)
                 raw = [item[2] for item in computed]
-                positives = [index for index, (_, form) in enumerate(pairs)
-                             if form in record["accepted_set"]]
+                positives = [index for index, candidate in enumerate(pairs)
+                             if candidate.form in record["accepted_set"]]
                 if not positives:
                     continue
                 maximum = max(raw)
@@ -138,13 +171,13 @@ class MlpRanker:
                 total = sum(exponentials)
                 old_w2 = list(self.w2)
                 deltas = []
-                for index, (edit_id, _) in enumerate(pairs):
+                for index, candidate in enumerate(pairs):
                     probability = exponentials[index] / total
                     target = 1.0 / len(positives) if index in positives else 0.0
                     delta = probability - target
                     if abs(delta) < 1e-6:
                         continue
-                    deltas.append((index, edit_id, delta))
+                    deltas.append((index, candidate.edit_id, delta))
                 # Output-layer updates use the forward activations, then the hidden gradients use the
                 # pre-update weights: mixing the two orders makes the gradient inconsistent.
                 for index, _, delta in deltas:
@@ -164,14 +197,15 @@ class MlpRanker:
                         for gram in grams:
                             self.w1[gram][j] -= self.learning_rate * dpre
 
-    def predict_all(self, lemma: str, base: str) -> list[tuple[str, str, float]]:
+    def predict_all(self, lemma: str, base: str, source: str = "") -> list[tuple[str, str, float]]:
         pairs = candidates(lemma, base)
         computed = self.scores(lemma, pairs)
         raw = [item[2] for item in computed]
         maximum = max(raw)
         exponentials = [math.exp(value - maximum) for value in raw]
         total = sum(exponentials)
-        return [(edit_id, form, exponentials[index] / total) for index, (edit_id, form) in enumerate(pairs)]
+        return [(candidate.edit_id, candidate.form, exponentials[index] / total)
+                for index, candidate in enumerate(pairs)]
 
     def parameters(self) -> int:
         return self.dims * self.width + len(EDIT_INDEX) * self.width + self.width * 3 + 1

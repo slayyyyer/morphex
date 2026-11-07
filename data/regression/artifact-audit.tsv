@@ -1,0 +1,25 @@
+# artifact audit fixture v1
+# Compacted regular words, the two -sis compaction traps found by the full P1 rerun, and policy cases.
+# Executed offline by inflector-core; this is a fixture, not the full frozen benchmark.
+lemma	expected	category	reason
+cat	cats	compacted	regular word omitted by the compact artifact
+card	cards	compacted	regular word omitted by the compact artifact
+heterotrichosis	heterotrichosises	compacted	-sis word whose attested form is NOT the new backoff
+phalaenopsis	phalaenopsises	compacted	-sis word whose attested form is NOT the new backoff
+cassis	cassises	compacted	-sis word whose attested form is NOT the new backoff
+basis	bases	backoff	Greek -sis -> -ses
+analysis	analyses	backoff	Greek -sis -> -ses
+woman	women	backoff	-woman -> -women
+aircraftwoman	aircraftwomen	backoff	-woman -> -women
+credit-card	credit-cards	compound	head-final noun compound
+city-state	city-states	compound	head-final noun compound
+coffee-shop	coffee-shops	compound	head-final noun compound
+CREDIT-CARD	CREDIT-CARDS	compound	head-final compound preserves upper-case rendering
+mother-in-law	mothers-in-law	compound	existing free-tail pattern keeps precedence
+court-martial	courts-martial	compound	existing postposed pattern keeps precedence
+well-known	well-known	compound	non-noun head stays unsupported
+CAT	CATS	uppercase	ordinary-word membership beats initialism inference
+API	APIs	uppercase	initialism rendering
+ZQX	ZQXs	uppercase	inferred initialism
+sheep	sheep	countability	invariant noun
+information	information	countability	mass noun policy

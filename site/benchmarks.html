@@ -47,10 +47,10 @@
         <tr><td><strong>inflectorAnalyze</strong></td><td>avgt</td><td><strong>321.475</strong></td><td>ns/op</td><td>234.9 B/op</td></tr>
         <tr><td>inflectorRulesOnly</td><td>avgt</td><td>391.191</td><td>ns/op</td><td>77.0 B/op</td></tr>
       </table>
-      <div class="callout"><strong>Measured claim:</strong> faster than stock 2.0 on repeated lookup (0.83×),
-      1.34× slower on distinct-word lookup (down from 2.4× before the packed layout), lower
-      allocation everywhere, 54% smaller retained heap, substantially higher accuracy. No
-      distinct-word speedup is claimed.</div>
+      <div class="callout"><strong>Measured claim:</strong> the fresh short run is faster on repeated lookup
+      (77.8 vs 81.5 ns), 1.38× slower on distinct-word lookup (226.0 vs 163.6 ns), and still
+      substantially more accurate. The table above is the historical profiled run; allocation
+      and retained-heap figures are from that run. No distinct-word speedup is claimed.</div>
     </div>
     <div class="grid two">
       <div class="card">
@@ -58,8 +58,8 @@
         <table class="data">
           <tr><td>First call (load + first pluralize)</td><td>392–505 ms (median 426 ms)</td></tr>
           <tr><td>50,000 cold miss-heavy calls</td><td>60.7–61.8 ms</td></tr>
-          <tr><td>Lexicon entries</td><td>150,267 (7.71 MB TSV, 1.21 MB gzip)</td></tr>
-          <tr><td>Retained heap after load</td><td><strong>24.1 MB</strong> (was 55.5 MB)</td></tr>
+          <tr><td>Lexicon entries</td><td>147,193 (7.55 MB TSV, 1.18 MB gzip)</td></tr>
+          <tr><td>Retained heap after load</td><td><strong>~24–25 MB</strong> (was 55.5 MB)</td></tr>
         </table>
         <p class="small">Load is slower than the old map (426 vs 309 ms) — one-time column packing + index
         build, not per-lookup cost. No model or native memory: the learning experiment was rejected.</p>

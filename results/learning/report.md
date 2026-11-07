@@ -1,51 +1,39 @@
 # Learning experiment (test split)
 
-Generated 2026-11-07T06:28:59+00:00. Runtime: python research code only; no Java inference path.
+Generated 2026-11-07T15:53:56+00:00. Research code only; no runtime model is shipped.
+
+## Protocol
+
+* P2 family holdout; inner-fold OOF training; outer dev threshold selection; test scored once. Primary selector = COUNTABLE/MIXED, non-invariant.
+* primary records: 36239
+* training examples: 170695 out-of-fold records (156825 eligible rule/fallback records)
+* OOF manifest: `results\learning\oof\manifest.json`
 
 ## Candidate ceiling
 
-* records: 36505
-* deterministic C accuracy: 88.136% (4331 errors)
-* candidate-oracle accuracy: 99.173% (+11.037pp)
-* required gain: 2.373pp -> cleared
+* base accuracy: 97.238% (1001 errors)
+* candidate-oracle accuracy: 99.230% (+1.992pp)
+* required gain: 0.552pp -> cleared
 
-| edit | oracle hits |
-| --- | --- |
-| base:s | 29181 |
-| s | 2651 |
-| base:other | 1774 |
-| base:es | 1181 |
-| man->men | 293 |
-| is->es | 285 |
-| um->a | 236 |
-| lemma | 186 |
-| es | 115 |
-| us->i | 97 |
-| a->ae | 51 |
-| ies | 46 |
-| base:same | 38 |
-| ix->ices | 18 |
-| fe->ves | 18 |
-| ves | 14 |
-| child->ren | 8 |
-| mouse->ice | 6 |
-| person->people | 3 |
-| quiz->zzes | 2 |
+## Selectors (threshold chosen on dev; test scored once)
 
-## Selectors
-
-| selector | seed | params | dev threshold | test accuracy | errors | corrections | regressions | CI95 pp | invocation | overrides |
+| selector | seed | params | threshold | dev accuracy | dev overrides | test accuracy | test errors | corrections | regressions | 95% CI pp |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| linear | 0 | 4096 | 0.30 | 88.218% | 4301 | 48 | 18 | [+0.038, +0.128] | 100.0% | 0.3% |
-| mlp-seed0 | 0 | 12589 | 0.00 | 88.136% | 4331 | 0 | 0 | [+0.000, +0.000] | 100.0% | 0.0% |
-| mlp-seed1 | 1 | 12589 | 0.00 | 88.136% | 4331 | 0 | 0 | [+0.000, +0.000] | 100.0% | 0.0% |
-| mlp-seed2 | 2 | 12589 | 0.00 | 88.136% | 4331 | 0 | 0 | [+0.000, +0.000] | 100.0% | 0.0% |
+| keep_base | 0 | 0 | 1.00 | 97.165% | 0 | 97.238% | 1001 | 0 | 0 | [+0.0000, +0.0000] |
+| linear | 0 | 4096 | 0.90 | 97.702% | 545 | 97.790% | 801 | 310 | 110 | [+0.4282, +0.6769] |
+
+## Runtime gates
+
+* model bytes: 16412 (gate 32.0 KiB)
+* p99: 14.1 us (gate 10.0 us)
+* initialization: 14.709 ms (gate 10.0 ms)
+* overall: FAIL
 
 ## Decision
 
 **reject** - learned selector did not clear the frozen gates; deterministic library ships
 
-* gain 0.0822pp below required 2.3728pp
-* residual errors reduced by only 0.7% (need 20%)
-* runtime microsecond/size gates require a Java scorer and were not demonstrated
+* test gain 0.5519pp below required 0.5524pp
+* residual errors reduced by only 20.0% (need 20%)
+* runtime gates failed: p99=False, size=True, init=False
 

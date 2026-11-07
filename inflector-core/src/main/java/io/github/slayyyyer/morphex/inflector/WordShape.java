@@ -95,6 +95,32 @@ final class WordShape {
         return sawLetter;
     }
 
+    /**
+     * True when every letter is an upper-case Latin letter, there are at least two letters, and there is no
+     * lower-case letter, digit or symbol. Used only by the bounded unknown-initialism policy.
+     */
+    static boolean isAllUpperLatinToken(String token) {
+        int letters = 0;
+        for (int i = 0; i < token.length(); ) {
+            int cp = token.codePointAt(i);
+            if (!Character.isLetter(cp)) {
+                return false;
+            }
+            if (Character.UnicodeScript.of(cp) != Character.UnicodeScript.LATIN
+                    || !Character.isUpperCase(cp)) {
+                return false;
+            }
+            letters++;
+            i += Character.charCount(cp);
+        }
+        return letters >= 2;
+    }
+
+    /** Number of Unicode code points, used for the bounded initialism length window. */
+    static int codePointLength(String token) {
+        return token.codePointCount(0, token.length());
+    }
+
     static boolean endsSibilant(String lower) {
         int n = lower.length();
         if (n == 0) {

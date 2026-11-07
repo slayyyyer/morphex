@@ -33,3 +33,21 @@ jobs:
         run: |
           chmod +x mvnw
           ./mvnw -B verify
+
+  python:
+    name: Python research tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run candidate and compaction tests
+        run: |
+          python -m unittest tools.research.test_lexicon tools.research.test_learning tools.research.test_splits

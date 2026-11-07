@@ -4,10 +4,10 @@ Deterministic English noun pluralization for Java 17+, inspired by and built on 
 
 - No runtime dependencies, no network calls, no model downloads.
 - Immutable per-instance configuration; thread-safe by construction.
-- A 150,267-entry lexical artifact (7.7 MB TSV, 1.21 MB gzip) plus three productive rules, with explicit precedence and a documented fallback.
+- A 147,193-entry lexical artifact (7.5 MB TSV, 1.18 MB gzip) plus three productive rules, documented backoffs, and a bounded compound resolver.
 - A diagnostic API (`analyze`) that says *why* a form was chosen.
-- Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **100.000%** vs **96.473%** accepted-form accuracy, mostly from the added lexicon. On the leakage-free family-holdout protocol this library scores **88.714%** (see `docs/evaluation.md`).
-- A neural-selector investigation was run and **not adopted** based on measured gates; the shipped artifact contains no model and no training dependency (`docs/learning.md`).
+- Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **100.000%** vs **96.473%** accepted-form accuracy. On the leakage-free family-holdout protocol this library scores **97.376%** vs **96.473%** (see `docs/evaluation.md`).
+- A corrected out-of-fold selector investigation was run. Its dependency-free Java mirror reproduces the result exactly, but the selector misses the offline gain gate by 0.0005 pp and fails the strict-default p99/init gates; it is **not shipped** (`docs/learning.md`).
 
 Status: `1.0.0` on Maven Central: `io.github.slayyyyer.morphex:english-inflector-core:1.0.0`.
 
@@ -109,7 +109,7 @@ No trimming, case folding or rewriting of the caller's input happens beyond the 
 
 ### Productive rules
 
-Only three, and they are the only suffix rules in the engine:
+Three productive rules, plus documented backoffs for known weak suffix families:
 
 | id                     | condition                                       | change      |
 |------------------------|-------------------------------------------------|-------------|
@@ -119,11 +119,18 @@ Only three, and they are the only suffix rules in the engine:
 
 Everything else irregular is lexical. Adding a word to the lexicon cannot change an unrelated word that shares its suffix.
 
+| backoff | condition | change |
+| --- | --- | --- |
+| `backoff:woman->women` | ends `woman` | `woman -> women` |
+| `backoff:wife->wives` | ends `wife` | `wife -> wives` |
+| `backoff:man->men` | lower-case noun+`man`, length >= 6, not in the author-reviewed exception set | `man -> men` |
+| `backoff:greek-sis` | ends `sis`, length >= 5 | `sis -> ses` |
+
 ### Casing
 
 `CasePolicy.PRESERVE` (default) restores the input's shape: `CHILD -> CHILDREN`, `Child -> Children`, `iPhone -> iPhones`. `LOWERCASE` and `UPPERCASE` force the output shape.
 
-Initialisms are explicit metadata, never an uppercase guess. A lexical entry is flagged when its attested plural is exactly `lemma + s`/`lemma + es`; it then appends that suffix without whole-token re-casing (`UFO -> UFOs`, `SMS -> SMSes`, `ABC -> ABCs`). Declare your own with `builder().initialism("XYZ")`.
+Explicit metadata and caller configuration always win. A lexical entry is flagged when its attested plural is exactly `lemma + s`/`lemma + es` and then appends that suffix without whole-token re-casing (`UFO -> UFOs`, `SMS -> SMSes`). For an unknown 2-6 letter upper-case Latin token that is not in the membership table, the default `UppercasePolicy.INFER_INITIALISM` infers an initialism and appends lower-case `s` (`API -> APIs`). `builder().uppercasePolicy(UppercasePolicy.LITERAL)` restores literal rendering (`API -> APIS`); ordinary uppercase nouns and overrides are unaffected. Declare explicit initialisms with `builder().initialism("XYZ")`.
 
 ### Countability
 
@@ -144,8 +151,10 @@ Kept separate from singular→plural accuracy:
 Bounded and tested, not suffix-guessed:
 
 - exact entries: `passer-by`, `stand-in`, `drive-by`, `hanger-on`, `runner-up`, `close-up`, `go-between`, `jack-in-the-box`, `man-of-war`, `major general`;
-- recognized free tails: `-in-law`, `-in-chief`, `-of-war`, `-at-arms`, `-at-law`, `-of-arms`;
+- recognized free tails: `-in-law`, `-in-arms`, `-in-aid`, `-in-kind`, `-in-chief`, `-of-war`, `-of-arms`, `-of-spring`, `-of-all-trades`, `-out-law`, `-at-arms`, `-at-law`, `-in-crime`;
 - postposed modifiers only after curated heads: `attorney general`, `court-martial`, `heir apparent`, `governor-elect`;
+- guarded head-final nouns, including multi-hyphen chains and productive head respellings: `credit-card -> credit-cards`, `great-great-grandfather -> great-great-grandfathers`, `ice-shelf -> ice-shelves`, `on-ramp -> on-ramps`;
+- verb-particle nouns: `bake-off -> bake-offs`, `blow-in -> blow-ins`, `warm-up -> warm-ups`;
 - space-separated compounds inflect the final token, unless the input contains a preposition (`jack in the box` is returned unchanged rather than guessed).
 
 The head inherits irregular forms: `child-in-law -> children-in-law`, `man-of-war -> men-of-war`.
@@ -181,10 +190,11 @@ The lexical artifact is generated offline from a pinned Kaikki/Wiktionary dump (
 
 Headline numbers (JDK 21, recorded runs):
 
-- P1 frozen lexicon: **100.000%** accepted-form accuracy (0/36,239 errors) vs evo-inflector 2.0 at **96.473%**; paired +4.16 pp, 95% CI `[+3.96, +4.37]`. Most of the gain comes from the bundled lexicon, so this measures dictionary coverage more than a fundamental difference in approach.
-- P2 family holdout: **88.714%** for both rules and train-only lexicon (no leakage possible), which is the honest unseen-family number.
-- External check (UD English EWT, CC BY-SA 4.0; 2,184 lemmas, no retraining): **98.76%** overall, **96.81%** on lemmas present in the shipped lexicon, **99.17%** on unseen lemmas — ahead of evo-inflector 2.0's 98.12% overall. The earlier countability defect (`book`/`bag`/`account` returned unchanged) is fixed; remaining errors are mostly EWT annotation noise plus disputed subordinate uses — see `docs/evaluation.md` and `results/external/ewt-report.md`.
-- JMH: 82 ns/op repeated (vs 98 ns evo-inflector), 201 ns/op distinct-word (vs 151 ns; 1.34× slower), 29-51 B/op allocated. The packed lexicon retains 24.1 MB after load. Concurrent throughput was not captured in the final run.
+- P1 frozen lexicon: **100.000%** accepted-form accuracy (0/36,239 errors) vs evo-inflector 2.0 at **96.473%**; paired +3.5266 pp, 95% CI `[+3.3323, +3.7159]`. Most of the gain comes from the bundled lexicon, so this measures dictionary coverage more than a fundamental difference in approach.
+- P2 family holdout: **97.376%** (951/36,239 errors) vs evo-inflector 2.0 at **96.473%**; paired gain +0.9023 pp, 95% CI `[+0.7309, +1.0718]`, 540 corrections and 213 regressions.
+- Strict-family sensitivity check (`split-v2`, supplementary): P2 test **97.238%** (1,036/37,507) vs **96.379%** (1,358/37,507); external family-unseen **98.82%** (501/507) vs **98.22%** (498/507). The stemmer is approximate and the changed denominators make this non-comparable to the default `split-v1` row above.
+- External check (UD English EWT, CC BY-SA 4.0; 2,184 lemmas, no retraining): **98.21% selected-output accuracy** overall, **93.48%** on lemmas present in the shipped lexicon, **99.17%** on unseen lemmas, with **98.76% alternative-set coverage**; evo-inflector 2.0 selects 98.12% overall. Remaining errors are mostly EWT annotation noise plus disputed subordinate uses — see `docs/evaluation.md` and `results/external-v2/ewt-report.md`.
+- JMH fresh short run: 77.8 ns/op repeated (vs 81.5 evo-inflector), 226.0 ns/op distinct-word (vs 163.6; 1.38× slower); the older full run's allocation and retained-heap figures remain historical. Concurrent throughput was not captured.
 
 ## Reproduce
 

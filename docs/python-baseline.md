@@ -29,7 +29,11 @@ mode, matching this library's anglicized default.
 | this library (rules + lexicon) | **100.000%** | **0** | **100.000%** | **0** |
 | evo-inflector 2.0 | 96.473% | 1,278 | 68.882% | 15,851 |
 | **PyPI `inflect` 7.6.0** | **94.169%** | **2,113** | **67.152%** | **16,732** |
-| repaired rules only | 88.714% | 4,090 | 64.259% | 18,206 |
+| repaired rules only (historical run) | 88.714% | 4,090 | 64.259% | 18,206 |
+
+The rules-only row is from the historical companion run, before the final backoff and
+compound changes; the current rules-only P1 result is 95.168% (1,751 errors). The `inflect`
+comparison itself is unchanged because its predictions were not retuned.
 
 Paired vs evo2: **−2.2846 pp** `[-2.4513, -2.1104]`, 103 corrections, 937 regressions —
 `inflect` sits between the rules-only floor and evo2 on this noun dictionary.

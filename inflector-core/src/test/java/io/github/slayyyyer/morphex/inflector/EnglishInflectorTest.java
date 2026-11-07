@@ -43,6 +43,8 @@ class EnglishInflectorTest {
             "CHILD,CHILDREN",
             "CITY,CITIES",
             "MOUSE,MICE",
+            "CAT,CATS",
+            "API,APIs",
             "Child,Children",
             "City,Cities",
             "child,children",
@@ -62,6 +64,19 @@ class EnglishInflectorTest {
             "day,days",
             "key,keys",
             "soliloquy,soliloquies",
+            "analysis,analyses",
+            "basis,bases",
+            "crisis,crises",
+            "woman,women",
+            "aircraftwoman,aircraftwomen",
+            "anchorman,anchormen",
+            "apeman,apemen",
+            "workman,workmen",
+            "human,humans",
+            "German,Germans",
+            "Cartman,Cartmans",
+            "wife,wives",
+            "ale-wife,ale-wives",
             "café,cafés",
             "naïve,naïves",
             // Lexical exceptions must not leak into unrelated words sharing a suffix.
@@ -100,6 +115,30 @@ class EnglishInflectorTest {
             "secretary-general,secretaries-general",
             "child-in-law,children-in-law",
             "zork-in-law,zorks-in-law",
+            "credit-card,credit-cards",
+            "city-state,city-states",
+            "coffee-shop,coffee-shops",
+            "Credit-Card,Credit-Cards",
+            "CREDIT-CARD,CREDIT-CARDS",
+            "X-ray,X-rays",
+            "bake-off,bake-offs",
+            "blow-in,blow-ins",
+            "warm-up,warm-ups",
+            "arc-over,arc-overs",
+            "barrow-way,barrow-ways",
+            "non-academic,non-academics",
+            "non-WASP,non-WASPs",
+            "great-great-grandfather,great-great-grandfathers",
+            "great-great-grandchild,great-great-grandchildren",
+            "great-grandfather-in-law,great-grandfathers-in-law",
+            "partner-in-crime,partners-in-crime",
+            "on-ramp,on-ramps",
+            "ice-shelf,ice-shelves",
+            "non-life,non-lives",
+            "G-PON,G-PONs",
+            "LV-ROM,LV-ROMs",
+            "harbinger-of-spring,harbingers-of-spring",
+            "grant-in-aid,grants-in-aid",
             "major general,major generals",
             "ice cream,ice creams",
             "high school,high schools"
@@ -250,7 +289,35 @@ class EnglishInflectorTest {
         assertEquals("scarps", rules.pluralize("scarp"));
         assertEquals("blouses", rules.pluralize("blouse"));
         assertEquals("cities", rules.pluralize("city"));
+        assertEquals("analyses", rules.pluralize("analysis"));
+        assertEquals("women", rules.pluralize("woman"));
+        assertEquals("CATS", rules.pluralize("CAT"), "no lexicon means no ordinary-word membership: literal casing");
+        assertEquals("APIS", rules.pluralize("API"), "initialism inference needs lexical membership");
         assertEquals("quizes", rules.pluralize("quiz"), "rules-only loses lexical quirk by design");
+    }
+
+    @Test
+    void unknownUppercaseUsesLexicalMembershipBeforeInference() {
+        assertEquals("CATS", inflector.pluralize("CAT"), "ordinary-word membership beats inference");
+        assertEquals("GERMANS", inflector.pluralize("GERMAN"), "case-sensitive entry does not match another casing");
+        assertEquals("ZQXs", inflector.pluralize("ZQX"));
+        assertEquals(DecisionSource.INFERRED, inflector.analyze("ZQX").source());
+
+        EnglishInflector literal = EnglishInflector.builder()
+                .uppercasePolicy(UppercasePolicy.LITERAL)
+                .build();
+        assertEquals("ZQKES", literal.pluralize("ZQKE"), "LITERAL preserves the ordinary upper-case spelling path");
+    }
+
+    @Test
+    void headFinalCompoundsAreDiagnosedAndBounded() {
+        Inflection compound = inflector.analyze("credit-card");
+        assertEquals("credit-cards", compound.plural());
+        assertEquals(DecisionSource.COMPOUND, compound.source());
+        assertEquals("compound:hyphen:head-final", compound.id());
+        assertEquals("mothers-in-law", inflector.pluralize("mother-in-law"), "documented patterns keep precedence");
+        assertEquals("courts-martial", inflector.pluralize("court-martial"), "postposed pattern keeps precedence");
+        assertSame("well-known", inflector.pluralize("well-known"), "non-noun head stays unsupported");
     }
 
     @Test
@@ -313,6 +380,7 @@ class EnglishInflectorTest {
     void builderRejectsNullConfiguration() {
         assertThrows(NullPointerException.class, () -> EnglishInflector.builder().mode(null));
         assertThrows(NullPointerException.class, () -> EnglishInflector.builder().casePolicy(null));
+        assertThrows(NullPointerException.class, () -> EnglishInflector.builder().uppercasePolicy(null));
         assertThrows(NullPointerException.class, () -> EnglishInflector.builder().overrides(null));
         assertThrows(NullPointerException.class, () -> EnglishInflector.builder().initialism(null));
     }

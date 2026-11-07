@@ -9,8 +9,11 @@ from __future__ import annotations
 
 import json
 import random
+import subprocess
 from collections import defaultdict
 from datetime import datetime, timezone
+from hashlib import sha256
+from pathlib import Path
 
 from . import dataset
 
@@ -18,11 +21,18 @@ POLICY_BUCKETS = {"MASS", "PLURAL_ONLY"}
 PRIMARY_COUNTABILITY = {"COUNTABLE", "MIXED"}
 
 
+def is_primary(record: dict) -> bool:
+    """The one primary selector used by every headline, comparison, and learning gate."""
+    return record["countability"] in PRIMARY_COUNTABILITY and not record["invariant"]
+
+
 def load_gold(path) -> dict[str, dict]:
     rows = dataset.read_tsv(path)
     gold: dict[str, dict] = {}
     for row in rows:
         accepted = tuple(form for form in row["accepted"].split(",") if form)
+        if row["id"] in gold:
+            raise ValueError(f"duplicate gold id {row['id']!r} in {path}")
         gold[row["id"]] = {
             "id": row["id"],
             "lemma": row["lemma"],
@@ -36,12 +46,19 @@ def load_gold(path) -> dict[str, dict]:
     return gold
 
 
-def load_predictions(paths: list) -> dict[str, dict[str, str]]:
+def load_predictions(paths: list) -> tuple[dict[str, dict[str, str]], dict[str, dict[str, str]]]:
+    """Returns (predictions, decision sources) keyed by system then record id."""
     predictions: dict[str, dict[str, str]] = defaultdict(dict)
+    sources: dict[str, dict[str, str]] = defaultdict(dict)
     for path in paths:
         for row in dataset.read_tsv(path):
-            predictions[row["system"]][row["id"]] = row["prediction"]
-    return dict(predictions)
+            system = row["system"]
+            record_id = row["id"]
+            if record_id in predictions[system]:
+                raise ValueError(f"duplicate prediction {system}/{record_id!r} in {path}")
+            predictions[system][record_id] = row["prediction"]
+            sources[system][record_id] = row["source"]
+    return dict(predictions), dict(sources)
 
 
 def _slice_stats(gold: dict[str, dict], preds: dict[str, str], selector) -> dict:
@@ -57,7 +74,8 @@ def _slice_stats(gold: dict[str, dict], preds: dict[str, str], selector) -> dict
             "accuracy": (correct / total) if total else None}
 
 
-def score_system(gold: dict[str, dict], preds: dict[str, str]) -> dict:
+def score_system(gold: dict[str, dict], preds: dict[str, str],
+                 sources: dict[str, str] | None = None) -> dict:
     def by(field: str) -> dict:
         result: dict[str, dict] = {}
         values = sorted({record[field] for record in gold.values()})
@@ -65,10 +83,17 @@ def score_system(gold: dict[str, dict], preds: dict[str, str]) -> dict:
             result[value] = _slice_stats(gold, preds, lambda record, value=value: record[field] == value)
         return result
 
-    primary = _slice_stats(
-        gold, preds,
-        lambda record: record["countability"] in PRIMARY_COUNTABILITY and not record["invariant"],
-    )
+    primary = _slice_stats(gold, preds, is_primary)
+    primary_by_bucket: dict[str, dict] = {}
+    for bucket in sorted({record["bucket"] for record in gold.values() if is_primary(record)}):
+        primary_by_bucket[bucket] = _slice_stats(
+            gold, preds, lambda record, bucket=bucket: is_primary(record) and record["bucket"] == bucket)
+    primary_by_source: dict[str, dict] = {}
+    if sources:
+        for source in sorted({sources.get(record_id, "") for record_id in gold if is_primary(gold[record_id])}):
+            primary_by_source[source] = _slice_stats(
+                gold, preds,
+                lambda record, source=source: is_primary(record) and sources.get(record["id"], "") == source)
     plain_non_invariant = _slice_stats(
         gold, preds,
         lambda record: record["bucket"] == "simple"
@@ -77,7 +102,7 @@ def score_system(gold: dict[str, dict], preds: dict[str, str]) -> dict:
     )
     lengths = {"short": [0, 0], "medium": [0, 0], "long": [0, 0]}
     for record_id, record in gold.items():
-        if record["countability"] not in PRIMARY_COUNTABILITY or record["invariant"]:
+        if not is_primary(record):
             continue
         size = len(record["lemma"])
         key = "short" if size <= 5 else "medium" if size <= 9 else "long"
@@ -88,6 +113,8 @@ def score_system(gold: dict[str, dict], preds: dict[str, str]) -> dict:
     return {
         "overall": _slice_stats(gold, preds, lambda record: True),
         "primary": primary,
+        "primary_by_bucket": primary_by_bucket,
+        "primary_by_source": primary_by_source,
         "primary_plain_non_invariant": plain_non_invariant,
         "by_bucket": by("bucket"),
         "by_countability": by("countability"),
@@ -106,7 +133,7 @@ def compare(gold: dict[str, dict], baseline: dict[str, str], candidate: dict[str
     regressions = 0
     family_delta: dict[str, list[int]] = defaultdict(lambda: [0, 0])
     for record_id, record in gold.items():
-        if record["countability"] not in PRIMARY_COUNTABILITY:
+        if not is_primary(record):
             continue
         base_correct = baseline.get(record_id) in record["accepted_set"]
         cand_correct = candidate.get(record_id) in record["accepted_set"]
@@ -134,13 +161,21 @@ def compare(gold: dict[str, dict], baseline: dict[str, str], candidate: dict[str
     deltas.sort()
     low = deltas[int(0.025 * (len(deltas) - 1))]
     high = deltas[int(0.975 * (len(deltas) - 1))]
+    baseline_errors = sum(1 for record_id, record in gold.items()
+                          if is_primary(record) and baseline.get(record_id) not in record["accepted_set"])
+    candidate_errors = sum(1 for record_id, record in gold.items()
+                           if is_primary(record) and candidate.get(record_id) not in record["accepted_set"])
+    net = corrections - regressions
     return {
         "corrections": corrections,
         "regressions": regressions,
+        "net_corrections": net,
+        "baseline_errors": baseline_errors,
+        "candidate_errors": candidate_errors,
         "delta_accuracy_pp": observed * 100,
         "ci95_pp": [low * 100, high * 100],
-        "relative_error_reduction": (corrections - regressions) / max(1, corrections + regressions)
-        if (corrections + regressions) else 0.0,
+        "relative_error_reduction": (baseline_errors - candidate_errors) / baseline_errors
+        if baseline_errors else 0.0,
         "iterations": iterations,
         "families": len(families),
     }
@@ -161,14 +196,17 @@ def render_markdown(report: dict) -> str:
     lines.append("")
     lines.append("## Paired comparisons (primary slice, family-clustered bootstrap)")
     lines.append("")
-    lines.append("| baseline | candidate | delta pp | 95% CI | corrections | regressions |")
-    lines.append("| --- | --- | --- | --- | --- | --- |")
+    lines.append("| baseline | candidate | delta pp | 95% CI | corrections | regressions | "
+                 "baseline errors | candidate errors | relative error reduction |")
+    lines.append("| --- | --- | --- | --- | --- | --- | --- | --- | --- |")
     for comparison in report["comparisons"]:
         ci = comparison["ci95_pp"]
         lines.append(
             f"| {comparison['baseline']} | {comparison['candidate']} | "
             f"{comparison['delta_accuracy_pp']:+.4f} | [{ci[0]:+.4f}, {ci[1]:+.4f}] | "
-            f"{comparison['corrections']} | {comparison['regressions']} |")
+            f"{comparison['corrections']} | {comparison['regressions']} | "
+            f"{comparison['baseline_errors']} | {comparison['candidate_errors']} | "
+            f"{comparison['relative_error_reduction'] * 100:+.3f}% |")
     lines.append("")
     lines.append("## Slice detail")
     lines.append("")
@@ -185,11 +223,29 @@ def render_markdown(report: dict) -> str:
     return "\n".join(lines)
 
 
+def _git_revision() -> str | None:
+    try:
+        result = subprocess.run(["git", "rev-parse", "HEAD"], cwd=dataset.ROOT,
+                                capture_output=True, text=True, check=True)
+        return result.stdout.strip() or None
+    except (OSError, subprocess.CalledProcessError):
+        return None
+
+
 def run(gold_path, prediction_paths: list, baseline: str, out_path, lexicon_split: str,
         split_name: str, iterations: int = 2000) -> dict:
     gold = load_gold(gold_path)
-    predictions = load_predictions(prediction_paths)
-    systems = {name: score_system(gold, preds) for name, preds in sorted(predictions.items())}
+    predictions, sources = load_predictions(prediction_paths)
+    gold_ids = set(gold)
+    for name, preds in predictions.items():
+        missing = sorted(gold_ids - set(preds))
+        extra = sorted(set(preds) - gold_ids)
+        if missing or extra:
+            raise ValueError(
+                f"prediction ids do not match gold for {name}: missing={len(missing)} "
+                f"(first {missing[:3]}), extra={len(extra)} (first {extra[:3]})")
+    systems = {name: score_system(gold, preds, sources[name])
+               for name, preds in sorted(predictions.items())}
     comparisons = []
     if baseline in predictions:
         for name, preds in sorted(predictions.items()):
@@ -200,9 +256,20 @@ def run(gold_path, prediction_paths: list, baseline: str, out_path, lexicon_spli
             comparisons.append(comparison)
     report = {
         "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "protocol_version": "eval-v2",
         "split": split_name,
         "lexicon_split": lexicon_split,
         "records": len(gold),
+        "denominators": {
+            "overall": len(gold),
+            "primary": sum(1 for record in gold.values() if is_primary(record)),
+        },
+        "gold_sha256": sha256(Path(gold_path).read_bytes()).hexdigest(),
+        "prediction_sha256": {Path(path).name: sha256(Path(path).read_bytes()).hexdigest()
+                              for path in prediction_paths},
+        "config": {"baseline": baseline, "iterations": iterations, "seed": 20261107,
+                   "primary_selector": "countability in {COUNTABLE,MIXED} and not invariant"},
+        "revision": _git_revision(),
         "systems": systems,
         "comparisons": comparisons,
     }

@@ -45,9 +45,15 @@ final class Lexicon {
     static final Lexicon EMPTY = new Lexicon(new Data());
 
     private final Data data;
+    private final Membership membership;
 
     private Lexicon(Data data) {
+        this(data, Membership.EMPTY);
+    }
+
+    private Lexicon(Data data, Membership membership) {
         this.data = data;
+        this.membership = membership;
     }
 
     /** Returns the entry index for a lower-cased lemma, or {@code -1}. */
@@ -70,6 +76,15 @@ final class Lexicon {
 
     int size() {
         return data.size;
+    }
+
+    /** True when the lower-cased lemma is in the permitted corpus membership table. */
+    boolean isOrdinaryWord(String lower) {
+        return membership.contains(lower);
+    }
+
+    boolean hasMembership() {
+        return !membership.isEmpty();
     }
 
     boolean matchesCase(int index, String token) {
@@ -193,13 +208,18 @@ final class Lexicon {
      * leakage-safe train-only lexicon). Not part of the supported application API; see README.
      */
     private static final String LEXICON_PROPERTY = "english.inflector.lexicon";
+    private static final String MEMBERSHIP_RESOURCE = "lexicon-membership-v1.bin";
 
     private static Lexicon loadBundled() {
         String external = System.getProperty(LEXICON_PROPERTY);
         if (external != null && !external.isEmpty()) {
             try (Reader reader = new BufferedReader(java.nio.file.Files.newBufferedReader(
                     java.nio.file.Path.of(external), StandardCharsets.UTF_8))) {
-                return load(reader);
+                java.nio.file.Path sibling = java.nio.file.Path.of(external).resolveSibling(MEMBERSHIP_RESOURCE);
+                Membership membership = java.nio.file.Files.exists(sibling)
+                        ? loadMembership(java.nio.file.Files.newInputStream(sibling))
+                        : Membership.EMPTY;
+                return load(reader, membership);
             } catch (IOException e) {
                 throw new IllegalStateException("could not read lexicon from " + external, e);
             }
@@ -211,7 +231,11 @@ final class Lexicon {
                             + "build without it via EnglishInflector.builder().withoutBundledLexicon()");
         }
         try (Reader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-            return load(reader);
+            InputStream membershipStream = Lexicon.class.getResourceAsStream(MEMBERSHIP_RESOURCE);
+            Membership membership = membershipStream == null
+                    ? Membership.EMPTY
+                    : loadMembership(membershipStream);
+            return load(reader, membership);
         } catch (IOException e) {
             throw new IllegalStateException("could not read bundled lexicon", e);
         }
@@ -219,6 +243,10 @@ final class Lexicon {
 
     /** Loads an artifact from any reader. Package-private: consumers use the bundled resource. */
     static Lexicon load(Reader source) throws IOException {
+        return load(source, Membership.EMPTY);
+    }
+
+    static Lexicon load(Reader source, Membership membership) throws IOException {
         Objects.requireNonNull(source, "source");
         BufferedReader reader = source instanceof BufferedReader br ? br : new BufferedReader(source);
         List<Raw> raws = new ArrayList<>(1 << 17);
@@ -282,7 +310,13 @@ final class Lexicon {
             }
             raws.add(raw);
         }
-        return new Lexicon(pack(raws));
+        return new Lexicon(pack(raws), membership);
+    }
+
+    private static Membership loadMembership(InputStream source) throws IOException {
+        try (InputStream in = source) {
+            return Membership.load(in);
+        }
     }
 
     private static Data pack(List<Raw> raws) {

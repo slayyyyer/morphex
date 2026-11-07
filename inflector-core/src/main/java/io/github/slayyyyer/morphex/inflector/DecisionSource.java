@@ -6,6 +6,8 @@ public enum DecisionSource {
     OVERRIDE,
     /** Exact lexical entry, including countability-only entries. */
     LEXICON,
+    /** Bounded spelling policy for an unknown all-upper-case token (not a lexical initialism). */
+    INFERRED,
     /** Supported compound transformation (exact compound entry or a documented compound pattern). */
     COMPOUND,
     /** Productive spelling rule. */

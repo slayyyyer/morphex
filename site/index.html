@@ -87,11 +87,11 @@ r.source();          // LEXICON — "lex:die"</pre>
   <p class="sub">JMH 1.37 on JDK 21, 2 forks, GC profiler.</p>
   <div class="stats">
     <div class="stat"><b>100%</b><span>P1 frozen-lexicon accuracy (0/36,239 errors) vs 96.473% stock</span></div>
-    <div class="stat"><b>88.714%</b><span>P2 unseen-family accuracy, the honest generalization number</span></div>
+    <div class="stat"><b>97.376%</b><span>P2 unseen-family accuracy (951/36,239 errors) vs 96.473% stock</span></div>
     <div class="stat"><b>82 ns</b><span>repeated lookup vs 98 ns stock (0.83×, faster)</span></div>
-    <div class="stat"><b>201 ns</b><span>distinct-word lookup vs 151 ns stock (1.34× slower)</span></div>
+    <div class="stat"><b>226 ns</b><span>distinct-word lookup vs 164 ns stock (1.38× slower)</span></div>
   </div>
-  <p class="note">29–51 B/op allocated vs 113–151 B/op stock. Packed lexicon retains ~25 MB. External UD English EWT check: 98.76% overall (ahead of evo2's 98.12%), 96.81% on seen lemmas, 99.17% unseen. <a href="./comparison.html">Comparisons →</a></p>
+  <p class="note">Packed lexicon retains ~25 MB. External UD English EWT selected-output check: 98.21% overall (evo2 98.12%), 93.48% on seen lemmas, 99.17% unseen; alternative coverage 98.76%. <a href="./comparison.html">Comparisons →</a></p>
 </section>
 
 <section>
@@ -101,7 +101,7 @@ r.source();          // LEXICON — "lex:die"</pre>
     <li><div><b>Caller override</b><span>Exact, case-sensitive whole-input match wins.</span></div></li>
     <li><div><b>Exact lexical entry</b><span>150k-entry TSV, case-insensitive lookup with case-sensitive entries where needed.</span></div></li>
     <li><div><b>Supported compound</b><span>Bounded table: exact entries, free tails, curated postposed heads. Unmatched input is left alone.</span></div></li>
-    <li><div><b>Productive spelling rule</b><span>Only three: <code>+es</code> after sibilants, consonant-<code>y → ies</code>, default <code>+s</code>.</span></div></li>
+    <li><div><b>Productive spelling rules</b><span>Three: <code>+es</code> after sibilants, consonant-<code>y → ies</code>, default <code>+s</code>, plus bounded backoffs.</span></div></li>
     <li><div><b>Documented fallback</b><span>Unsupported shapes are returned unchanged and identified by <code>analyze</code>.</span></div></li>
   </ol>
   <p class="note"><a href="./design.html">Read the design report →</a></p>
@@ -114,7 +114,7 @@ r.source();          // LEXICON — "lex:die"</pre>
     <a class="card" href="./comparison.html"><h3>Comparisons</h3><p>Against evo-inflector 2.0: accuracy, latency, behaviour differences and migration notes.</p></a>
     <a class="card" href="./benchmarks.html"><h3>Benchmarks</h3><p>JMH methodology, raw numbers, allocation, startup and retained footprint.</p></a>
     <a class="card" href="./design.html"><h3>Architecture</h3><p>Precedence, packed lexicon layout, casing, compounds, countability, tradeoffs.</p></a>
-    <a class="card" href="https://github.com/slayyyyer/morphex/blob/main/docs/evaluation.md"><h3>Evaluation ↗</h3><p>P1/P2 definitions, residual errors, external validation, and the rejected neural selector.</p></a>
+    <a class="card" href="https://github.com/slayyyyer/morphex/blob/main/docs/evaluation.md"><h3>Evaluation ↗</h3><p>P1/P2 definitions, corrected OOF learning, external validation, and the rejected runtime model.</p></a>
   </div>
 </section>
 

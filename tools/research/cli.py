@@ -49,8 +49,8 @@ def cmd_extract(args: argparse.Namespace) -> int:
 
 
 def cmd_splits(args: argparse.Namespace) -> int:
-    manifest = splits.run()
-    print(f"splits: {manifest['split']}")
+    manifest = splits.run(mode=args.mode)
+    print(f"splits: {manifest['strict_split'] if args.mode == 'strict' else manifest['split']}")
     return 0
 
 
@@ -59,7 +59,8 @@ def cmd_artifact(args: argparse.Namespace) -> int:
     if args.out:
         from pathlib import Path
         out = Path(args.out)
-    manifest = lexicon.run(split_filter=args.split, target=out, selection=args.selection)
+    manifest = lexicon.run(split_filter=args.split, target=out, selection=args.selection,
+                            splits_path=args.splits)
     print(f"artifact: {manifest['artifact']}")
     return 0
 
@@ -69,7 +70,7 @@ def cmd_records(args: argparse.Namespace) -> int:
 
     if not dataset.SPLITS.exists():
         raise SystemExit("splits missing: run `splits` first")
-    assignments = splits.load()
+    assignments = splits.load(args.splits)
     normalized = dataset.read_tsv(dataset.NORMALIZED)
     records_rows: list[list[str]] = []
     gold_rows: list[list[str]] = []
@@ -132,6 +133,13 @@ def cmd_evaluate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_oof(args: argparse.Namespace) -> int:
+    from . import oof
+    manifest = oof.run(folds=args.folds, out_dir=args.out)
+    print(f"out-of-fold predictions: {manifest['predictions']}")
+    return 0
+
+
 def cmd_learn(args: argparse.Namespace) -> int:
     from . import experiment
     experiment.run(args)
@@ -145,16 +153,19 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("fetch", help="download and verify the pinned Kaikki noun dump (network)")
     extract_parser = sub.add_parser("extract", help="normalize and validate the dump")
     extract_parser.add_argument("--limit", type=int, default=None)
-    sub.add_parser("splits", help="write family-aware splits")
+    splits_parser = sub.add_parser("splits", help="write family-aware splits")
+    splits_parser.add_argument("--mode", choices=["lexical", "strict"], default="lexical")
     artifact_parser = sub.add_parser("artifact", help="generate the runtime/jsonl lexicon artifact")
     artifact_parser.add_argument("--split", default="all", choices=["all", "train"])
     artifact_parser.add_argument("--selection", default="compact", choices=["compact", "full"])
     artifact_parser.add_argument("--out", default=None)
+    artifact_parser.add_argument("--splits", default=None)
     records_parser = sub.add_parser("records", help="write evaluation records and frozen gold labels")
     records_parser.add_argument("--split", default="test", choices=["train", "dev", "test"])
     records_parser.add_argument("--out", required=True)
     records_parser.add_argument("--gold", required=True)
     records_parser.add_argument("--lexicon-split", default="all", choices=["all", "train"])
+    records_parser.add_argument("--splits", default=None)
     evaluate_parser = sub.add_parser("evaluate", help="score prediction files against frozen gold")
     evaluate_parser.add_argument("--gold", required=True)
     evaluate_parser.add_argument("--predictions", nargs="+", required=True)
@@ -167,7 +178,21 @@ def build_parser() -> argparse.ArgumentParser:
     learn_parser.add_argument("--split", default="test", choices=["train", "dev", "test"])
     learn_parser.add_argument("--out", default="results/learning")
     learn_parser.add_argument("--iterations", type=int, default=2000)
+    learn_parser.add_argument("--oof", default="results/learning/oof/train-preds.tsv")
+    learn_parser.add_argument("--dev-preds", default="results/eval/p2-dev-preds-v4.tsv")
+    learn_parser.add_argument("--test-preds", default="results/eval/p2-test-preds-v4.tsv")
+    learn_parser.add_argument("--model-out", default="results/learning/linear-v1.bin",
+                              help="write the corrected linear selector artifact for the Java scorer")
+    learn_parser.add_argument("--selector-input", default="results/learning/java-test-input.tsv",
+                              help="write the Java selector's id/lemma/base/source evaluation input")
+    learn_parser.add_argument("--runtime", default="results/learning/java-gate.json",
+                              help="optional Java gate JSON to include in the learning report")
     learn_parser.add_argument("--fast", action="store_true", help="smaller training budget for smoke checks")
+    learn_parser.add_argument("--linear-only", action="store_true",
+                              help="train the corrected linear selector without the MLP screening runs")
+    oof_parser = sub.add_parser("oof", help="generate inner-fold out-of-fold training predictions")
+    oof_parser.add_argument("--folds", type=int, default=5)
+    oof_parser.add_argument("--out", default="results/learning/oof")
     return parser
 
 
@@ -181,6 +206,7 @@ def main(argv: list[str] | None = None) -> int:
         "artifact": cmd_artifact,
         "records": cmd_records,
         "evaluate": cmd_evaluate,
+        "oof": cmd_oof,
         "learn": cmd_learn,
     }
     return handlers[args.command](args)

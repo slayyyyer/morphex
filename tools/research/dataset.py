@@ -17,6 +17,7 @@ REGRESSION = DATA / "regression"
 RESULTS = ROOT / "results"
 
 CORE_RESOURCE = ROOT / "inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv"
+CORE_MEMBERSHIP = CORE_RESOURCE.parent / "lexicon-membership-v1.bin"
 
 DATASET_VERSION = "nouns-v1"
 EXTRACTION_VERSION = "extract-v2"
@@ -28,6 +29,7 @@ NORMALIZED = DERIVED / "nouns-v1.tsv.gz"
 QUARANTINE = DERIVED / "quarantine-v1.tsv"
 MANIFEST = DERIVED / "manifest-v1.json"
 ARTIFACT = DERIVED / "lexicon-v1.tsv"
+MEMBERSHIP = DERIVED / "lexicon-membership-v1.bin"
 SPLITS = DERIVED / "splits-v1.tsv"
 
 # Pinned snapshot metadata. The checksum is verified when the raw dump is present.

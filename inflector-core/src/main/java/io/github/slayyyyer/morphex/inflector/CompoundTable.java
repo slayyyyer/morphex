@@ -33,7 +33,8 @@ final class CompoundTable {
 
     /** Hyphenated tails that cannot themselves be a noun, so any head is safe. */
     private final Set<String> freeTails = Set.of(
-            "in-law", "in-chief", "of-war", "at-arms", "at-law", "of-arms");
+            "in-law", "in-arms", "in-aid", "in-kind", "in-chief", "of-war", "of-arms", "of-spring",
+            "of-all-trades", "out-law", "at-arms", "at-law", "in-crime");
 
     /** Postposed modifiers: only with a curated head, because "major general" is a counterexample. */
     private final Set<String> postposed = Set.of(
@@ -49,6 +50,43 @@ final class CompoundTable {
     private final Set<String> prepositions = Set.of(
             "in", "of", "at", "on", "by", "to", "with", "for", "from", "upon", "under", "over", "into");
 
+    /**
+     * Final tokens that can be the end of a hyphenated expression but are not nouns, so the expression is not a
+     * head-final noun compound. This is the guard that keeps {@code well-known} and the other documented
+     * unsupported-input regressions unchanged while permitting {@code credit-card} and {@code coffee-shop}.
+     */
+    private final Set<String> nonNounHeads = Set.of(
+            "known", "born", "bred", "built", "done", "gone", "held", "left", "lost", "made", "paid",
+            "sold", "told", "worn", "written", "spoken", "taken", "given", "seen", "heard", "led", "won",
+            "set", "put", "cut", "read", "run", "come", "become", "beaten", "broken", "chosen", "driven",
+            "eaten", "fallen", "forgotten", "frozen", "hidden", "risen", "shaken", "shown",
+            "stolen", "sworn", "torn", "woken", "wrong", "aware", "alike", "alone", "asleep", "awake");
+
+    /** Verbed-particle nouns: the plural is the whole expression plus s, not the final token. */
+    private final Set<String> particles = Set.of(
+            "off", "in", "on", "up", "out", "over", "back", "down", "through", "around", "about", "away");
+
+    /** Coordinators/articles that signal a fixed phrase, not a head-final noun compound. */
+    private final Set<String> coordinators = Set.of("and", "or", "nor", "but", "the");
+
+    /** Preposition-like prefixes reviewed as productive in head-final nouns ({@code on-ramp}). */
+    private final Set<String> compoundPrefixes = Set.of("on");
+
+    /** True invariant plurals that must not be respelled when used as a compound head. */
+    private final Set<String> invariantHeads = Set.of(
+            "series", "species", "means", "offspring", "deer", "sheep", "swine", "bison", "moose",
+            "aircraft", "hovercraft", "spacecraft", "salmon", "trout", "cod");
+
+    /**
+     * Lower-case -man words that are not compounds of a noun + man, so the -man backoff must not touch them.
+     * Proper names are additionally excluded by requiring an all-lower-case input for this rule.
+     */
+    private final Set<String> manExceptions = Set.of(
+            "human", "german", "roman", "shaman", "talisman", "caiman", "ottoman", "brahman", "atman",
+            "liman", "chroman", "hooman", "kundiman", "laraman", "oralman", "abhuman", "metahuman",
+            "paleohuman", "parahuman", "dragoman", "firman", "harman", "tarman", "turkman", "touman",
+            "tramman", "vataman", "velociman", "zygentoman");
+
     private CompoundTable() {
     }
 
@@ -58,6 +96,21 @@ final class CompoundTable {
 
     boolean isFreeTail(String tailLower) {
         return freeTails.contains(tailLower);
+    }
+
+    /** Returns the hyphen index of the longest recognized free-tail suffix, or -1. */
+    int freeTailSuffix(String lower) {
+        int best = -1;
+        for (String tail : freeTails) {
+            String suffix = "-" + tail;
+            if (lower.endsWith(suffix)) {
+                int index = lower.length() - suffix.length();
+                if (index > 0 && index > best) {
+                    best = index;
+                }
+            }
+        }
+        return best;
     }
 
     boolean isPostposed(String tailLower) {
@@ -70,5 +123,29 @@ final class CompoundTable {
 
     boolean isPreposition(String tokenLower) {
         return prepositions.contains(tokenLower);
+    }
+
+    boolean isNonNounHead(String tokenLower) {
+        return nonNounHeads.contains(tokenLower);
+    }
+
+    boolean isParticle(String tokenLower) {
+        return particles.contains(tokenLower);
+    }
+
+    boolean isManException(String tokenLower) {
+        return manExceptions.contains(tokenLower) || tokenLower.endsWith("human");
+    }
+
+    boolean isInvariantHead(String tokenLower) {
+        return invariantHeads.contains(tokenLower);
+    }
+
+    boolean isCoordinator(String tokenLower) {
+        return coordinators.contains(tokenLower);
+    }
+
+    boolean isCompoundPrefix(String tokenLower) {
+        return compoundPrefixes.contains(tokenLower);
     }
 }

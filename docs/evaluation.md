@@ -1,180 +1,224 @@
 # Evaluation
 
-Two protocols are reported separately. Both use fixed gold labels written **before** any
-prediction is read, fixed denominators, and no relabelling from engine output.
+All numbers below come from frozen, checksummed outputs in `results/eval/`. The current
+contract is **eval-v2**. Historical results from the audited commit are kept separately and
+labelled as such; they are not mixed into the current tables.
 
-The dataset is a pinned Kaikki/Wiktionary extract (`data/LICENSE-DATA.md`). Records are
-normalized by `tools/research/extract.py` and never by the engine under test.
+## Contract
 
-## Primary accuracy definition
+* **Primary** means `countability in {COUNTABLE, MIXED}` and `invariant == false`. This one
+  selector is used by every headline, paired comparison, bootstrap interval and learning gate.
+* Accuracy is **accepted-form**: the prediction must equal any independently attested plural.
+  The engine is not rewarded for matching the preferred form by luck.
+* Gold labels are written before predictions. No prediction changes a label.
+* The Java evaluator skips an explicit `id<TAB>lemma` header, asserts unique ids, and rejects
+  any gold/prediction id mismatch. The former 50,939-vs-50,938 off-by-one is fixed.
+* Relative error reduction is `(baseline_errors - candidate_errors) / baseline_errors`.
+* `artifact_hit` / `artifact_miss` describe the compact artifact only. They are not claims
+  about source-corpus membership.
+* The historical 36,505-record learning population is retired. The current primary
+  denominator is 36,239 on the P1/P2 test split and 36,470 on dev.
 
-`primary` = every test record whose normalized countability is `COUNTABLE` or `MIXED`, scored
-on **accepted-form accuracy**: the engine's output must equal any independently attested
-plural. Because Wiktionary attests alternatives, `persons` and `people` are both accepted for
-`person`; the engine is not rewarded for matching the preferred form by luck.
+Source: pinned Kaikki/Wiktionary dump (`data/LICENSE-DATA.md`), normalized offline by
+`tools/research/extract.py`; split families are assigned by the pinned hash in `splits.py`.
 
-`overall` additionally includes `MASS`, `PLURAL_ONLY` and invariant records. Those are policy
-outcomes, not singular→plural predictions, so they are reported separately and are not used
-for the headline claim.
+## P1 - frozen shipped lexicon (lexical coverage)
 
-## Protocol 1 — frozen shipped lexicon (lexical coverage)
+The shipped artifact is built from all permitted splits and frozen before evaluation. This
+measures dictionary coverage, not generalization.
 
-The shipped artifact (all splits, 150,267 entries) is frozen, then evaluated on the test split.
-This measures **coverage of a frozen dictionary**, not generalization to unseen lemmas.
+Artifact: **147,193 entries**, 7,545,760 bytes TSV (1,176,616 bytes gzip), plus a 340,565-entry
+membership table (2,724,532 bytes). The membership table is generated from every permitted
+lemma, not only the compact rows, so omitted regular words still count as ordinary words for
+uppercase inference.
 
-| system | primary accuracy | errors / 36,239 | overall accuracy | overall errors / 50,938 |
+| system | primary accuracy | primary errors / 36,239 | overall accuracy | overall errors / 50,938 |
 | --- | --- | --- | --- | --- |
-| A. stock evo-inflector 2.0 | 96.473% | 1,278 | 68.882% | 15,851 |
-| C. rules + curated + Wiktionary artifact | **100.000%** | **0** | **100.000%** | **0** |
-| B. repaired rules only (no lexicon) | 88.714% | 4,090 | 64.259% | 18,206 |
+| stock evo-inflector 2.0 | 96.473% | 1,278 | 68.882% | 15,851 |
+| lexicon + rules + curated | **100.000%** | **0** | **100.000%** | **0** |
+| rules only (no lexicon) | 95.168% | 1,751 | 67.851% | 16,376 |
 
-Paired comparison, clustered bootstrap by lemma family (95% CI):
+Paired family-clustered bootstrap (2,000 iterations, 95% CI):
 
-* evo2 → this library: **+4.1611 pp** `[+3.9597, +4.3727]`, 1,519 corrections, 0 regressions.
-* evo2 → rules only: `-7.7031 pp` `[-8.7735, -6.8541]`, 479 corrections, 3,291 regressions.
+* evo2 -> lexicon: **+3.5266 pp** `[+3.3323, +3.7159]`, 1,278 corrections, 0 regressions.
+* evo2 -> rules: `-1.3052 pp` `[-1.5035, -1.0974]`, 463 corrections, 936 regressions.
 
-Rule source usage on the test split: 28,512 rule decisions, 22,426 lexical decisions, no fallback.
-Mass nouns explain the overall gap: stock 2.0 pluralizes all 14,952 mass records
-(`informations`), while this library returns the lemma and reports `MASS`.
+P1 primary source usage: 7,244 `lexicon:lexicon`, 28,995 `lexicon:rule`; every record is
+correct. There is no fallback or inferred-uppercase decision in this coverage protocol.
 
-### Residual errors (0)
+### Historical results (audited commit)
 
-No test record is missed. The two former residuals — the 51-character
-`meet-her-in-the-entry-and-kiss-her-in-the-buttery` and the 45-character MASS
-`pneumonoultramicroscopicsilicovolcanokoniosis` — were an arbitrary 40-character cap on
-lexical entries, not wrong morphological decisions. The cap is lifted (the longest
-validated single-token lemma is 53 characters and the packed columns impose no such
-limit); the artifact now covers all of them.
+The audited commit reported P1 100.000% primary (0/36,239) and 100.000% overall
+(0/50,938), with a 150,267-entry artifact and rules-only 88.714% (4,090 errors). Those
+numbers remain reproduced in `results/eval/p1-report.json` and are not the current v4
+results. The old evaluator also counted the header, which is why historical prediction files
+contain 50,939 rows; current files contain exactly 50,938.
 
-## Protocol 2 — family holdout (no lexical leakage)
+## P2 - family holdout (unseen families, train-only artifact)
 
-Whole lemma families are assigned to train/dev/test by a pinned hash (`splits.py`). Casing
-variants, compounds and related records stay in one family. The experimental artifact is
-built **from the train split only** (105,688 entries); dev and test lemmas are absent from
-every lexical resource and from all training, mining and calibration inputs.
+Whole lemma families are assigned to train/dev/test by the pinned hash. Casing variants,
+compounds and related records stay in one family. The P2 artifact is built from train
+families only: **103,576 entries** (5,312,723 bytes), with a 238,810-entry membership table.
+Dev/test families are absent from the artifact and from all threshold selection.
 
-| system | primary accuracy | errors / 36,239 | note |
-| --- | --- | --- | --- |
-| A. stock evo-inflector 2.0 | 96.473% | 1,278 | unchanged baseline |
-| C. train-only artifact | 88.714% | 4,090 | held-out families have almost no entries |
-| B. repaired rules | 88.714% | 4,090 | identical by construction |
+| system | primary accuracy | primary errors / 36,239 | dev accuracy | dev errors / 36,470 |
+| --- | --- | --- | --- | --- |
+| stock evo-inflector 2.0 | 96.473% | 1,278 | 96.397% | 1,314 |
+| train-only lexicon + rules | **97.376%** | **951** | **97.398%** | **949** |
+| rules only | 95.168% | 1,751 | 95.281% | 1,721 |
 
-The equality is the expected result, not a bug: on unseen families the train-only artifact
-contributes almost nothing, so the system reduces to the three productive rules. P2 is the
-honest measure of generalization, and it is **worse than evo2** because evo2 carries a large
-built-in exception table while P2 forbids using the test families' lexical knowledge.
+Test paired comparison: **+0.9023 pp** `[+0.7309, +1.0718]`, 540 corrections, 213
+regressions, **25.587%** relative error reduction. Dev: +1.0008 pp `[+0.8317, +1.1672]`,
+545 corrections, 180 regressions. The compound slice fell from 180 to 130 test errors
+(50 corrected, 0 regressed) and from 177 to 92 dev errors (85 corrected, 0 regressed).
 
-P2 is the primary evaluation for the learning experiment: a learner must improve the
-rules-only baseline using only train/dev data.
+### Test primary slices
 
-## External validation — UD English EWT
+| bucket | records | correct | errors | accuracy |
+| --- | ---: | ---: | ---: | ---: |
+| compound | 2,018 | 1,888 | 130 | 93.558% |
+| initialism | 806 | 783 | 23 | 97.146% |
+| simple | 33,147 | 32,364 | 783 | 97.638% |
+| unicode | 268 | 253 | 15 | 94.403% |
 
-A fresh, independently annotated corpus check: [UD English EWT](https://github.com/UniversalDependencies/UD_English-EWT),
-CC BY-SA 4.0, 10,106 plural noun tokens, filtered to 2,184 single-token alphabetic
-lemma→plural pairs (2,221 attested forms). The shipped artifact was **not retrained or tuned**
-on this corpus; 454 of the 2,184 lemmas happen to be present in the lexicon, and 1,730 are
-unseen.
+| decision source | records | errors | accuracy |
+| --- | ---: | ---: | ---: |
+| `lexicon:compound` | 1,915 | 27 | 98.590% |
+| `lexicon:rule` | 33,415 | 798 | 97.612% |
+| `lexicon:inferred` | 806 | 23 | 97.146% |
+| `lexicon:fallback` | 103 | 103 | 0.000% |
 
-| system | overall | seen (376) | unseen (1,808) |
-| --- | --- | --- | --- |
-| stock evo-inflector 2.0 | 98.12% [97.53, 98.67] | 94.41% [92.02, 96.54] | 98.89% [98.40, 99.34] |
-| shipped lexicon | **98.76%** [98.26, 99.22] | **96.81%** [94.95, 98.40] | **99.17%** [98.73, 99.56] |
-| repaired rules only | 97.71% [97.07, 98.31] | 90.69% [87.50, 93.62] | 99.17% [98.73, 99.56] |
+The 103 fallback records are unsupported shapes, not silently rewritten. The remaining
+130 test compound errors are mostly head-final compounds whose head is absent or
+non-productive in the train-only lexicon, plus unsupported fixed phrases; the remaining
+simple errors are dominated by irregular suffix families that have no training-family entry.
 
-Accepted-form accuracy; 95% percentile bootstrap over lemmas. The unseen lexicon number
-equals the rules number by construction: unseen lemmas fall through to the productive rules.
+### Historical results (audited commit)
 
-The earlier seen-subset failure (77.09% on 454 lemmas) is fixed. Three extraction defects
-caused it, all corrected and re-measured with a full P1/P2 rerun:
+The audited P2 result was **88.714%** (4,090 errors), with `rules only` identical by
+construction. On the 33,147 simple non-invariant records it was 31,876 correct (96.166%);
+the remaining 3,092 records were 273 correct (8.829%). Those numbers are retained in
+`results/eval/p2-report.json` and summarized in `FINAL_REPORT.md` as historical evidence.
+They are not comparable to the current P2 table because the engine, artifact, and evaluation
+contract all changed.
 
-1. Sense-level `plural-normally` tags promoted whole lemmas to `PLURAL_ONLY`
-   (`book`, `bag`) — now only head-level plural-only marking counts.
-2. A single subordinate `uncountable` sense outweighed attested plurals (`account`)
-   — now attested plurals win unless the head itself says uncountable.
-3. Multi-etymology labels took the first record in dump order (`plate`) — now reconciled
-   by votes, and `usually uncountable` with an attested plural maps to `MIXED`
-   (`practice`, `reality`, `sculpture`, `truth`, `stuff`, `furniture`).
-4. `money`/`music`/`traffic` moved from curated `MASS` to `MIXED` (`monies`, `musics`,
-   `traffics`), matching the `water`/`coffee` precedent.
+## Artifact preservation
 
-Of the remaining 27 lexicon errors, 16 are rule-source misses on EWT annotation noise
-(`aquiriums`, `bredders`, `dinasaurs`, `paraded`, `tomatos`, `thanx`, `titts`, `villians`)
-or known rule limits (`gardneri`, `mullahs`, `attys`/`cpys`); 8 are identity returns on
-disputed subordinate uses (`works`, `olds`, `offs`, `osteos`, `luggage`, `accent`,
-`amenity`, `belonging`); 3 are correct outputs scored wrong against gold typos
-(`tomatoes`, `aquariums`, `lasers`). Nothing here was tuned against the external set;
-see `results/external/ewt-report.md` for the full list.
+Compaction omits a known entry only when the final resolver reproduces the required output
+and no lexical metadata is needed. The Python mirror is checked against the Java engine by
+`ArtifactAuditTest` over the full pinned P1 evaluation, including policy cases. Current P1:
+**0 errors / 0 overall**, and the audit fixture is green.
 
-## Candidate-oracle ceiling (P2 test)
+## External validation - UD English EWT
 
-Candidates are generated from lemma suffix and shape only; the deterministic base result is
-always a candidate. An oracle picks a valid candidate whenever one exists.
+[UD English EWT](https://github.com/UniversalDependencies/UD_English-EWT), CC BY-SA 4.0,
+filtered to 2,184 single-token alphabetic lemma->plural pairs (2,221 forms); 368 lemmas are
+present in the shipped artifact and 1,816 are unseen. The artifact was not retrained or tuned
+on this corpus.
+
+Selected-output accuracy and alternative-set coverage are separate. The former is what both
+systems are compared on; the latter is not equivalent to another system's selected output.
+
+| system | selected overall | selected seen (368) | selected unseen (1,816) | alternative coverage |
+| --- | --- | --- | --- | --- |
+| stock evo-inflector 2.0 | 98.12% [97.53, 98.67] | 94.29% [91.85, 96.47] | 98.90% [98.40, 99.34] | n/a |
+| shipped lexicon | **98.21%** [97.62, 98.76] | 93.48% [90.76, 95.92] | **99.17%** [98.73, 99.56] | 98.76% [98.26, 99.22] |
+| rules only | **98.26%** [97.66, 98.76] | 93.75% [91.30, 96.20] | **99.17%** [98.73, 99.56] | 98.26% [97.66, 98.76] |
+
+The lexicon's selected-output advantage over evo2 is small (0.09 pp) and its seen-subset
+score is lower; the alternative coverage is higher. The remaining 39 lexicon errors include
+identity returns on disputed countability, EWT typos, and rule limits. Nothing was tuned on
+this set. Full list: `results/external-v2/ewt-report.md`.
+
+### Strict-family sensitivity check
+
+A supplementary rerun groups conservative derivational relatives before splitting. The
+`split-v2` key strips common nominal suffixes and normalizes some stem endings; it is an
+approximation, not a lemmatizer. The train-only artifact for this run has **102,273
+entries**, and the stricter grouping changes the P2 denominators to **36,520 dev** and
+**37,507 test**. These numbers are therefore not directly comparable to the primary
+`split-v1` table above and do not replace it.
+
+| P2 split | evo-inflector 2.0 | train-only lexicon | paired delta (95% CI) |
+| --- | ---: | ---: | ---: |
+| dev strict families (36,520) | 96.358% (1,330) | **97.125% (1,050)** | **+0.7667 pp** `[+0.4742, +1.0107]` |
+| test strict families (37,507) | 96.379% (1,358) | **97.238% (1,036)** | **+0.8585 pp** `[+0.6868, +1.0287]` |
+
+The strict test gain is 536 corrections and 214 regressions; rules-only accuracy is
+95.174% (1,810 errors). External EWT uses the same strict family key for its family slices:
+
+| external slice | evo-inflector 2.0 | shipped lexicon |
+| --- | ---: | ---: |
+| family seen (1,677) | **98.09% (1,645)** | 98.03% (1,644) |
+| family unseen (507) | 98.22% (498) | **98.82% (501)** |
+
+Reports: `results/strict-family-report.md`, `results/eval-strict/*-report.json`, and
+`results/external-strict/ewt-report.md`.
+
+## Candidate ceiling (P2 test, pre-compound run)
+
+Candidates are generated from lemma shape/suffix plus the deterministic base, which is always
+present. The oracle picks any accepted candidate.
 
 | quantity | value |
-| --- | --- |
-| records | 36,505 |
-| base accuracy | 88.136% |
-| oracle accuracy | 99.173% |
-| oracle gain | **+11.04 pp** |
-| required gain (20% fewer errors + 0.05 pp) | 2.373 pp |
-| ceiling clears required gain | yes |
+| --- | ---: |
+| primary records | 36,239 |
+| base accuracy (pre-compound run) | 97.238% (1,001 errors) |
+| candidate-oracle accuracy | 99.230% |
+| oracle gain | +1.992 pp |
+| required gain (20% fewer errors, >=0.05 pp) | 0.552 pp |
+| ceiling clears | yes |
 
-Oracle hits by edit: `base:s` 29,181, `s` 2,651, `base:other` 1,774, `base:es` 1,181,
-`man->men` 293, `is->es` 285, `um->a` 236, `lemma` 186, `es` 115, `us->i` 97, `a->ae` 51,
-`ies` 46, `base:same` 38, `ix->ices` 18, `fe->ves` 18, `ves` 14, `child->ren` 8,
-`mouse->ice` 6, `person->people` 3, `quiz->zzes` 2.
-
-Because the ceiling clears the required gain, a learned candidate selector is worth training
-(no pretraining stop applies). The learner's actual result is in `docs/learning.md`.
+The ceiling was computed before the compound resolver changes and is retained as the
+selection evidence for the rejected selector; the learner result and its rejection are in
+`docs/learning.md`.
 
 ## What is not measured
 
-* Application-call accuracy on real text: the corpus is dictionary lemmas, not sampled usage.
-* Preferred-form accuracy: Wiktionary preferences are not independently labelled here.
-* Singularization, verbs, sentence context: out of scope.
-* Human adjudication: no new records were adjudicated, so no claim of human review is made.
-* External generalization: UD EWT is one corpus with its own annotation noise (typos and
-  abbreviations such as `aquiriums` and `bredders` appear in the gold). The 27-error list is
-  published rather than hand-cleaned; most of it is that noise plus disputed subordinate
-  uses (`works`, `olds`).
+* Application-call accuracy on natural text; the corpus is dictionary lemmas.
+* Preferred-form accuracy; Wiktionary preferences are not independently labelled.
+* Singularization, verbs, sentence context, multilingual morphology.
+* Human adjudication; no records were externally reviewed.
+* The strict-family rerun is a sensitivity check with a deterministic approximate stemmer,
+  not a second primary protocol; the `split-v1` results remain the headline evaluation.
 
 ## Reproduction
 
 ```bash
-# one-off (network): fetch and verify the pinned dump
+# one-off network fetch and checksum verification
 py -3 -m tools.research.cli fetch
 
-# offline from data/raw: normalize, split, build artifacts
+# offline: normalize, split, build both artifacts and membership tables
 py -3 -m tools.research.cli extract
 py -3 -m tools.research.cli splits
 py -3 -m tools.research.cli artifact --split all  --selection compact
+py -3 -m tools.research.cli artifact --split train --selection compact --out build/p2/lexicon-v1.tsv
 
-# predictions from the Java engine
-./mvnw -q -pl inflector-eval -am install -DskipTests
-./mvnw -q -pl inflector-eval exec:java \
-  -Dexec.args="--input results/eval/test-records.tsv --out results/eval/p1-test-preds.tsv"
+./mvnw -q -o -pl inflector-eval -am install -DskipTests
 
-# score
+# P1
+./mvnw -q -o -pl inflector-eval exec:java \
+  -Dexec.args="--input results/eval/test-records.tsv --out results/eval/p1-test-preds-v4.tsv"
 py -3 -m tools.research.cli evaluate \
-  --gold results/eval/test-gold.tsv --predictions results/eval/p1-test-preds.tsv \
-  --out results/eval/p1-report.json --split test --lexicon-split all
+  --gold results/eval/test-gold.tsv --predictions results/eval/p1-test-preds-v4.tsv \
+  --out results/eval/p1-report-final.json --split test --lexicon-split all --iterations 2000
 
-# external validation (network: UD English EWT, CC BY-SA 4.0)
-git clone --depth 1 https://github.com/UniversalDependencies/UD_English-EWT.git \
-  build/external/ewt-repo
-mkdir -p build/external/ud-ewt
-cp build/external/ewt-repo/*.conllu build/external/ud-ewt/
-py -3 tools/research/external_eval.py prepare --conllu-dir build/external/ud-ewt \
-  --out-dir results/external
-./mvnw -q -pl inflector-eval -am package -DskipTests
-./mvnw -q -pl inflector-eval exec:java \
-  -Dexec.mainClass=io.github.slayyyyer.morphex.inflector.eval.ExternalEval \
-  -Dexec.args="--gold results/external/ewt-gold.tsv --out results/external/ewt-predictions.tsv"
-py -3 tools/research/external_eval.py score --gold results/external/ewt-gold.tsv \
-  --predictions results/external/ewt-predictions.tsv \
-  --lexicon inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv \
-  --out-dir results/external
+# P2 dev/test (train-only artifact; membership is loaded from its sibling file)
+for split in dev test; do
+  ./mvnw -q -o -pl inflector-eval exec:java \
+    -Denglish.inflector.lexicon="$(pwd)/build/p2/lexicon-v1.tsv" \
+    -Dexec.args="--input results/eval/p2-$split-records.tsv --out results/eval/p2-$split-preds-v4.tsv"
+  py -3 -m tools.research.cli evaluate \
+    --gold "results/eval/p2-$split-gold.tsv" \
+    --predictions "results/eval/p2-$split-preds-v4.tsv" \
+    --out "results/eval/p2-$split-report-final.json" --split "$split" \
+    --lexicon-split train --iterations 2000
+done
+
+# corrected out-of-fold learning input and selector run
+py -3 -m tools.research.cli oof --folds 5
+py -3 -m tools.research.cli learn --linear-only --iterations 1000
 ```
 
-The committed `results/eval/*.json` are the outputs of these commands. `data/raw/` is
-gitignored; a missing dump makes the corpus evaluation unavailable, never silently successful.
+The full driver is `scripts/rebuild-and-evaluate.sh`. `data/raw/` is gitignored; without it
+the corpus evaluation is unavailable, never silently successful.

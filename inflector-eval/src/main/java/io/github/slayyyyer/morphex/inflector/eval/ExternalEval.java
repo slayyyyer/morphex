@@ -14,8 +14,9 @@ import java.nio.file.Path;
  * Scores the shipped and rules-only engines against an external, independently sourced gold TSV.
  *
  * <p>Input: {@code lemma<TAB>form1[,form2...]}. Output:
- * {@code lemma<TAB>system<TAB>selected<TAB>accepted<TAB>source}. {@code accepted} is true when the
- * selected form or any reported alternative is one of the gold forms. No network access.
+ * {@code lemma<TAB>system<TAB>selected<TAB>selectedAccepted<TAB>alternativeCoverage<TAB>source}.
+ * Selected-output accuracy and alternative-set coverage are deliberately separate: scoring a system's
+ * alternatives against another system's selected output is not an equivalent comparison. No network access.
  */
 public final class ExternalEval {
 
@@ -42,7 +43,7 @@ public final class ExternalEval {
 
         try (BufferedReader reader = Files.newBufferedReader(gold, StandardCharsets.UTF_8);
                 Writer writer = Files.newBufferedWriter(out, StandardCharsets.UTF_8)) {
-            writer.write("lemma\tsystem\tselected\taccepted\tsource\n");
+            writer.write("lemma\tsystem\tselected\tselectedAccepted\talternativeCoverage\tsource\n");
             String line;
             int lineNo = 0;
             while ((line = reader.readLine()) != null) {
@@ -59,7 +60,8 @@ public final class ExternalEval {
                 writeSystem(writer, lemma, "lexicon", lexicon, forms);
                 writeSystem(writer, lemma, "rules", rules, forms);
                 String evo = org.atteo.evo.inflector.English.plural(lemma);
-                writer.write(lemma + "\tevo2\t" + sanitize(evo) + "\t" + contains(forms, evo) + "\tevo2\n");
+                writer.write(lemma + "\tevo2\t" + sanitize(evo) + "\t" + contains(forms, evo)
+                        + "\tfalse\tevo2\n");
             }
         }
     }
@@ -67,10 +69,11 @@ public final class ExternalEval {
     private static void writeSystem(Writer writer, String lemma, String name, EnglishInflector inflector,
             String[] forms) throws IOException {
         Inflection inflection = inflector.analyze(lemma);
-        boolean accepted = false;
-        for (String form : forms) {
-            if (inflection.isAccepted(form)) {
-                accepted = true;
+        boolean selected = contains(forms, inflection.plural());
+        boolean alternatives = false;
+        for (String alternative : inflection.alternatives()) {
+            if (contains(forms, alternative)) {
+                alternatives = true;
                 break;
             }
         }
@@ -80,7 +83,9 @@ public final class ExternalEval {
         writer.write('\t');
         writer.write(sanitize(inflection.plural()));
         writer.write('\t');
-        writer.write(Boolean.toString(accepted));
+        writer.write(Boolean.toString(selected));
+        writer.write('\t');
+        writer.write(Boolean.toString(selected || alternatives));
         writer.write('\t');
         writer.write(inflection.source().name().toLowerCase(java.util.Locale.ROOT));
         writer.write('\n');

@@ -17,13 +17,20 @@ final class Rule {
     private final int cut;
     private final String append;
     private final Predicate<String> matcher;
+    private final boolean lowercaseOnly;
 
     Rule(String id, String description, int cut, String append, Predicate<String> matcher) {
+        this(id, description, cut, append, matcher, false);
+    }
+
+    Rule(String id, String description, int cut, String append, Predicate<String> matcher,
+            boolean lowercaseOnly) {
         this.id = id;
         this.description = description;
         this.cut = cut;
         this.append = append;
         this.matcher = matcher;
+        this.lowercaseOnly = lowercaseOnly;
     }
 
     String id() {
@@ -45,5 +52,10 @@ final class Rule {
     /** Returns true when this rule applies to the lower-cased token. */
     boolean applies(String lower) {
         return matcher.test(lower);
+    }
+
+    /** True when the rule must not change a capitalized proper-name spelling such as {@code Cartman}. */
+    boolean lowercaseOnly() {
+        return lowercaseOnly;
     }
 }
