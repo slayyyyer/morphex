@@ -41,16 +41,16 @@
     <a class="btn p" href="#install">Get started</a>
     <a class="btn" href="./comparison.html">See comparisons</a>
     <a class="btn" href="https://github.com/slayyyyer/morphex">GitHub</a>
-  </div>    <div class="badges"><span>Java 17+</span><span>Zero runtime deps</span><span>MIT code · CC BY-SA 3.0 data</span><span>Thread-safe · immutable</span><span>Release branch: 1.2.0</span></div>
+  </div>    <div class="badges"><span>Java 17+</span><span>Zero runtime deps</span><span>MIT code · CC BY-SA 3.0 data</span><span>Thread-safe · immutable</span><span>Release: 1.3.0</span></div>
 </div>
 
 <section id="install">
   <h2>Install</h2>
-  <p class="sub">The 1.2.0 artifacts are built from this release branch. Coordinates: <code>io.github.slayyyyer.morphex:english-inflector-core:1.2.0</code>. Build/install locally until the release is published.</p>
+  <p class="sub">The 1.3.0 artifacts are built from this release. Coordinates: <code>io.github.slayyyyer.morphex:english-inflector-core:1.3.0</code>.</p>
   <div class="tabs" role="tablist" id="tabs"></div>
   <pre id="snip"></pre>
   <p class="note"><b>Rules-only runtime mode:</b> <code>EnglishInflector.builder().withoutBundledLexicon().build()</code> disables loading the packaged lexicon and uses three productive rules plus your overrides. The lexical resources still ship inside the JAR, so the CC BY-SA 3.0 data attribution and distribution terms still apply.</p>
-  <p class="note"><b>New in 1.2.0:</b> provenance-aware compound heads, bounded recursion, coherent whole-compound casing, stable preferred plurals, corrected plural-only extraction, full-vocabulary membership labels, and a Java-generated site catalog. The linear selector remains experimental and is not shipped.</p>
+  <p class="note"><b>New in 1.3.0:</b> independent AGID unseen-lemma evidence, ASCII shape fast paths, and a flattened ordered rule dispatch that brings compacted lookup to 79.4 ns/op. The public API and rule precedence are unchanged. The 1.2.0 compound/casing work remains the foundation; the linear selector is still not shipped.</p>
 
   <h3 style="margin:34px 0 12px;font-size:24px">Quickstart</h3>
 <pre class="solo">EnglishInflector inflector = EnglishInflector.standard();

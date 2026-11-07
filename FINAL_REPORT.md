@@ -1,7 +1,8 @@
 # Final report
 
-Date: 2026-11-07. Current numbers come from the recorded v2 runs under
-`results/release-1.2.0/`. Historical audited-commit results are labelled separately.
+Date: 2026-11-07. Release: `1.3.0`. Current numbers come from the recorded v2 runs under
+`results/release-1.2.0/`; 1.3.0 adds the AGID stress test and compacted-path benchmark
+evidence without a new P1/P2 run. Historical audited-commit results are labelled separately.
 
 ## What shipped
 

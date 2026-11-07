@@ -9,11 +9,18 @@ Deterministic English noun pluralization for Java 17+, inspired by and built on 
 - Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **100.000%** vs **96.474%** accepted-form accuracy. On the family-holdout protocol this library scores **97.365%** vs **96.474%** (see `docs/evaluation.md`).
 - The linear-selector investigation remains rejected and **not shipped** (`docs/learning.md`).
 
-Status: `1.2.0` release branch. Maven Central publication of these artifacts is not part of this commit; build/install the branch locally until it is published.
+Status: `1.3.0` release.
 
 Website: https://slayyyyer.github.io/morphex/ (install, quickstart, comparison, benchmarks, design, Javadoc).
 
-## What's new in 1.2.0
+## What's new in 1.3.0
+
+- **Independent AGID evidence.** The AGID 2016.01.19 stress test adds 261 genuinely unseen lemmas; the lexicon and rules-only select 249/261 (95.40%) versus evo2 at 248/261 (95.02%). AGID is generated data and its overall 93.84% lexicon result is a documented `MASS`/invariant policy stress result, not a natural-text accuracy claim.
+- **Faster compacted path.** ASCII shape fast paths and flattened ordered rule dispatch reduce the compacted benchmark from 105.0 to 79.4 ns/op; it remains 1.33x slower than evo2 (59.8 ns) and allocation is unchanged at 51.4 B/op.
+- **Measured evidence only.** Benchmark claims now distinguish the release baseline (456.4 ns), compound stage (187.3 ns), ASCII stage (105.0 ns), and flattened stage (79.4 ns).
+- **No public API change.** The removed `Rule` type was package-private; rule IDs and precedence are unchanged.
+
+### 1.2.0 foundation
 
 - **Runtime-correct compounds.** Compound heads retain provenance (override, lexical, nested compound, inferred initialism, rule, fallback). Only unresolved rule heads may be respelled; lexical, invariant, mass and override results are never rewritten. Recursion is bounded at depth 4, and padded/repeated whitespace is explicitly unsupported and returned unchanged.
 - **Coherent casing.** Configured `LOWERCASE`/`UPPERCASE` is applied once to the whole reconstructed compound. Caller overrides remain literal exact replacements.
@@ -29,7 +36,7 @@ Website: https://slayyyyer.github.io/morphex/ (install, quickstart, comparison, 
 <dependency>
   <groupId>io.github.slayyyyer.morphex</groupId>
   <artifactId>english-inflector-core</artifactId>
-  <version>1.2.0</version>
+  <version>1.3.0</version>
 </dependency>
 ```
 
@@ -170,7 +177,7 @@ The lexical artifact is generated offline from a pinned Kaikki/Wiktionary dump (
 
 ## Evidence
 
-Current results are under `results/release-1.2.0/`; historical audited results remain separate.
+The frozen full evaluation remains under `results/release-1.2.0/`; 1.3.0 adds the independent AGID and targeted benchmark records there. Historical audited results remain separate. Release notes: `docs/release-1.3.0.md`.
 
 | document | contents |
 | --- | --- |
@@ -179,6 +186,7 @@ Current results are under `results/release-1.2.0/`; historical audited results r
 | `docs/learning.md` | rejected selector investigation |
 | `docs/compatibility.md` | differences from evo-inflector and migration |
 | `docs/design.md` | engine architecture and compound provenance |
+| `docs/release-1.3.0.md` | 1.3.0 changes, verification, and limitations |
 | `results/release-1.2.0/EVIDENCE.md` | commands and checksum manifest |
 
 Headline numbers (JDK 21, recorded runs):
@@ -188,6 +196,7 @@ Headline numbers (JDK 21, recorded runs):
 - P2 dev: **97.382%** (955/36,473) vs evo2 96.400% (1,313).
 - External EWT (2,184 lemmas, no retraining): **98.76%** selected overall vs evo2 98.12%. Of the 2,148 lemmas in the full permitted vocabulary, **98.88%** are selected correctly; the genuinely unseen slice is only **36 lemmas** (91.67%, tied with both baselines). Compact-artifact hit is 363 lemmas at 96.69%; artifact miss is 1,821 at 99.18%. Alternative coverage is **98.99%**.
 - AGID 2016.01.19 independent lexical stress test (34,642 lemmas, no retraining): **261** full-vocabulary-unseen lemmas, where the shipped lexicon and rules-only are tied at **249/261 (95.40%)** and evo2 is **248/261 (95.02%)**. AGID overall is 93.84% for the lexicon vs 98.20% for rules-only because 1,722 lexicon errors are `MASS`/invariant identity returns against AGID's generated plurals; it is **not a natural-text or corpus-accuracy estimate**. AGID is automatically generated, not a hand-adjudicated corpus; the EWT result is retained separately.
+- Compacted regular words: **79.4 ns/op** vs evo2 **59.8 ns** (1.33x slower), down from 105.0 after the ASCII path and 456.4 at the release baseline; allocation is 51.4 B/op vs evo2 80.6 B/op. This is a targeted rerun; no general speedup is claimed.
 - Benchmarks: see `docs/benchmarks.md` for the fixed workload and same-run comparisons. No speedup is claimed without the recorded numbers.
 
 ## Reproduce
