@@ -9,9 +9,18 @@ Deterministic English noun pluralization for Java 17+, inspired by and built on 
 - Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **100.000%** vs **96.473%** accepted-form accuracy. On the leakage-free family-holdout protocol this library scores **97.376%** vs **96.473%** (see `docs/evaluation.md`).
 - A corrected out-of-fold selector investigation was run. Its dependency-free Java mirror reproduces the result exactly, but the selector misses the offline gain gate by 0.0005 pp and fails the strict-default p99/init gates; it is **not shipped** (`docs/learning.md`).
 
-Status: `1.0.0` on Maven Central: `io.github.slayyyyer.morphex:english-inflector-core:1.0.0`.
+Status: `1.1.0` on Maven Central: `io.github.slayyyyer.morphex:english-inflector-core:1.1.0`.
 
 Website: https://slayyyyer.github.io/morphex/ (install, quickstart, comparison, benchmarks, design, Javadoc).
+
+## What's new in 1.1.0
+
+This is a backwards-compatible minor release. It keeps the 1.0 API and zero-runtime-dependency constraints while tightening the runtime and evaluation story:
+
+- a compact packed membership index, improved compound handling, and explicit uppercase/initialism policies;
+- a supplementary strict derivational-family evaluation (`split-v2`); the headline `split-v1` protocol is unchanged;
+- a dependency-free Java evaluator for the linear selector, which remains experimental and is **not** shipped;
+- refreshed benchmarks, external validation, and reproducible reports.
 
 ## Why
 
@@ -32,7 +41,7 @@ From Maven Central:
 <dependency>
   <groupId>io.github.slayyyyer.morphex</groupId>
   <artifactId>english-inflector-core</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
 </dependency>
 ```
 

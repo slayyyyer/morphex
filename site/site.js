@@ -1,8 +1,8 @@
 // morphex browser sketch: tabs + three-rule demo
 const SN={
- "Maven":'<dependency>\n  <groupId>io.github.slayyyyer.morphex</groupId>\n  <artifactId>english-inflector-core</artifactId>\n  <version>1.0.0</version>\n</dependency>',
- "Gradle (Kotlin)":'implementation("io.github.slayyyyer.morphex:english-inflector-core:1.0.0")',
- "Gradle (Groovy)":"implementation 'io.github.slayyyyer.morphex:english-inflector-core:1.0.0'",
+ "Maven":'<dependency>\n  <groupId>io.github.slayyyyer.morphex</groupId>\n  <artifactId>english-inflector-core</artifactId>\n  <version>1.1.0</version>\n</dependency>',
+ "Gradle (Kotlin)":'implementation("io.github.slayyyyer.morphex:english-inflector-core:1.1.0")',
+ "Gradle (Groovy)":"implementation 'io.github.slayyyyer.morphex:english-inflector-core:1.1.0'",
  "From source":'./mvnw install   # JDK 17+; wrapper pins Maven 3.9.9'
 };
 const tabs=document.getElementById('tabs'),snip=document.getElementById('snip');

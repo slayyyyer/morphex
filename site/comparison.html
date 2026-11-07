@@ -88,7 +88,7 @@ String plural = INFLECTOR.pluralize(word);</code></pre>
       <p class="small">No <code>org.atteo.evo.inflector</code> shim ships on purpose (it would duplicate the API on the benchmark classpath). Caller overrides take precedence over everything: <code>builder().override("information", "informations")</code>.</p>
       <div class="callout"><strong>Which should you use?</strong> Stay with evo-inflector 2.0 if you want the
       smallest thing that works — no data file, static API, well understood. Choose this library
-      if the rows above matter to you and you can carry the 7.7&nbsp;MB TSV (1.21&nbsp;MB gzip,
+      if the rows above matter to you and you can carry the 7.55&nbsp;MB TSV (1.18&nbsp;MB gzip,
       ~24&nbsp;MB retained) — or use the rules-only build to drop the data entirely at the cost
       of irregular forms.</div>
     </div>

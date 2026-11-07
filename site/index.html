@@ -23,7 +23,7 @@
 <div class="hero" id="top">
   <div class="eyebrow">english-inflector · Java 17+</div>
   <h1>Pluralize English nouns. <em>Deterministically.</em></h1>
-  <p class="lede">A Java library in the spirit of evo-inflector: predictable runtime behaviour, no dependencies, no network calls, no model downloads. A 150k-entry auditable lexicon, three productive rules, and a diagnostic API that says <i>why</i> a form was chosen.</p>
+  <p class="lede">A Java library in the spirit of evo-inflector: predictable runtime behaviour, no dependencies, no network calls, no model downloads. A 147k-entry auditable lexicon, three productive rules, and a diagnostic API that says <i>why</i> a form was chosen.</p>
 
   <div class="demo">
     <div class="row">
@@ -40,15 +40,16 @@
     <a class="btn" href="./comparison.html">See comparisons</a>
     <a class="btn" href="https://github.com/slayyyyer/morphex">GitHub</a>
   </div>
-  <div class="badges"><span>Java 17+</span><span>Zero runtime deps</span><span>MIT code · CC BY-SA 3.0 data</span><span>Thread-safe · immutable</span><span>Maven Central: 1.0.0</span></div>
+  <div class="badges"><span>Java 17+</span><span>Zero runtime deps</span><span>MIT code · CC BY-SA 3.0 data</span><span>Thread-safe · immutable</span><span>Maven Central: 1.1.0</span></div>
 </div>
 
 <section id="install">
   <h2>Install</h2>
-  <p class="sub">Available on Maven Central as <code>io.github.slayyyyer.morphex:english-inflector-core:1.0.0</code>. If your mirror hasn't synced yet, build from source.</p>
+  <p class="sub">Available on Maven Central as <code>io.github.slayyyyer.morphex:english-inflector-core:1.1.0</code>. If your mirror hasn't synced yet, build from source.</p>
   <div class="tabs" role="tablist" id="tabs"></div>
   <pre id="snip"></pre>
   <p class="note"><b>Rules-only build</b> (no bundled Wiktionary data, no CC BY-SA obligation): <code>EnglishInflector.builder().withoutBundledLexicon().build()</code>. Three productive rules plus your overrides. It loses irregular forms by design.</p>
+  <p class="note"><b>New in 1.1.0:</b> a compact packed membership index, improved compound handling, explicit uppercase/initialism policies, and strict-family reports. The linear selector remains experimental and is not shipped.</p>
 
   <h3 style="margin:34px 0 12px;font-size:24px">Quickstart</h3>
 <pre class="solo">EnglishInflector inflector = EnglishInflector.standard();
@@ -99,7 +100,7 @@ r.source();          // LEXICON — "lex:die"</pre>
   <p class="sub">First match wins. Nothing is guessed.</p>
   <ol class="steps">
     <li><div><b>Caller override</b><span>Exact, case-sensitive whole-input match wins.</span></div></li>
-    <li><div><b>Exact lexical entry</b><span>150k-entry TSV, case-insensitive lookup with case-sensitive entries where needed.</span></div></li>
+    <li><div><b>Exact lexical entry</b><span>147k-entry TSV, case-insensitive lookup with case-sensitive entries where needed.</span></div></li>
     <li><div><b>Supported compound</b><span>Bounded table: exact entries, free tails, curated postposed heads. Unmatched input is left alone.</span></div></li>
     <li><div><b>Productive spelling rules</b><span>Three: <code>+es</code> after sibilants, consonant-<code>y → ies</code>, default <code>+s</code>, plus bounded backoffs.</span></div></li>
     <li><div><b>Documented fallback</b><span>Unsupported shapes are returned unchanged and identified by <code>analyze</code>.</span></div></li>

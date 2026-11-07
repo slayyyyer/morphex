@@ -4,4 +4,4 @@ Standard library only: no third-party runtime or build dependency, and no networ
 build. Network access happens only in the explicit ``fetch`` command.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
