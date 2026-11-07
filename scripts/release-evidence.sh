@@ -48,6 +48,10 @@ for path in \
   results/release-1.2.0/eval/p2-test-report.json \
   results/release-1.2.0/external/ewt-predictions.tsv \
   results/release-1.2.0/external/ewt-report.json \
+  results/release-1.2.0/external/agid-manifest.json \
+  results/release-1.2.0/external/agid-gold.tsv \
+  results/release-1.2.0/external/agid-predictions.tsv \
+  results/release-1.2.0/external/agid-report.json \
   inflector-benchmarks/src/main/resources/benchmark-workload-v1.tsv \
   results/release-1.2.0/benchmarks/jmh-workload-v1.json \
   site/catalog.json; do

@@ -17,7 +17,7 @@ data at runtime, but the resource remains in the JAR and the data terms still ap
 remove the data entirely, build a jar that excludes the resources or regenerate them from a
 source you can license.
 
-## External validation corpus (not redistributed)
+## External validation corpora (not used for training)
 
 `docs/evaluation.md` reports an external check on
 [UD English EWT](https://github.com/UniversalDependencies/UD_English-EWT), licensed
@@ -25,6 +25,18 @@ source you can license.
 aggregate reports and predictions under `results/release-1.2.0/external/` are kept. The
 shipped artifact is not derived from this corpus and the corpus was not used for training or
 tuning.
+
+The larger external stress test uses
+[AGID 2016.01.19](https://sourceforge.net/projects/wordlist/files/AGID/2016.01.19/), an
+automatically generated inflection database. Its archive SHA-256 is
+`15d2d792d309d2dc838bf75d8abcd3feb36708c219dc5158d4fff70b89e601d1`; the source
+`infl.txt` SHA-256 is `df0c8f6edd4193d823abfad9e4ff6f42b4526211516649e1c73d4533aef749fa`.
+`results/release-1.2.0/external/agid-gold.tsv` is a filtered derivative (lowercase lemmas,
+clean preferred plurals, deduplicated). The AGID terms permit use, modification and
+distribution provided the copyright and permission notices are retained; the source notice
+is reproduced in `NOTICE` and `results/release-1.2.0/external/AGID-EVIDENCE.md`. AGID is not
+derived from the shipped Kaikki/Wiktionary vocabulary and was not used to train or tune the
+runtime artifact.
 
 ## Pinned snapshot
 

@@ -8,6 +8,7 @@ Nothing below is projected. Historical audited-commit results are labelled separ
 | stock outputs | `docs/upstream-probe.md`, `results/upstream-probe.tsv` |
 | P1/P2 results | `docs/evaluation.md`, `results/release-1.2.0/eval/` |
 | external EWT | `results/release-1.2.0/external/ewt-report.md` |
+| external AGID stress test | `results/release-1.2.0/external/agid-report.md` |
 | latency / footprint | `docs/benchmarks.md`, `results/release-1.2.0/benchmarks/` |
 | API and migration | `docs/compatibility.md` |
 
@@ -24,6 +25,8 @@ Nothing below is projected. Historical audited-commit results are labelled separ
 | External EWT full-vocab seen (2,148) | 98.23% | **98.88%** |
 | External EWT artifact hit (363) | 94.21% | **96.69%** |
 | External EWT alternative coverage | n/a | **98.99%** |
+| External AGID full-vocab unseen (261) | 95.02% | **95.40%** |
+| External AGID selected overall (34,642) | 97.48% | 93.84%* |
 | Lexicon artifact | small built-in table | 147,338 entries, 7.55 MB TSV, 1.18 MB gzip |
 | Retained lexicon heap | n/a | ~18.2 MiB (19.08 MB, packed) |
 | Runtime dependencies | none | none |
@@ -33,6 +36,12 @@ ahead of evo2 despite forbidding test families from the artifact. Current P2 is 
 above the historical v1 measurement** (955 vs 951) on two more primary records; that change
 is reported rather than hidden. The strict-family sensitivity experiment is historical and
 is not part of the current headline.
+
+\* AGID 2016.01.19 is an automatically generated, permissively licensed lexical stress test,
+not a hand-adjudicated corpus. Its 34,642 lemmas include 261 full-vocabulary-unseen lemmas,
+where the library is tied with rules-only at 95.40% and one lemma ahead of evo2. The lower
+overall AGID score is caused by 1,722 `MASS`/invariant identity returns against generated
+plurals; it is not evidence of a natural-text regression.
 
 ## Why the difference
 
@@ -85,16 +94,20 @@ lookup from rendering and stores exceptions as whole-word entries. It also adds:
 * **P1 is coverage.** The 100% is not evidence that unseen compounds or irregulars are
   solved; P2 is the generalization number.
 * **External labels were corrected.** The old 368/1,816 split was compact-artifact presence,
-  not vocabulary membership. Full-vocabulary membership gives 2,148 seen lemmas (98.88% for
-  the lexicon) and only 36 genuinely unseen lemmas (91.67%, tied with both baselines).
+  not vocabulary membership. Full-vocabulary membership gives 2,148 seen EWT lemmas (98.88%
+  for the lexicon) and only 36 genuinely unseen EWT lemmas (91.67%, tied with both baselines).
   Compact-artifact hit is 363 lemmas at 96.69%. Overall selected accuracy is 98.76% vs
-  98.12%; alternative coverage is 98.99%.
+  98.12%; alternative coverage is 98.99%. AGID adds 261 unseen lemmas at 95.40% for the
+  lexicon and rules-only, but it is a generated lexicon and its overall score is not a
+  corpus-accuracy claim.
 * **Latency is mixed, not universally improved.** Repeated and exact lexical lookups are
-  faster in the fixed-workload run. A targeted optimization improved unknown tokens from
-  906.1 to 608.6 ns and compounds from 499.7 to 442.7 ns, but they remain 7.57x and 4.62x
-  slower than evo2; compacted (4.36x), uppercase (7.92x) and unsupported (4.89x) paths are also
-  slower, and four-thread throughput is 4.34x lower. The unknown/compound after figures are a
-  separate targeted rerun, not the full release run. Retained heap is lower.
+  faster in the fixed-workload run. Targeted optimization improved unknown tokens from
+  906.1 to 608.6 ns, compounds from 499.7 to 442.7 ns, and compacted words from 456.4 to
+  187.3 ns, then to 105.0 ns after the ASCII fast path and 79.4 ns after flattening the rule
+  dispatch. They remain 7.57x, 4.62x and 1.33x slower than evo2; uppercase (7.92x) and
+  unsupported (4.89x) remain release-baseline figures. Four-thread throughput is 4.34x lower.
+  The after figures are separate targeted reruns, not the full release run. Retained heap is
+  lower.
 * **Unknown-uppercase inference is a default policy change.** It applies only after lexical
   lookup, only to 2-6 upper-case Latin letters, and can be disabled with
   `UppercasePolicy.LITERAL`.

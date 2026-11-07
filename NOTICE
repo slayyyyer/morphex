@@ -24,6 +24,25 @@ jar; they are not relicensed by the MIT license. `withoutBundledLexicon()` is a 
 mode that does not load the data. It does not remove the data from the jar and does not
 remove the CC BY-SA 3.0 attribution or redistribution obligations.
 
+External evaluation data (not bundled in the runtime JAR)
+---------------------------------------------------------
+`results/release-1.2.0/external/agid-gold.tsv` is a filtered derivative of the
+Automatically Generated Inflection Database (AGID) 2016.01.19:
+
+    Copyright 2000-2016 by Kevin Atkinson <kevina@gnu.org>
+    Permission to use, copy, modify, distribute and sell this database, the associated
+    scripts, the output created from the scripts and its documentation for any purpose is
+    hereby granted without fee, provided that the above copyright notice appears in all
+    copies and that both that copyright notice and this permission notice appear in
+    supporting documentation. Kevin Atkinson makes no representations about the suitability
+    of this array for any purpose. It is provided "as is" without express or implied
+    warranty.
+
+The part-of-speech database is partly derived from Princeton WordNet 1.6, whose permission
+notice is retained in the AGID README and in
+`results/release-1.2.0/external/AGID-EVIDENCE.md`. AGID is external evaluation data; it is
+not part of the shipped lexical artifact.
+
 Reference implementations and prior art
 ---------------------------------------
 This project was specified against atteo/evo-inflector. No evo-inflector code or data is

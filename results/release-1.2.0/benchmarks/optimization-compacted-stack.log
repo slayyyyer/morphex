@@ -1,0 +1,557 @@
+# JMH version: 1.37
+# VM version: JDK 21.0.13, OpenJDK 64-Bit Server VM, 21.0.13+9-LTS
+# VM invoker: C:\Users\justin\projects\morphex\.tools\jdk-21.0.13+9\bin\java.exe
+# VM options: <none>
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 3 iterations, 500 ms each
+# Measurement: 5 iterations, 500 ms each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.evo2Compacted
+
+# Run progress: 0.00% complete, ETA 00:00:08
+# Fork: 1 of 1
+# Warmup Iteration   1: 79.699 ns/op
+# Warmup Iteration   2: 60.020 ns/op
+# Warmup Iteration   3: 59.203 ns/op
+Iteration   1: 58.073 ns/op
+                 stack: <delayed till summary>
+
+Iteration   2: 58.275 ns/op
+                 stack: <delayed till summary>
+
+Iteration   3: 60.600 ns/op
+                 stack: <delayed till summary>
+
+Iteration   4: 59.710 ns/op
+                 stack: <delayed till summary>
+
+Iteration   5: 57.326 ns/op
+                 stack: <delayed till summary>
+
+
+
+Result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.evo2Compacted":
+  58.797 ±(99.9%) 5.110 ns/op [Average]
+  (min, avg, max) = (57.326, 58.797, 60.600), stdev = 1.327
+  CI (99.9%): [53.687, 63.906] (assumes normal distribution)
+
+Secondary result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.evo2Compacted:stack":
+Stack profiler:
+
+....[Thread state distributions]....................................................................
+ 66.5%         RUNNABLE
+ 33.3%         TIMED_WAITING
+  0.2%         WAITING
+
+....[Thread state: RUNNABLE]........................................................................
+ 33.3%  50.1% <stack is empty, everything is filtered?>
+ 16.6%  24.9% org.atteo.evo.inflector.English.getPlural
+              org.atteo.evo.inflector.English.plural
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.evo2Compacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x000001cac402a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x000001cac402b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  9.7%  14.5% org.atteo.evo.inflector.CompiledInflector$CompiledRule.matches
+              org.atteo.evo.inflector.CompiledInflector.match
+              org.atteo.evo.inflector.CompiledInflector.pluralize
+              org.atteo.evo.inflector.English.getPlural
+              org.atteo.evo.inflector.English.plural
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.evo2Compacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x000001cac402a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x000001cac402b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  3.2%   4.7% io.github.slayyyyer.morphex.inflector.bench.Workload.category
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.nextCategory
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.evo2Compacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x000001cac402a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x000001cac402b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  2.6%   3.9% java.lang.StringLatin1.toLowerCase
+              java.lang.String.toLowerCase
+              org.atteo.evo.inflector.CompiledInflector.pluralize
+              org.atteo.evo.inflector.English.getPlural
+              org.atteo.evo.inflector.English.plural
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.evo2Compacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x000001cac402a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x000001cac402b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  0.2%   0.3% io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x000001cac402a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x000001cac402b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  0.2%   0.3% jdk.internal.misc.Unsafe.unpark
+              java.util.concurrent.locks.LockSupport.unpark
+              java.util.concurrent.locks.AbstractQueuedSynchronizer.signalNext
+              java.util.concurrent.locks.AbstractQueuedSynchronizer.release
+              java.util.concurrent.locks.ReentrantLock.unlock
+              java.util.concurrent.LinkedBlockingQueue.signalNotEmpty
+              java.util.concurrent.LinkedBlockingQueue.offer
+              java.util.AbstractQueue.add
+              java.util.concurrent.ExecutorCompletionService$QueueingFuture.done
+              java.util.concurrent.FutureTask.finishCompletion
+              java.util.concurrent.FutureTask.set
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  0.2%   0.3% org.atteo.evo.inflector.CompiledInflector.match
+              org.atteo.evo.inflector.CompiledInflector.pluralize
+              org.atteo.evo.inflector.English.getPlural
+              org.atteo.evo.inflector.English.plural
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.evo2Compacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_evo2Compacted_jmhTest.evo2Compacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x000001cac402a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x000001cac402b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  0.2%   0.3% java.util.concurrent.ForkJoinPool.managedBlock
+              java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await
+              java.util.concurrent.LinkedBlockingQueue.take
+              java.util.concurrent.ThreadPoolExecutor.getTask
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  0.2%   0.3% jdk.internal.misc.Unsafe.putReference
+              java.util.concurrent.locks.AbstractQueuedSynchronizer$Node.setPrevRelaxed
+              java.util.concurrent.locks.AbstractQueuedSynchronizer.enqueue
+              java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.doSignal
+              java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.signal
+              java.util.concurrent.LinkedBlockingQueue.signalNotEmpty
+              java.util.concurrent.LinkedBlockingQueue.offer
+              java.util.AbstractQueue.add
+              java.util.concurrent.ExecutorCompletionService$QueueingFuture.done
+              java.util.concurrent.FutureTask.finishCompletion
+              java.util.concurrent.FutureTask.set
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  0.2%   0.3% <other>
+
+....[Thread state: TIMED_WAITING]...................................................................
+ 33.3% 100.0% jdk.internal.misc.Unsafe.park
+              java.util.concurrent.locks.LockSupport.parkNanos
+              java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await
+              java.lang.ref.ReferenceQueue.await
+              java.lang.ref.ReferenceQueue.remove0
+              java.lang.ref.ReferenceQueue.remove
+              jdk.internal.ref.CleanerImpl.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+              jdk.internal.misc.InnocuousThread.run
+
+
+....[Thread state: WAITING].........................................................................
+  0.2% 100.0% jdk.internal.misc.Unsafe.park
+              java.util.concurrent.locks.LockSupport.park
+              java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionNode.block
+              java.util.concurrent.ForkJoinPool.unmanagedBlock
+              java.util.concurrent.ForkJoinPool.managedBlock
+              java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await
+              java.util.concurrent.LinkedBlockingQueue.take
+              java.util.concurrent.ThreadPoolExecutor.getTask
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+
+
+
+# JMH version: 1.37
+# VM version: JDK 21.0.13, OpenJDK 64-Bit Server VM, 21.0.13+9-LTS
+# VM invoker: C:\Users\justin\projects\morphex\.tools\jdk-21.0.13+9\bin\java.exe
+# VM options: <none>
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 3 iterations, 500 ms each
+# Measurement: 5 iterations, 500 ms each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted
+
+# Run progress: 50.00% complete, ETA 00:00:04
+# Fork: 1 of 1
+# Warmup Iteration   1: 213.953 ns/op
+# Warmup Iteration   2: 188.615 ns/op
+# Warmup Iteration   3: 181.064 ns/op
+Iteration   1: 176.624 ns/op
+                 stack: <delayed till summary>
+
+Iteration   2: 188.261 ns/op
+                 stack: <delayed till summary>
+
+Iteration   3: 177.257 ns/op
+                 stack: <delayed till summary>
+
+Iteration   4: 183.777 ns/op
+                 stack: <delayed till summary>
+
+Iteration   5: 179.379 ns/op
+                 stack: <delayed till summary>
+
+
+
+Result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted":
+  181.060 ±(99.9%) 18.885 ns/op [Average]
+  (min, avg, max) = (176.624, 181.060, 188.261), stdev = 4.904
+  CI (99.9%): [162.175, 199.944] (assumes normal distribution)
+
+Secondary result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted:stack":
+Stack profiler:
+
+....[Thread state distributions]....................................................................
+ 66.5%         RUNNABLE
+ 33.3%         TIMED_WAITING
+  0.2%         WAITING
+
+....[Thread state: RUNNABLE]........................................................................
+ 33.3%  50.1% <stack is empty, everything is filtered?>
+ 14.3%  21.5% java.util.Arrays.binarySearch0
+              java.util.Arrays.binarySearch
+              java.lang.Character$UnicodeScript.of
+              io.github.slayyyyer.morphex.inflector.WordShape.isPlainLatinToken
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.resolve
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.pluralize
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  4.4%   6.6% io.github.slayyyyer.morphex.inflector.Rule.applies
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.resolve
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.pluralize
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  3.6%   5.4% io.github.slayyyyer.morphex.inflector.EnglishInflector.pluralize
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  3.2%   4.8% io.github.slayyyyer.morphex.inflector.Lexicon.find
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.resolve
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.pluralize
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  2.0%   3.0% io.github.slayyyyer.morphex.inflector.WordShape.casingOf
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.render
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.resolve
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.pluralize
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  1.6%   2.4% io.github.slayyyyer.morphex.inflector.bench.Workload.category
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.nextCategory
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  1.6%   2.4% java.util.Arrays.binarySearch0
+              java.util.Arrays.binarySearch
+              java.lang.Character$UnicodeScript.of
+              io.github.slayyyyer.morphex.inflector.WordShape.isAllUpperLatinToken
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.resolve
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.pluralize
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  1.4%   2.1% io.github.slayyyyer.morphex.inflector.WordShape.hasUpper
+              io.github.slayyyyer.morphex.inflector.WordShape.lower
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.resolve
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.pluralize
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  0.4%   0.6% io.github.slayyyyer.morphex.inflector.EnglishInflector.resolve
+              io.github.slayyyyer.morphex.inflector.EnglishInflector.pluralize
+              io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompacted
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_avgt_jmhStub
+              io.github.slayyyyer.morphex.inflector.bench.jmh_generated.LookupBenchmark_inflectorCompacted_jmhTest.inflectorCompacted_AverageTime
+              java.lang.invoke.DirectMethodHandle$Holder.invokeSpecial
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502a800.invoke
+              java.lang.invoke.LambdaForm$MH/0x0000023f4502b000.invokeExact_MT
+              jdk.internal.reflect.DirectMethodHandleAccessor.invokeImpl
+              jdk.internal.reflect.DirectMethodHandleAccessor.invoke
+              java.lang.reflect.Method.invoke
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              org.openjdk.jmh.runner.BenchmarkHandler$BenchmarkTask.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.Executors$RunnableAdapter.call
+              java.util.concurrent.FutureTask.run
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+  0.8%   1.2% <other>
+
+....[Thread state: TIMED_WAITING]...................................................................
+ 33.3% 100.0% jdk.internal.misc.Unsafe.park
+              java.util.concurrent.locks.LockSupport.parkNanos
+              java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await
+              java.lang.ref.ReferenceQueue.await
+              java.lang.ref.ReferenceQueue.remove0
+              java.lang.ref.ReferenceQueue.remove
+              jdk.internal.ref.CleanerImpl.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+              jdk.internal.misc.InnocuousThread.run
+
+
+....[Thread state: WAITING].........................................................................
+  0.2% 100.0% jdk.internal.misc.Unsafe.park
+              java.util.concurrent.locks.LockSupport.park
+              java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionNode.block
+              java.util.concurrent.ForkJoinPool.unmanagedBlock
+              java.util.concurrent.ForkJoinPool.managedBlock
+              java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.await
+              java.util.concurrent.LinkedBlockingQueue.take
+              java.util.concurrent.ThreadPoolExecutor.getTask
+              java.util.concurrent.ThreadPoolExecutor.runWorker
+              java.util.concurrent.ThreadPoolExecutor$Worker.run
+              java.lang.Thread.runWith
+              java.lang.Thread.run
+
+
+
+
+# Run complete. Total time: 00:00:09
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                                 Mode  Cnt    Score    Error  Units
+LookupBenchmark.evo2Compacted             avgt    5   58.797 ±  5.110  ns/op
+LookupBenchmark.evo2Compacted:stack       avgt           NaN             ---
+LookupBenchmark.inflectorCompacted        avgt    5  181.060 ± 18.885  ns/op
+LookupBenchmark.inflectorCompacted:stack  avgt           NaN             ---

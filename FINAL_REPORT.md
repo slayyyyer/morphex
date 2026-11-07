@@ -92,6 +92,33 @@ full-vocabulary-seen lemmas, 3 genuinely unseen lemmas, 12 artifact hits; 16 rul
 and 11 lexical decisions. Nothing was tuned on this corpus. Full list:
 `results/release-1.2.0/external/ewt-report.md`.
 
+### AGID independent stress test
+
+AGID 2016.01.19 is a permissively licensed, automatically generated inflection lexicon,
+not a hand-adjudicated corpus. Its archive SHA-256 is
+`15d2d792d309d2dc838bf75d8abcd3feb36708c219dc5158d4fff70b89e601d1`; the
+`infl.txt` SHA-256 is `df0c8f6edd4193d823abfad9e4ff6f42b4526211516649e1c73d4533aef749fa`.
+It is independent of the shipped Kaikki/Wiktionary vocabulary and was not used for training
+or tuning.
+
+After filtering 48,500 `N:` entries to lowercase, clean, single-token preferred plurals,
+**34,642 lemmas** remain. **34,381** are in the full vocabulary and **261** are genuinely
+unseen (7.25x the EWT unseen slice); 5,463 are compact-artifact hits and 29,179 are misses.
+
+| system | selected overall | full-vocab seen | full-vocab unseen (261) | artifact hit (5,463) | artifact miss (29,179) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| stock evo-inflector 2.0 | 97.48% | 97.50% | 95.02% | 87.50% | 99.35% |
+| shipped lexicon | 93.84% | 93.83% | **95.40%** | 61.54% | 99.89% |
+| rules only | **98.20%** | **98.22%** | **95.40%** | **89.16%** | **99.89%** |
+
+AGID has no countability labels; the lexicon's `MASS`/invariant policy returns identity for
+many mass and abstract nouns that AGID gives generated plurals. Of 2,133 lexicon errors,
+1,722 are identity returns (1,685 `MASS/I`), 2,121 are full-vocabulary-seen, 2,101 are
+artifact hits, and only 12 are genuinely unseen. The overall AGID row is therefore a lexical
+policy stress test, not a natural-text accuracy claim. On the 261 unseen lemmas, lexicon and
+rules are tied at 249/261 (95.40%); evo2 is 248/261 (95.02%). Full output:
+`results/release-1.2.0/external/agid-report.md`.
+
 ## Benchmarks
 
 The fixed workload is `inflector-benchmarks/src/main/resources/benchmark-workload-v1.tsv`,
@@ -103,7 +130,7 @@ same-run measurements.
 ## Validation
 
 * `mvn -o -pl inflector-core test` passed after the final resource removal.
-* All 44 Python extract/lexicon/split/external tests passed.
+* All Python extract/lexicon/split/external tests passed.
 * P1, P2 dev and P2 test reports used frozen gold files and 2,000-round family bootstrap.
 * `scripts/release-evidence.sh` emits a checksum manifest for inputs, predictions, reports,
   the Java catalog, and benchmark data.
@@ -117,15 +144,19 @@ same-run measurements.
 * 103 P2 fallback records are unsupported and returned unchanged.
 * Current P2 is 4 errors above the historical v1 951-error measurement, though far below
   evo2’s 1,278.
-* The genuinely unseen external slice is only 36 lemmas; no strong unseen-generalization
-  claim is made.
+* EWT's genuinely unseen slice is only 36 lemmas. AGID adds a 261-lemma unseen stress test,
+  but AGID is automatically generated and not hand-adjudicated; its overall figure is not a
+  corpus-accuracy claim.
 * Compound misses remain concentrated in unsupported fixed phrases and non-productive heads.
 * No human adjudication was performed.
 
 ## Bottom line
 
 The deterministic library preserves P1 at 100%, scores 97.365% on P2 (955 errors), and clears
-the 1,278-error evo2 parity target by 323 errors. The 1.2.0 work corrects compound
+the 1,278-error evo2 parity target by 323 errors. On the larger AGID unseen slice it is tied
+with rules-only at 95.40% (249/261) and one lemma ahead of evo2; its lower AGID overall score
+is a documented mass-policy stress result, not a natural-text regression. The 1.2.0 work
+corrects compound
 provenance/casing, plural-only extraction, preferred plural stability, external membership
 labelling, and website provenance. The measured P2 change from 951 to 955 errors is reported
 explicitly rather than hidden.

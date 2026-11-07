@@ -30,36 +30,6 @@ import java.util.Set;
  */
 public final class EnglishInflector {
 
-    private static final Rule SIBILANT = new Rule(
-            "rule:sibilant-es", "suffix s/x/z/ch/sh appends es", 0, "es", WordShape::endsSibilant);
-    private static final Rule CONSONANT_Y = new Rule(
-            "rule:consonant-y-ies", "consonant before y becomes ies", 1, "ies", WordShape::endsConsonantY);
-    private static final Rule DEFAULT = new Rule(
-            "rule:default-s", "default appends s", 0, "s", lower -> true);
-
-    /**
-     * Bounded morphological backoff for two suffix families whose ordinary spelling is not the productive
-     * default. Both are measured on development data (see docs/evaluation.md) and only ever see dictionary
-     * misses; the shipped lexical artifact retains every attested irregular.
-     */
-    private static final Rule WOMAN = new Rule(
-            "backoff:woman->women", "documented -woman -> -women backoff", 5, "women",
-            lower -> lower.endsWith("woman"));
-    private static final Rule WIFE = new Rule(
-            "backoff:wife->wives", "documented -wife -> -wives backoff", 4, "wives",
-            lower -> lower.endsWith("wife"));
-    private static final Rule MAN = new Rule(
-            "backoff:man->men", "documented noun + man -> men backoff", 3, "men",
-            lower -> lower.length() >= 6 && lower.endsWith("man")
-                    && !lower.endsWith("woman")
-                    && !CompoundTable.INSTANCE.isManException(lower),
-            true);
-    private static final Rule GREEK_SIS = new Rule(
-            "backoff:sis->ses", "documented Greek -sis -> -ses backoff", 2, "es",
-            lower -> lower.length() >= 5 && lower.endsWith("sis"));
-
-    private static final List<Rule> RULES = List.of(WOMAN, WIFE, MAN, GREEK_SIS, SIBILANT, CONSONANT_Y, DEFAULT);
-
     /**
      * Compound transformations are nested, never unbounded: a free tail may contain another documented
      * compound ({@code great-grandfather-in-law}), so the parser carries an explicit recursion budget.
@@ -215,15 +185,7 @@ public final class EnglishInflector {
         }
 
         if (WordShape.isPlainLatinToken(noun)) {
-            for (Rule rule : RULES) {
-                if (rule.applies(lower) && (!rule.lowercaseOnly() || noun.equals(lower))) {
-                    if (sink != null) {
-                        sink.set(DecisionSource.RULE, rule.id(), Countability.UNKNOWN,
-                                false, false, null, rule.description());
-                    }
-                    return render(noun, lower, rule.cut(), rule.append(), policy);
-                }
-            }
+            return applyRule(noun, lower, sink, policy);
         }
 
         if (sink != null) {
@@ -233,6 +195,52 @@ public final class EnglishInflector {
                             + "returned unchanged");
         }
         return noun;
+    }
+
+    /**
+     * Ordered productive rules and documented backoffs. This is deliberately a direct branch chain:
+     * the previous {@code List<Rule>} loop made seven interface-dispatched predicate calls for every
+     * dictionary miss, including the dominant regular-word path.
+     */
+    private String applyRule(String noun, String lower, Sink sink, CasePolicy policy) {
+        if (lower.endsWith("woman")) {
+            return ruleResult(noun, lower, 5, "women",
+                    "backoff:woman->women", "documented -woman -> -women backoff", sink, policy);
+        }
+        if (lower.endsWith("wife")) {
+            return ruleResult(noun, lower, 4, "wives",
+                    "backoff:wife->wives", "documented -wife -> -wives backoff", sink, policy);
+        }
+        if (lower.length() >= 6
+                && lower.endsWith("man")
+                && !lower.endsWith("woman")
+                && noun.equals(lower)
+                && !compounds.isManException(lower)) {
+            return ruleResult(noun, lower, 3, "men",
+                    "backoff:man->men", "documented noun + man -> men backoff", sink, policy);
+        }
+        if (lower.length() >= 5 && lower.endsWith("sis")) {
+            return ruleResult(noun, lower, 2, "es",
+                    "backoff:sis->ses", "documented Greek -sis -> -ses backoff", sink, policy);
+        }
+        if (WordShape.endsSibilant(lower)) {
+            return ruleResult(noun, lower, 0, "es",
+                    "rule:sibilant-es", "suffix s/x/z/ch/sh appends es", sink, policy);
+        }
+        if (WordShape.endsConsonantY(lower)) {
+            return ruleResult(noun, lower, 1, "ies",
+                    "rule:consonant-y-ies", "consonant before y becomes ies", sink, policy);
+        }
+        return ruleResult(noun, lower, 0, "s",
+                "rule:default-s", "default appends s", sink, policy);
+    }
+
+    private String ruleResult(String noun, String lower, int cut, String append, String id, String description,
+            Sink sink, CasePolicy policy) {
+        if (sink != null) {
+            sink.set(DecisionSource.RULE, id, Countability.UNKNOWN, false, false, null, description);
+        }
+        return render(noun, lower, cut, append, policy);
     }
 
     private String fromEntry(String noun, String lower, int entry, Sink sink, CasePolicy policy) {
@@ -503,12 +511,7 @@ public final class EnglishInflector {
                 return render(head, lower, pair[0].length(), pair[1], policy);
             }
         }
-        for (Rule rule : RULES) {
-            if (rule.applies(lower) && (!rule.lowercaseOnly() || head.equals(lower))) {
-                return render(head, lower, rule.cut(), rule.append(), policy);
-            }
-        }
-        return render(head, lower, 0, "s", policy);
+        return applyRule(head, lower, null, policy);
     }
 
     /**

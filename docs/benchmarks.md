@@ -1,9 +1,13 @@
 # Benchmarks
 
 JMH 1.37, two independent forks, average time, GC profiler. The release baseline is
-`results/release-1.2.0/benchmarks/jmh-workload-v1.json`; the log is next to it. A separate
-post-optimization targeted rerun of the unknown and compound methods is
-`results/release-1.2.0/benchmarks/optimization-unknown-compound.json`, with its log alongside.
+`results/release-1.2.0/benchmarks/jmh-workload-v1.json`; the log is next to it. Separate
+post-optimization targeted reruns are
+`results/release-1.2.0/benchmarks/optimization-unknown-compound.json`,
+`results/release-1.2.0/benchmarks/optimization-compacted.json`,
+`results/release-1.2.0/benchmarks/optimization-compacted-ascii.json`, and
+`results/release-1.2.0/benchmarks/optimization-compacted-flat-clean.json`, with their logs
+alongside.
 The fixed input is `inflector-benchmarks/src/main/resources/benchmark-workload-v1.tsv`
 (version 1).
 
@@ -41,7 +45,7 @@ release baseline; the unknown and compound rows are superseded by the targeted r
 | evo2LexicalHit | 118.495 | 121.7 |
 | **inflectorLexicalHit** | **100.733** | 65.7 |
 | evo2Compacted | 104.666 | 80.6 |
-| inflectorCompacted | 456.362 | 395.4 |
+| inflectorCompacted (release baseline) | 456.362 | 395.4 |
 | evo2Unknown | 80.420 | 73.6 |
 | inflectorUnknown | 906.080 | 392.8 |
 | evo2Uppercase | 89.823 | 120.0 |
@@ -64,7 +68,7 @@ release baseline; the unknown and compound rows are superseded by the targeted r
 | inflectorDiagnosticsWorkload | 574.171 | 423.5 |
 | inflectorRulesOnly | 1,032.422 | 910.2 |
 
-Release-baseline same-run ratios (unknown and compound are superseded by the targeted rerun below):
+Release-baseline same-run ratios (unknown, compound and compacted are superseded by the targeted reruns below):
 
 | path | ratio to evo2 | reading |
 | --- | ---: | --- |
@@ -73,7 +77,7 @@ Release-baseline same-run ratios (unknown and compound are superseded by the tar
 | count path | 1.45× | slower |
 | historical distinct corpus | 1.48× | slower |
 | mixed case | 2.37× | slower |
-| compacted regular | 4.36× | slower |
+| compacted regular (pre-optimization) | 4.36× | slower |
 | compound | 5.22× | slower |
 | unsupported | 4.89× | slower |
 | uppercase inference | 7.92× | slower |
@@ -82,8 +86,8 @@ Release-baseline same-run ratios (unknown and compound are superseded by the tar
 
 The fixed workload changes the conclusion from the old corpus-only run: the library is faster
 only on repeated and exact lexical hits. Compacted, uppercase and unsupported paths remain
-slower; the optimized unknown and compound paths are still 7.57x and 4.62x slower than the
-same-run evo2 references, down from 11.27x and 5.22x. No general speedup is claimed.
+slower; the optimized unknown, compacted and compound paths are still 7.57x, 1.33x and 4.62x
+slower than their same-run evo2 references. No general speedup is claimed.
 
 ### Post-release optimization: unknown and compound
 
@@ -109,6 +113,49 @@ methods above were selected in the second run; the ratios are point estimates, n
 same-session A/B with a confidence interval. The after run's 99.9% JMH errors were ±36.0 ns
 for unknown and ±51.6 ns for compound. Against the release run's evo2 references (80.420 and
 95.773 ns), the optimized paths remain 7.57x and 4.62x slower.
+
+### Post-release optimization: compacted
+
+The 456.4 ns / 395.4 B compacted row is the pre-optimization release baseline. The same
+unconditional single-token compound scan also ran here: before `4b79062`, every compacted
+word entered `resolveCompound`, and `freeTailSuffix` allocated a fresh `"-" + tail` string
+for each known free tail before falling through to the productive rule. That accounts for
+most of the old 395 B/op.
+
+Rerunning only the compacted method after the compound fast path:
+
+| path | release baseline ns/op | after compound fix ns/op | change | baseline B/op | after B/op |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| compacted regular | 456.362 | 187.287 | 2.44x faster (-59.0%) | 395.4 | 51.4 |
+
+Stack profiling then showed that roughly 24% of RUNNABLE samples went through
+`Character.UnicodeScript.of` inside `WordShape.isPlainLatinToken` and
+`isAllUpperLatinToken`. The ASCII fast path bypasses Unicode script lookup for ASCII
+letters, which are all Latin, and for ASCII non-letters, which are never combining marks.
+It also classifies ASCII casing without `Character.isLetter`/`isUpperCase` calls.
+
+| path | before ASCII ns/op | after ASCII ns/op | change | B/op |
+| --- | ---: | ---: | ---: | ---: |
+| compacted regular | 187.287 | 105.008 | 1.78x faster (-43.9%) | 51.4 |
+
+The seven-rule `List<Rule>` loop was then replaced with an ordered direct branch chain in
+`applyRule`, shared by the fast path and compound-head respelling. This removes seven
+interface-dispatched predicate calls for every dictionary miss.
+
+| path | after ASCII ns/op | after flat dispatch ns/op | change | B/op |
+| --- | ---: | ---: | ---: | ---: |
+| compacted regular | 105.008 | 79.445 | 1.32x faster (-24.3%) | 51.4 |
+
+The clean same-run evo2 reference is 59.826 ns/op and 80.572 B/op; the current compacted path
+is **1.33x slower**, down from 1.78x after the ASCII path, 3.09x after the compound fix, and
+4.36x in the release baseline. Allocation is unchanged and lower than evo2. The after figures
+are separate targeted runs, not same-session A/Bs and not the full release workload.
+
+The dispatch rewrite also removed `Rule.applies` from the stack sample. The remaining top
+library frames were `isPlainLatinToken` (7.1% cumulative in one fork), `casingOf` (5.0%),
+`Lexicon.find` (4.1%), and `hasUpper` (3.6%); `Workload.category` is harness overhead present
+in both systems. Profile: `optimization-compacted-flat.log`; clean measurement:
+`optimization-compacted-flat-clean.json`.
 
 ### CI smoke gate
 
@@ -160,11 +207,11 @@ rather than mixing runs.
 
 ## Known gaps
 
-* The resolver is still not competitive on cold/unknown/compound paths. The optimized
-  unknown path is 7.57x slower and the compound path 4.62x slower than evo2; unknown lookup
-  still pays for a cold lexical table probe, and compound heads still allocate diagnostic
-  state. The experimental head/split fast path was not retained because it did not measurably
-  help.
+* The resolver is still not competitive on cold/unknown/compacted/compound paths. The
+  optimized unknown path is 7.57x slower, compacted is 1.33x slower, and compound is 4.62x
+  slower than evo2; unknown lookup still pays for a cold lexical table probe, compacted still
+  pays for shape scans and casing, and compound heads still allocate diagnostic state.
+  The experimental head/split fast path was not retained because it did not measurably help.
 * Concurrency is 4.34× below evo2 in this run, despite immutability.
 * The previous historical corpus-only JMH numbers are preserved in `results/benchmarks/` but
   are not comparable to the fixed-category workload and are not used for current claims.

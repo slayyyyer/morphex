@@ -91,9 +91,9 @@ r.source();          // LEXICON — "lex:die"</pre>
     <div class="stat"><b>100%</b><span>P1 frozen-lexicon accuracy (0/36,241 errors) vs 96.474% stock</span></div>
     <div class="stat"><b>97.365%</b><span>P2 family-holdout accuracy (955/36,241 errors) vs 96.474% stock</span></div>
     <div class="stat"><b>81 ns</b><span>repeated lookup vs 111 ns stock (1.36× faster)</span></div>
-    <div class="stat"><b>4.4×</b><span>slower on compacted regular words (456 vs 105 ns)</span></div>
+    <div class="stat"><b>1.3×</b><span>slower on compacted regular words (79 vs 60 ns, flattened dispatch)</span></div>
   </div>
-  <p class="note">Packed lexicon retains ~18.2 MiB. External UD English EWT selected-output check: <b>98.76%</b> overall (evo2 98.12%), <b>98.88%</b> on the 2,148 full-vocabulary-seen lemmas, 96.69% on 363 compact-artifact hits, and 91.67% on only 36 genuinely unseen lemmas; alternative coverage 98.99%. The old “99.17% unseen” label referred to artifact misses and is corrected. <a href="./comparison.html">Comparisons →</a></p>
+  <p class="note">Packed lexicon retains ~18.2 MiB. External UD English EWT selected-output check: <b>98.76%</b> overall (evo2 98.12%), <b>98.88%</b> on the 2,148 full-vocabulary-seen lemmas, 96.69% on 363 compact-artifact hits, and 91.67% on only 36 genuinely unseen lemmas; alternative coverage 98.99%. A larger independent AGID 2016.01.19 stress test has <b>261</b> genuinely unseen lemmas: the lexicon and rules-only tie at <b>95.40%</b> (249/261), evo2 95.02%. AGID is automatically generated and not a corpus; its 93.84% lexicon overall reflects 1,722 MASS/invariant identity returns against generated plurals, not a natural-text regression. <a href="./comparison.html">Comparisons →</a></p>
 </section>
 
 <section>

@@ -119,7 +119,7 @@ Three productive rules, plus documented backoffs for known weak suffix families:
 | `backoff:woman->women` | ends `woman` | `woman -> women` |
 | `backoff:wife->wives` | ends `wife` | `wife -> wives` |
 | `backoff:man->men` | lower-case noun+`man`, length >= 6, not in the reviewed exception set | `man -> men` |
-| `backoff:greek-sis` | ends `sis`, length >= 5 | `sis -> ses` |
+| `backoff:sis->ses` | ends `sis`, length >= 5 | `sis -> ses` |
 
 ### Casing
 
@@ -187,6 +187,7 @@ Headline numbers (JDK 21, recorded runs):
 - P2 family holdout: **97.365%** (955/36,241 errors) vs evo-inflector 2.0 at **96.474%** (1,278); paired gain +0.8913 pp, 95% CI `[+0.7355, +1.0531]`, 538 corrections and 215 regressions. The previous v1 measurement was 951 errors on 36,239 records; v2 is **4 errors above that baseline**, with 303 net fewer errors than evo2.
 - P2 dev: **97.382%** (955/36,473) vs evo2 96.400% (1,313).
 - External EWT (2,184 lemmas, no retraining): **98.76%** selected overall vs evo2 98.12%. Of the 2,148 lemmas in the full permitted vocabulary, **98.88%** are selected correctly; the genuinely unseen slice is only **36 lemmas** (91.67%, tied with both baselines). Compact-artifact hit is 363 lemmas at 96.69%; artifact miss is 1,821 at 99.18%. Alternative coverage is **98.99%**.
+- AGID 2016.01.19 independent lexical stress test (34,642 lemmas, no retraining): **261** full-vocabulary-unseen lemmas, where the shipped lexicon and rules-only are tied at **249/261 (95.40%)** and evo2 is **248/261 (95.02%)**. AGID overall is 93.84% for the lexicon vs 98.20% for rules-only because 1,722 lexicon errors are `MASS`/invariant identity returns against AGID's generated plurals; it is **not a natural-text or corpus-accuracy estimate**. AGID is automatically generated, not a hand-adjudicated corpus; the EWT result is retained separately.
 - Benchmarks: see `docs/benchmarks.md` for the fixed workload and same-run comparisons. No speedup is claimed without the recorded numbers.
 
 ## Reproduce

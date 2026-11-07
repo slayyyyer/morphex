@@ -1,0 +1,30 @@
+{
+  "source": "AGID 2016.01.19",
+  "source_url": "https://sourceforge.net/projects/wordlist/files/AGID/2016.01.19/",
+  "license": "AGID permissive terms (WordNet 1.6-style)",
+  "source_kind": "lexicon",
+  "source_revision": "2016.01.19",
+  "source_sha256": "df0c8f6edd4193d823abfad9e4ff6f42b4526211516649e1c73d4533aef749fa",
+  "archive_sha256": "15d2d792d309d2dc838bf75d8abcd3feb36708c219dc5158d4fff70b89e601d1",
+  "files": [
+    "infl.txt"
+  ],
+  "noun_entries": 48500,
+  "lemmas": 34642,
+  "forms": 34642,
+  "skipped": {
+    "capitalized_or_initialism": 10141,
+    "uncertain_marker": 5934,
+    "no_accepted_form": 3717,
+    "unsupported_shape": 54,
+    "identity": 428,
+    "nonpreferred_variant": 51
+  },
+  "filters": [
+    "AGID noun entries (N:) only",
+    "source lemma must be lowercase (removes capitalized proper names and initialisms)",
+    "preferred plural with no uncertainty marker or non-zero variant level",
+    "single-token alphabetic lemma and form matching [a-z]{3,}",
+    "form != lemma; lower-cased and de-duplicated by lemma"
+  ]
+}

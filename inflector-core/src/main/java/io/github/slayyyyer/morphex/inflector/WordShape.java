@@ -32,7 +32,11 @@ final class WordShape {
     static boolean hasUpper(String token) {
         for (int i = 0; i < token.length(); ) {
             int cp = token.codePointAt(i);
-            if (Character.isUpperCase(cp)) {
+            if (cp < 0x80) {
+                if (cp >= 'A' && cp <= 'Z') {
+                    return true;
+                }
+            } else if (Character.isUpperCase(cp)) {
                 return true;
             }
             i += Character.charCount(cp);
@@ -46,7 +50,19 @@ final class WordShape {
         int firstLetter = -1;
         for (int i = 0; i < token.length(); ) {
             int cp = token.codePointAt(i);
-            if (Character.isLetter(cp)) {
+            if (cp < 0x80) {
+                if (cp >= 'A' && cp <= 'Z') {
+                    if (firstLetter < 0) {
+                        firstLetter = i;
+                    }
+                    anyUpper = true;
+                } else if (cp >= 'a' && cp <= 'z') {
+                    if (firstLetter < 0) {
+                        firstLetter = i;
+                    }
+                    anyLower = true;
+                }
+            } else if (Character.isLetter(cp)) {
                 if (firstLetter < 0) {
                     firstLetter = i;
                 }
@@ -82,7 +98,13 @@ final class WordShape {
         boolean sawLetter = false;
         for (int i = 0; i < token.length(); ) {
             int cp = token.codePointAt(i);
-            if (Character.isLetter(cp)) {
+            if (cp < 0x80) {
+                // ASCII letters are Latin; ASCII punctuation/digits are never combining marks.
+                if (!isAsciiLetter(cp)) {
+                    return false;
+                }
+                sawLetter = true;
+            } else if (Character.isLetter(cp)) {
                 if (Character.UnicodeScript.of(cp) != Character.UnicodeScript.LATIN) {
                     return false;
                 }
@@ -103,10 +125,12 @@ final class WordShape {
         int letters = 0;
         for (int i = 0; i < token.length(); ) {
             int cp = token.codePointAt(i);
-            if (!Character.isLetter(cp)) {
-                return false;
-            }
-            if (Character.UnicodeScript.of(cp) != Character.UnicodeScript.LATIN
+            if (cp < 0x80) {
+                if (cp < 'A' || cp > 'Z') {
+                    return false;
+                }
+            } else if (!Character.isLetter(cp)
+                    || Character.UnicodeScript.of(cp) != Character.UnicodeScript.LATIN
                     || !Character.isUpperCase(cp)) {
                 return false;
             }
@@ -150,6 +174,10 @@ final class WordShape {
             return before == 'u' && n >= 3 && lower.charAt(n - 3) == 'q';
         }
         return true;
+    }
+
+    private static boolean isAsciiLetter(int cp) {
+        return (cp >= 'A' && cp <= 'Z') || (cp >= 'a' && cp <= 'z');
     }
 
     private static boolean isAsciiVowel(char c) {

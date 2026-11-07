@@ -118,14 +118,52 @@ comparison between systems; the latter is not equivalent to another system's sel
 | shipped lexicon | **98.76%** | **98.88%** | 91.67% | **96.69%** | **99.18%** | **98.88%** | 91.18% | **98.99%** |
 | rules only | 98.26% | 98.37% | 91.67% | 93.66% | **99.18%** | 98.37% | 91.18% | 98.26% |
 
-The genuinely unseen slice is only 36 lemmas, so it cannot support a strong “unseen
-generalization” claim. The safer statement is that selected accuracy is 98.76% overall,
-98.88% on full-vocabulary-seen lemmas, and 96.69% on the 363 compact-artifact hits.
+The EWT unseen slice is only 36 lemmas, so it cannot support a strong “unseen
+generalization” claim. It remains the hand-adjudicated corpus result and is **not replaced**
+by the AGID stress test below. The safer statement is that selected accuracy is 98.76%
+overall, 98.88% on full-vocabulary-seen lemmas, and 96.69% on the 363 compact-artifact hits.
 
 The 27 remaining lexicon errors include 4 identity returns on disputed countability, 24
 full-vocabulary-seen lemmas, 3 genuinely unseen lemmas, and 12 artifact hits. By source:
 16 rule decisions and 11 lexical decisions. Nothing was tuned on this set. Full list:
 `results/release-1.2.0/external/ewt-report.md`.
+
+## External stress test - AGID 2016.01.19
+
+[AGID 2016.01.19](https://sourceforge.net/projects/wordlist/files/AGID/2016.01.19/),
+AGID permissive terms (public-domain word lists plus WordNet 1.6-style terms), archive
+SHA-256 `15d2d792d309d2dc838bf75d8abcd3feb36708c219dc5158d4fff70b89e601d1`,
+`infl.txt` SHA-256 `df0c8f6edd4193d823abfad9e4ff6f42b4526211516649e1c73d4533aef749fa`.
+It is an automatically generated inflection lexicon, **not a hand-adjudicated corpus**, and
+is independent of the shipped Kaikki/Wiktionary vocabulary. It was not used for training or
+tuning.
+
+`infl.txt` has 48,500 `N:` entries. The filter keeps a lowercase lemma, one clean preferred
+plural, and a single-token alphabetic lemma/form matching `[a-z]{3,}`; this yields **34,642
+lemmas**. Full-vocabulary membership is **34,381 seen / 261 unseen** (7.25x the EWT unseen
+denominator); compact-artifact membership is **5,463 hit / 29,179 miss**. Other permissive UD
+English treebanks checked added only dozens of unseen lemmas each; GUM, LinES and ParTUT are
+CC BY-NC-SA 4.0 and were excluded.
+
+| system | selected overall | full-vocab seen | full-vocab unseen (261) | artifact hit (5,463) | artifact miss (29,179) | alternative coverage |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| stock evo-inflector 2.0 | 97.48% `[97.32, 97.64]` | 97.50% `[97.33, 97.66]` | 95.02% `[92.34, 97.32]` | 87.50% | 99.35% | n/a |
+| shipped lexicon | 93.84% `[93.59, 94.09]` | 93.83% `[93.57, 94.08]` | **95.40%** `[92.72, 97.70]` | 61.54% | 99.89% | 94.67% |
+| rules only | **98.20%** `[98.06, 98.33]` | **98.22%** `[98.08, 98.35]` | **95.40%** `[92.72, 97.70]` | **89.16%** | **99.89%** | **98.20%** |
+
+**How to read the overall row.** AGID has no countability labels. The lexicon's `MASS` and
+invariant policy returns identity for many mass/abstract nouns that AGID supplies with a
+generated plural. Of 2,133 lexicon errors, **1,722 are identity returns** (1,685 `MASS/I`),
+2,121 are full-vocabulary-seen, 2,101 are compact-artifact hits, and only 12 are in the
+unseen slice. The fact that the lexicon scores below rules-only overall is therefore a
+**lexical policy stress test**, not evidence of a natural-text regression. No stable
+improvement is claimed.
+
+On the 261 genuinely unseen lemmas, lexicon and rules are tied at **249/261 (95.40%)**;
+evo2 is **248/261 (95.02%)**. The 12 lexicon errors are `calliopsis`, `corditis`,
+`corneum`, `dalo`, `globigerina`, `marum`, `pizzaz`, `siris`, `stelis`, `stypsis`, `tabis`,
+and `yourself`; the last is an AGID pronoun misclassified as a noun and illustrates the
+source's label noise. Full output: `results/release-1.2.0/external/agid-report.md`.
 
 ## Artifact preservation
 
@@ -140,7 +178,7 @@ against the P1 records, including countability and policy cases. Current P1 is 0
 * Preferred-form accuracy; Wiktionary preferences are not independently labelled.
 * Singularization, verbs, sentence context, multilingual morphology.
 * Human adjudication; no records were externally reviewed.
-* The external unseen slice is too small for a strong generalization claim.
+* EWT's 36-lemma unseen slice is still too small for a strong claim. AGID's 261-lemma slice is larger, but AGID is automatically generated and has no countability labels; its overall figure is not a corpus-accuracy estimate.
 
 ## Reproduction
 
@@ -163,6 +201,19 @@ py -3 -m tools.research.cli evaluate \
   --gold results/release-1.2.0/eval/p1-test-gold.tsv \
   --predictions results/release-1.2.0/eval/p1-test-preds.tsv \
   --out results/release-1.2.0/eval/p1-report.json --split test --lexicon-split all --iterations 2000
+
+# External EWT (existing) and AGID (new)
+py -3 tools/research/external_eval.py prepare --source agid \
+  --agid build/external/agid/agid-2016.01.19/infl.txt \
+  --out-dir results/release-1.2.0/external
+./mvnw -q -o -pl inflector-eval exec:java \
+  -Dexec.mainClass=io.github.slayyyyer.morphex.inflector.eval.ExternalEval \
+  -Dexec.args="--gold results/release-1.2.0/external/agid-gold.tsv --out results/release-1.2.0/external/agid-predictions.tsv"
+py -3 tools/research/external_eval.py score --source agid \
+  --gold results/release-1.2.0/external/agid-gold.tsv \
+  --predictions results/release-1.2.0/external/agid-predictions.tsv \
+  --lexicon inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v2.tsv \
+  --out-dir results/release-1.2.0/external --family-mode lexical
 
 # P2 (train-only artifact; membership is loaded from its sibling)
 for split in dev test; do

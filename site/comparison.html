@@ -36,7 +36,7 @@
         <tr><td>P2 family-holdout accuracy (36,241)</td><td>96.474% (1,278 errors)</td><td><strong>97.365%</strong> (955 errors; +0.8913 pp; +4 vs historical v1)</td></tr>
         <tr><td>External UD EWT selected overall / full-vocab seen (2,148) / artifact hit (363)</td><td>98.12% / 98.23% / 94.21%</td><td><strong>98.76%</strong> / <strong>98.88%</strong> / <strong>96.69%</strong>; 98.99% alternative coverage</td></tr>
         <tr><td>Repeated lookup (fixed workload)</td><td>110.9 ns/op</td><td><strong>81.4 ns/op</strong> (0.73×)</td></tr>
-        <tr><td>Compacted regular-word lookup</td><td>104.7 ns/op</td><td>456.4 ns/op (4.36× slower)</td></tr>
+        <tr><td>Compacted regular-word lookup (flattened dispatch)</td><td>59.8 ns/op</td><td>79.4 ns/op (1.33× slower)</td></tr>
         <tr><td>Concurrent throughput, 4 threads</td><td><strong>20.91M ops/s</strong></td><td>4.82M ops/s (4.34× lower)</td></tr>
         <tr><td>Runtime dependencies</td><td>none</td><td>none</td></tr>
       </table></div>
@@ -75,7 +75,7 @@
           <tr><td><code>user_id</code>, <code>3.14</code></td><td>unchanged (<code>FALLBACK</code>)</td><td>out of scope, reported</td></tr>
           <tr><td><code>well-known</code></td><td>unchanged</td><td>unmatched compounds not guessed</td></tr>
         </table></div>
-        <div class="callout warn"><strong>Qualifications:</strong> P1 is dictionary coverage, not generalization. External overall accuracy is 98.76% vs 98.12%; 98.88% on full-vocabulary-seen lemmas and 96.69% on compact-artifact hits. Only 36 lemmas are genuinely unseen, so that slice cannot support a strong unseen-generalization claim. Current P2 has 4 more errors than the historical v1 measurement (955 vs 951).</div>
+        <div class="callout warn"><strong>Qualifications:</strong> P1 is dictionary coverage, not generalization. External EWT overall accuracy is 98.76% vs 98.12%; 98.88% on full-vocabulary-seen lemmas and 96.69% on compact-artifact hits, but only 36 EWT lemmas are genuinely unseen. The larger AGID 2016.01.19 stress test has 261 unseen lemmas, where the lexicon and rules-only tie at 95.40% (249/261); AGID is automatically generated, and its 93.84% lexicon overall is dominated by MASS/invariant identity returns, not natural-text accuracy. Current P2 has 4 more errors than the historical v1 measurement (955 vs 951).</div>
       </div>
     </div>
     <div class="card">

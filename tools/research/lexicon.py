@@ -22,7 +22,7 @@ FNV_OFFSET = 0xCBF29CE484222325
 FNV_PRIME = 0x100000001B3
 MASK64 = (1 << 64) - 1
 
-# Must stay in sync with CompoundTable.manExceptions and EnglishInflector.RULES.
+# Must stay in sync with CompoundTable.manExceptions and EnglishInflector's rule dispatch.
 MAN_EXCEPTIONS = {
     "human", "german", "roman", "shaman", "talisman", "caiman", "ottoman", "brahman", "atman",
     "liman", "chroman", "hooman", "kundiman", "laraman", "oralman", "abhuman", "metahuman",
@@ -46,7 +46,7 @@ def productive_form(lemma: str) -> str:
 
     Compaction is only safe when this function still reproduces the attested form: the artifact deliberately
     omits regular words, so a later rule change must not silently alter an omitted word. Keeping this mirror in
-    the same order as ``EnglishInflector.RULES`` is what prevents that class of P1 regression.
+    the same order as ``EnglishInflector``'s rule dispatch is what prevents that class of P1 regression.
     """
     low = lemma.lower()
     if low.endswith("woman"):

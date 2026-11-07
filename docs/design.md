@@ -80,7 +80,7 @@ graph retained 55.5 MB; the packed artifact measured **19.08 MB** retained in th
 run after GC, at the cost of slower one-time load (column packing + index build, 718-726 ms
 to first call on that run). No per-entry object exists.
 
-## Rules (`Rule.java`, `WordShape.java`)
+## Rules (`EnglishInflector.java`, `WordShape.java`)
 
 Three productive rules, with documented backoffs for known weak suffix families (the
 backoffs are bounded lexical fallbacks, not general suffix rules):
@@ -91,7 +91,7 @@ backoffs are bounded lexical fallbacks, not general suffix rules):
 | `rule:consonant-y-ies` | consonant before final `y`, including `qu + y` (`soliloquy → soliloquies`) | `y → ies` (cut 1) |
 | `rule:default-s` | otherwise | append `s` |
 
-Rules are separate from the lexicon by construction: a `Rule` is a suffix condition plus a
+Rules are separate from the lexicon by construction: a rule is a suffix condition plus a
 fixed end-of-token edit. Nothing word-specific is expressible as a rule, which removes the
 upstream `carp/scarp` and `louse/blouse` failure structurally — `carp` and `louse` are
 lexical rows, not patterns, so they cannot reach `scarp` or `blouse`.
