@@ -207,8 +207,16 @@ Headline numbers (JDK 21, recorded runs):
   1 regression.
 * P2 family holdout: **88.618%** for both rules and train-only lexicon (no leakage possible),
   which is the honest unseen-family number.
-* JMH: 83 ns/op repeated (vs 110 ns stock), 395 ns/op distinct-word (vs 163 ns stock),
-  29-51 B/op allocated. Concurrent throughput was not captured in the final run.
+* External check (UD English EWT, CC BY-SA 4.0; 2,184 lemmas, no retraining): **94.55%**
+  overall, **77.09%** on lemmas present in the shipped lexicon, **99.13%** on unseen lemmas.
+  The low seen figure is a data defect: common count nouns such as `book`, `bag` and
+  `account` are misclassified as `PLURAL_ONLY`/`MASS` and returned unchanged. P1 does not
+  catch this because identity counts as correct for those policy rows; see
+  `docs/evaluation.md` and `results/external/ewt-report.md`. Treat P1 as dictionary coverage,
+  not production accuracy.
+* JMH: 82 ns/op repeated (vs 98 ns stock), 201 ns/op distinct-word (vs 151 ns stock;
+  1.34× slower), 29-51 B/op allocated. The packed lexicon retains 25.4 MB after load.
+  Concurrent throughput was not captured in the final run.
 
 ## Reproduce
 

@@ -37,7 +37,7 @@ Rule source usage on the test split: 27,421 rule decisions, 23,517 lexical decis
 Mass nouns explain the overall gap: stock 2.0 pluralizes all 14,952 mass records
 (`informations`), while this library returns the lemma and reports `MASS`.
 
-### Residual errors (4)
+### Residual errors (2)
 
 | lemma | output | gold accepted | classification |
 | --- | --- | --- | --- |
@@ -68,6 +68,36 @@ built-in exception table while P2 forbids using the test families' lexical knowl
 P2 is the primary evaluation for the learning experiment: a learner must improve the
 rules-only baseline using only train/dev data.
 
+## External validation — UD English EWT
+
+A fresh, independently annotated corpus check: [UD English EWT](https://github.com/UniversalDependencies/UD_English-EWT),
+CC BY-SA 4.0, 10,106 plural noun tokens, filtered to 2,184 single-token alphabetic
+lemma→plural pairs (2,221 attested forms). The shipped artifact was **not retrained or tuned**
+on this corpus; 454 of the 2,184 lemmas happen to be present in the lexicon, and 1,730 are
+unseen.
+
+| system | overall | seen (454) | unseen (1,730) |
+| --- | --- | --- | --- |
+| stock evo-inflector 2.0 | 98.12% [97.53, 98.67] | 95.37% [93.39, 97.14] | 98.84% [98.32, 99.31] |
+| shipped lexicon | **94.55%** [93.59, 95.47] | **77.09%** [73.13, 80.84] | **99.13%** [98.67, 99.54] |
+| repaired rules only | 97.71% [97.07, 98.31] | 92.29% [89.65, 94.49] | 99.13% [98.67, 99.54] |
+
+Accepted-form accuracy; 95% percentile bootstrap over lemmas. The unseen lexicon number
+equals the rules number by construction: unseen lemmas fall through to the productive rules.
+
+The seen-subset failure is a **data defect, not a morphology result**: 100 of the 119 lexicon
+errors are identity returns, and the artifact classifies common count nouns as mass or
+plural-only — `book` is `PLURAL_ONLY`, `account` is `MASS`, `bag` is `PLURAL_ONLY`, so they
+are returned unchanged (`book`, not `books`). The identity errors break down as `MASS` 44,
+`PLURAL_ONLY` 53, `MASS/I` 3.
+
+P1 did not expose this because its overall accepted-form slice counts identity as correct for
+`MASS`/`PLURAL_ONLY` rows, and its primary slice excludes those rows entirely. The external
+corpus supplies count contexts and shows that the artifact's countability classification is
+over-broad. Fixing it requires correcting extraction/classification and re-running P1/P2; it
+was deliberately **not** tuned against this external set. Until then, treat P1 as dictionary
+coverage, not production accuracy, and see `results/external/ewt-report.md` for the error list.
+
 ## Candidate-oracle ceiling (P2 test)
 
 Candidates are generated from lemma suffix and shape only; the deterministic base result is
@@ -96,6 +126,9 @@ Because the ceiling clears the required gain, a learned candidate selector is wo
 * Preferred-form accuracy: Wiktionary preferences are not independently labelled here.
 * Singularization, verbs, sentence context: out of scope.
 * Human adjudication: no new records were adjudicated, so no claim of human review is made.
+* External generalization: UD EWT is one corpus with its own annotation noise (typos and
+  abbreviations such as `aquiriums` and `bredders` appear in the gold). The 119-error list is
+  published rather than hand-cleaned, and the defect pattern is far larger than that noise.
 
 ## Reproduction
 
@@ -117,6 +150,22 @@ py -3 -m tools.research.cli artifact --split all  --selection compact
 py -3 -m tools.research.cli evaluate \
   --gold results/eval/test-gold.tsv --predictions results/eval/p1-test-preds.tsv \
   --out results/eval/p1-report.json --split test --lexicon-split all
+
+# external validation (network: UD English EWT, CC BY-SA 4.0)
+git clone --depth 1 https://github.com/UniversalDependencies/UD_English-EWT.git \
+  build/external/ewt-repo
+mkdir -p build/external/ud-ewt
+cp build/external/ewt-repo/*.conllu build/external/ud-ewt/
+py -3 tools/research/external_eval.py prepare --conllu-dir build/external/ud-ewt \
+  --out-dir results/external
+./mvnw -q -pl inflector-eval -am package -DskipTests
+./mvnw -q -pl inflector-eval exec:java \
+  -Dexec.mainClass=io.github.morphex.inflector.eval.ExternalEval \
+  -Dexec.args="--gold results/external/ewt-gold.tsv --out results/external/ewt-predictions.tsv"
+py -3 tools/research/external_eval.py score --gold results/external/ewt-gold.tsv \
+  --predictions results/external/ewt-predictions.tsv \
+  --lexicon inflector-core/src/main/resources/io/github/morphex/inflector/lexicon-v1.tsv \
+  --out-dir results/external
 ```
 
 The committed `results/eval/*.json` are the outputs of these commands. `data/raw/` is

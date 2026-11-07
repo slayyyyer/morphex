@@ -7,4 +7,6 @@ data/derived/
 build/
 .freebuff/
 results/eval/*.tsv
+results/external/*.tsv
+results/benchmarks/*.log
 inflector-benchmarks/results/*.tmp

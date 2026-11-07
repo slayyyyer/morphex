@@ -18,7 +18,7 @@ import java.util.Set;
  * allocates nothing for identity results and never builds diagnostic collections.
  *
  * <p>Instances are immutable and thread-safe. There is no mutable global configuration: the bundled lexicon is
- * loaded once into an immutable map and shared.
+ * loaded once into packed arrays and shared.
  *
  * <pre>{@code
  * EnglishInflector inflector = EnglishInflector.standard();
@@ -141,8 +141,8 @@ public final class EnglishInflector {
         }
 
         String lower = WordShape.lower(noun);
-        Lexicon.Entry entry = lexicon.lookup(lower);
-        if (entry != null && entry.matchesCase(noun)) {
+        int entry = lexicon.find(lower);
+        if (entry >= 0 && lexicon.matchesCase(entry, noun)) {
             return fromEntry(noun, lower, entry, sink);
         }
 
@@ -182,62 +182,66 @@ public final class EnglishInflector {
         return noun;
     }
 
-    private String fromEntry(String noun, String lower, Lexicon.Entry entry, Sink sink) {
-        if (entry.initialism) {
+    private String fromEntry(String noun, String lower, int entry, Sink sink) {
+        if (lexicon.initialism(entry)) {
             if (sink != null) {
-                sink.set(DecisionSource.LEXICON, entry.id() + "#initialism", entry.countability,
-                        false, entry.ambiguous, null,
+                sink.set(DecisionSource.LEXICON, lexicon.id(entry) + "#initialism", lexicon.countability(entry),
+                        false, lexicon.ambiguous(entry), null,
                         "initialism metadata: append the entry's s/es suffix without whole-token re-casing");
             }
-            return renderInitialism(noun, lower, entry.append);
+            return renderInitialism(noun, lower, lexicon.append(entry));
         }
 
-        if (entry.countability == Countability.MASS
-                || entry.countability == Countability.PLURAL_ONLY
-                || entry.invariant) {
+        Countability countability = lexicon.countability(entry);
+        boolean invariant = lexicon.invariant(entry);
+        if (countability == Countability.MASS
+                || countability == Countability.PLURAL_ONLY
+                || invariant) {
             if (sink != null) {
-                sink.set(DecisionSource.LEXICON, entry.id(), entry.countability,
-                        entry.invariant, entry.ambiguous, renderAlternatives(noun, lower, entry, false),
+                sink.set(DecisionSource.LEXICON, lexicon.id(entry), countability,
+                        invariant, lexicon.ambiguous(entry), renderAlternatives(noun, lower, entry, false),
                         entryNote(entry));
             }
             return noun;
         }
 
-        boolean classical = mode == Mode.CLASSICAL && entry.classicalCut >= 0;
-        int cut = classical ? entry.classicalCut : entry.cut;
-        String append = classical ? entry.classicalAppend : entry.append;
+        boolean classical = mode == Mode.CLASSICAL && lexicon.classicalCut(entry) >= 0;
+        int cut = classical ? lexicon.classicalCut(entry) : lexicon.cut(entry);
+        String append = classical ? lexicon.classicalAppend(entry) : lexicon.append(entry);
         String plural = render(noun, lower, cut, append);
 
         if (sink != null) {
-            sink.set(DecisionSource.LEXICON, entry.id(), entry.countability, false, entry.ambiguous,
+            sink.set(DecisionSource.LEXICON, lexicon.id(entry), countability, false, lexicon.ambiguous(entry),
                     renderAlternatives(noun, lower, entry, classical),
                     classical ? "classical preference selected by mode" : entryNote(entry));
         }
         return plural;
     }
 
-    private List<String> renderAlternatives(String noun, String lower, Lexicon.Entry entry, boolean classicalUsed) {
-        if (entry.alternatives.isEmpty() && entry.classical == null && !classicalUsed) {
+    private List<String> renderAlternatives(String noun, String lower, int entry, boolean classicalUsed) {
+        List<String> stored = lexicon.alternatives(entry);
+        String classical = lexicon.classical(entry);
+        if (stored.isEmpty() && classical == null && !classicalUsed) {
             return null;
         }
-        List<String> alternatives = new ArrayList<>(entry.alternatives.size() + 1);
+        List<String> alternatives = new ArrayList<>(stored.size() + 1);
         if (classicalUsed) {
-            alternatives.add(renderFull(noun, lower, entry.plural));
-        } else if (entry.classical != null) {
-            alternatives.add(renderFull(noun, lower, entry.classical));
+            alternatives.add(renderFull(noun, lower, lexicon.plural(entry)));
+        } else if (classical != null) {
+            alternatives.add(renderFull(noun, lower, classical));
         }
-        for (String alternative : entry.alternatives) {
+        for (String alternative : stored) {
             alternatives.add(renderFull(noun, lower, alternative));
         }
         return alternatives;
     }
 
-    private static String entryNote(Lexicon.Entry entry) {
-        return switch (entry.countability) {
+    private String entryNote(int entry) {
+        return switch (lexicon.countability(entry)) {
             case MASS -> "mass noun: returned unchanged by policy";
             case PLURAL_ONLY -> "plural-only lemma: returned unchanged by policy";
             case MIXED -> "mixed mass/countable noun: pluralized in its countable sense";
-            default -> entry.invariant ? "invariant plural: singular and plural are identical" : "";
+            default -> lexicon.invariant(entry) ? "invariant plural: singular and plural are identical" : "";
         };
     }
 

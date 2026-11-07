@@ -1,0 +1,20 @@
+{
+  "source": "UD English EWT",
+  "source_url": "https://github.com/UniversalDependencies/UD_English-EWT",
+  "license": "CC BY-SA 4.0",
+  "files": [
+    "en_ewt-ud-dev.conllu",
+    "en_ewt-ud-test.conllu",
+    "en_ewt-ud-train.conllu"
+  ],
+  "plural_noun_tokens": 10106,
+  "lemmas": 2184,
+  "forms": 2221,
+  "filters": [
+    "UPOS=NOUN and Number=Plur",
+    "single-token word lines only",
+    "lemma and form match [a-z]{2,}",
+    "form != lemma",
+    "lower-cased and de-duplicated by lemma"
+  ]
+}

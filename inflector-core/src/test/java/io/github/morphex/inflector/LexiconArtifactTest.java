@@ -67,10 +67,10 @@ class LexiconArtifactTest {
                         + "German\tGermans\t-\t-\tCOUNTABLE\tC\tt\n"
                         + "germ\tgerms\t-\t-\tCOUNTABLE\t-\tt\n"));
         assertEquals(2, lexicon.size());
-        Lexicon.Entry german = lexicon.lookup("german");
-        assertNotNull(german);
-        assertTrue(german.caseSensitive);
-        assertFalse(german.matchesCase("german"));
-        assertTrue(german.matchesCase("German"));
+        int german = lexicon.find("german");
+        assertTrue(german >= 0);
+        assertTrue(lexicon.caseSensitive(german));
+        assertFalse(lexicon.matchesCase(german, "german"));
+        assertTrue(lexicon.matchesCase(german, "German"));
     }
 }

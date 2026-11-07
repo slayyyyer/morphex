@@ -15,6 +15,15 @@ CC BY-SA 3.0. Redistributing the jar therefore distributes CC BY-SA 3.0 data alo
 MIT code. `NOTICE` records the attribution. If that is unacceptable, build without the
 bundled artifact (see README) or regenerate the artifact from a source you can license.
 
+## External validation corpus (not redistributed)
+
+`docs/evaluation.md` reports an external check on
+[UD English EWT](https://github.com/UniversalDependencies/UD_English-EWT), licensed
+**CC BY-SA 4.0**. The corpus is downloaded into `build/external/` and is not committed; only aggregate
+reports under `results/external/` and citations are kept (derived pair/prediction TSVs are
+gitignored). The shipped artifact is not derived from this corpus and the corpus was not
+used for training or tuning.
+
 ## Pinned snapshot
 
 | Field | Value |
