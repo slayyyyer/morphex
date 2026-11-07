@@ -9,7 +9,7 @@ Deterministic English noun pluralization for Java 17+, inspired by and built on 
 - Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **100.000%** vs **96.474%** accepted-form accuracy. On the family-holdout protocol this library scores **97.365%** vs **96.474%** (see `docs/evaluation.md`).
 - The linear-selector investigation remains rejected and **not shipped** (`docs/learning.md`).
 
-Status: `1.2.0` on Maven Central: `io.github.slayyyyer.morphex:english-inflector-core:1.2.0`.
+Status: `1.2.0` release branch. Maven Central publication of these artifacts is not part of this commit; build/install the branch locally until it is published.
 
 Website: https://slayyyyer.github.io/morphex/ (install, quickstart, comparison, benchmarks, design, Javadoc).
 
