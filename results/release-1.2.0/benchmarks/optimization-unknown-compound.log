@@ -1,0 +1,243 @@
+# JMH version: 1.37
+# VM version: JDK 21.0.13, OpenJDK 64-Bit Server VM, 21.0.13+9-LTS
+# VM invoker: C:\Users\justin\projects\morphex\.tools\jdk-21.0.13+9\bin\java.exe
+# VM options: <none>
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 3 iterations, 500 ms each
+# Measurement: 5 iterations, 500 ms each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompound
+
+# Run progress: 0.00% complete, ETA 00:00:16
+# Fork: 1 of 2
+# Warmup Iteration   1: 682.716 ns/op
+# Warmup Iteration   2: 440.795 ns/op
+# Warmup Iteration   3: 423.391 ns/op
+Iteration   1: 415.559 ns/op
+                 gc.alloc.rate:      453.209 MB/sec
+                 gc.alloc.rate.norm: 197.605 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            3.000 ms
+
+Iteration   2: 406.773 ns/op
+                 gc.alloc.rate:      462.999 MB/sec
+                 gc.alloc.rate.norm: 197.606 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            2.000 ms
+
+Iteration   3: 467.087 ns/op
+                 gc.alloc.rate:      403.198 MB/sec
+                 gc.alloc.rate.norm: 197.607 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            3.000 ms
+
+Iteration   4: 486.883 ns/op
+                 gc.alloc.rate:      386.839 MB/sec
+                 gc.alloc.rate.norm: 197.607 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            2.000 ms
+
+Iteration   5: 404.906 ns/op
+                 gc.alloc.rate:      465.195 MB/sec
+                 gc.alloc.rate.norm: 197.606 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            2.000 ms
+
+
+# Run progress: 25.00% complete, ETA 00:00:15
+# Fork: 2 of 2
+# Warmup Iteration   1: 647.135 ns/op
+# Warmup Iteration   2: 472.496 ns/op
+# Warmup Iteration   3: 443.147 ns/op
+Iteration   1: 428.224 ns/op
+                 gc.alloc.rate:      439.847 MB/sec
+                 gc.alloc.rate.norm: 197.606 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            2.000 ms
+
+Iteration   2: 415.882 ns/op
+                 gc.alloc.rate:      452.754 MB/sec
+                 gc.alloc.rate.norm: 197.605 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            1.000 ms
+
+Iteration   3: 445.888 ns/op
+                 gc.alloc.rate:      422.367 MB/sec
+                 gc.alloc.rate.norm: 197.606 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            1.000 ms
+
+Iteration   4: 501.167 ns/op
+                 gc.alloc.rate:      375.799 MB/sec
+                 gc.alloc.rate.norm: 197.607 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            2.000 ms
+
+Iteration   5: 454.198 ns/op
+                 gc.alloc.rate:      414.656 MB/sec
+                 gc.alloc.rate.norm: 197.606 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            2.000 ms
+
+
+
+Result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompound":
+  442.657 ±(99.9%) 51.620 ns/op [Average]
+  (min, avg, max) = (404.906, 442.657, 501.167), stdev = 34.144
+  CI (99.9%): [391.037, 494.277] (assumes normal distribution)
+
+Secondary result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompound:gc.alloc.rate":
+  427.686 ±(99.9%) 48.443 MB/sec [Average]
+  (min, avg, max) = (375.799, 427.686, 465.195), stdev = 32.042
+  CI (99.9%): [379.244, 476.129] (assumes normal distribution)
+
+Secondary result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompound:gc.alloc.rate.norm":
+  197.606 ±(99.9%) 0.001 B/op [Average]
+  (min, avg, max) = (197.605, 197.606, 197.607), stdev = 0.001
+  CI (99.9%): [197.605, 197.607] (assumes normal distribution)
+
+Secondary result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompound:gc.count":
+  10.000 ±(99.9%) 0.001 counts [Sum]
+  (min, avg, max) = (1.000, 1.000, 1.000), stdev = 0.001
+  CI (99.9%): [10.000, 10.000] (assumes normal distribution)
+
+Secondary result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorCompound:gc.time":
+  20.000 ±(99.9%) 0.001 ms [Sum]
+  (min, avg, max) = (1.000, 2.000, 3.000), stdev = 0.667
+  CI (99.9%): [20.000, 20.000] (assumes normal distribution)
+
+
+# JMH version: 1.37
+# VM version: JDK 21.0.13, OpenJDK 64-Bit Server VM, 21.0.13+9-LTS
+# VM invoker: C:\Users\justin\projects\morphex\.tools\jdk-21.0.13+9\bin\java.exe
+# VM options: <none>
+# Blackhole mode: compiler (auto-detected, use -Djmh.blackhole.autoDetect=false to disable)
+# Warmup: 3 iterations, 500 ms each
+# Measurement: 5 iterations, 500 ms each
+# Timeout: 10 min per iteration
+# Threads: 1 thread, will synchronize iterations
+# Benchmark mode: Average time, time/op
+# Benchmark: io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorUnknown
+
+# Run progress: 50.00% complete, ETA 00:00:10
+# Fork: 1 of 2
+# Warmup Iteration   1: 740.682 ns/op
+# Warmup Iteration   2: 578.621 ns/op
+# Warmup Iteration   3: 611.338 ns/op
+Iteration   1: 590.634 ns/op
+                 gc.alloc.rate:      78.759 MB/sec
+                 gc.alloc.rate.norm: 48.808 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            2.000 ms
+
+Iteration   2: 608.357 ns/op
+                 gc.alloc.rate:      76.466 MB/sec
+                 gc.alloc.rate.norm: 48.808 B/op
+                 gc.count:           ≈ 0 counts
+
+Iteration   3: 604.773 ns/op
+                 gc.alloc.rate:      76.910 MB/sec
+                 gc.alloc.rate.norm: 48.808 B/op
+                 gc.count:           ≈ 0 counts
+
+Iteration   4: 618.684 ns/op
+                 gc.alloc.rate:      75.161 MB/sec
+                 gc.alloc.rate.norm: 48.809 B/op
+                 gc.count:           ≈ 0 counts
+
+Iteration   5: 618.362 ns/op
+                 gc.alloc.rate:      75.226 MB/sec
+                 gc.alloc.rate.norm: 48.809 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            2.000 ms
+
+
+# Run progress: 75.00% complete, ETA 00:00:05
+# Fork: 2 of 2
+# Warmup Iteration   1: 736.226 ns/op
+# Warmup Iteration   2: 653.833 ns/op
+# Warmup Iteration   3: 581.153 ns/op
+Iteration   1: 579.851 ns/op
+                 gc.alloc.rate:      80.234 MB/sec
+                 gc.alloc.rate.norm: 48.808 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            3.000 ms
+
+Iteration   2: 596.979 ns/op
+                 gc.alloc.rate:      77.894 MB/sec
+                 gc.alloc.rate.norm: 48.808 B/op
+                 gc.count:           ≈ 0 counts
+
+Iteration   3: 602.723 ns/op
+                 gc.alloc.rate:      77.187 MB/sec
+                 gc.alloc.rate.norm: 48.808 B/op
+                 gc.count:           ≈ 0 counts
+
+Iteration   4: 598.382 ns/op
+                 gc.alloc.rate:      77.738 MB/sec
+                 gc.alloc.rate.norm: 48.808 B/op
+                 gc.count:           ≈ 0 counts
+
+Iteration   5: 667.384 ns/op
+                 gc.alloc.rate:      69.439 MB/sec
+                 gc.alloc.rate.norm: 48.809 B/op
+                 gc.count:           1.000 counts
+                 gc.time:            6.000 ms
+
+
+
+Result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorUnknown":
+  608.613 ±(99.9%) 35.956 ns/op [Average]
+  (min, avg, max) = (579.851, 608.613, 667.384), stdev = 23.783
+  CI (99.9%): [572.657, 644.569] (assumes normal distribution)
+
+Secondary result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorUnknown:gc.alloc.rate":
+  76.501 ±(99.9%) 4.406 MB/sec [Average]
+  (min, avg, max) = (69.439, 76.501, 80.234), stdev = 2.914
+  CI (99.9%): [72.096, 80.907] (assumes normal distribution)
+
+Secondary result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorUnknown:gc.alloc.rate.norm":
+  48.808 ±(99.9%) 0.001 B/op [Average]
+  (min, avg, max) = (48.808, 48.808, 48.809), stdev = 0.001
+  CI (99.9%): [48.808, 48.809] (assumes normal distribution)
+
+Secondary result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorUnknown:gc.count":
+  4.000 ±(99.9%) 0.001 counts [Sum]
+  (min, avg, max) = (≈ 0, 0.400, 1.000), stdev = 0.516
+  CI (99.9%): [4.000, 4.000] (assumes normal distribution)
+
+Secondary result "io.github.slayyyyer.morphex.inflector.bench.LookupBenchmark.inflectorUnknown:gc.time":
+  13.000 ±(99.9%) 0.001 ms [Sum]
+  (min, avg, max) = (≈ 0, 1.300, 6.000), stdev = 2.003
+  CI (99.9%): [13.000, 13.000] (assumes normal distribution)
+
+
+# Run complete. Total time: 00:00:20
+
+REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
+why the numbers are the way they are. Use profilers (see -prof, -lprof), design factorial
+experiments, perform baseline and negative tests that provide experimental control, make sure
+the benchmarking environment is safe on JVM/OS/HW level, ask for reviews from the domain experts.
+Do not assume the numbers tell you what you want them to tell.
+
+NOTE: Current JVM experimentally supports Compiler Blackholes, and they are in use. Please exercise
+extra caution when trusting the results, look into the generated code to check the benchmark still
+works, and factor in a small probability of new VM bugs. Additionally, while comparisons between
+different JVMs are already problematic, the performance difference caused by different Blackhole
+modes can be very significant. Please make sure you use the consistent Blackhole mode for comparisons.
+
+Benchmark                                             Mode  Cnt    Score    Error   Units
+LookupBenchmark.inflectorCompound                     avgt   10  442.657 ± 51.620   ns/op
+LookupBenchmark.inflectorCompound:gc.alloc.rate       avgt   10  427.686 ± 48.443  MB/sec
+LookupBenchmark.inflectorCompound:gc.alloc.rate.norm  avgt   10  197.606 ±  0.001    B/op
+LookupBenchmark.inflectorCompound:gc.count            avgt   10   10.000           counts
+LookupBenchmark.inflectorCompound:gc.time             avgt   10   20.000               ms
+LookupBenchmark.inflectorUnknown                      avgt   10  608.613 ± 35.956   ns/op
+LookupBenchmark.inflectorUnknown:gc.alloc.rate        avgt   10   76.501 ±  4.406  MB/sec
+LookupBenchmark.inflectorUnknown:gc.alloc.rate.norm   avgt   10   48.808 ±  0.001    B/op
+LookupBenchmark.inflectorUnknown:gc.count             avgt   10    4.000           counts
+LookupBenchmark.inflectorUnknown:gc.time              avgt   10   13.000               ms
+
+Benchmark result is saved to results/release-1.2.0/benchmarks/optimization-unknown-compound.json

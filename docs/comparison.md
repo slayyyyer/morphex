@@ -90,9 +90,11 @@ lookup from rendering and stores exceptions as whole-word entries. It also adds:
   Compact-artifact hit is 363 lemmas at 96.69%. Overall selected accuracy is 98.76% vs
   98.12%; alternative coverage is 98.99%.
 * **Latency is mixed, not universally improved.** Repeated and exact lexical lookups are
-  faster in the fixed-workload run, but compacted, unknown, compound, uppercase and unsupported
-  paths are slower (up to 11.3x on unknown tokens), and four-thread throughput is 4.34x lower.
-  Retained heap is lower.
+  faster in the fixed-workload run. A targeted optimization improved unknown tokens from
+  906.1 to 608.6 ns and compounds from 499.7 to 442.7 ns, but they remain 7.57x and 4.62x
+  slower than evo2; compacted (4.36x), uppercase (7.92x) and unsupported (4.89x) paths are also
+  slower, and four-thread throughput is 4.34x lower. The unknown/compound after figures are a
+  separate targeted rerun, not the full release run. Retained heap is lower.
 * **Unknown-uppercase inference is a default policy change.** It applies only after lexical
   lookup, only to 2-6 upper-case Latin letters, and can be disabled with
   `UppercasePolicy.LITERAL`.

@@ -26,7 +26,8 @@
       <h2>Benchmarks</h2>
       <p class="small">JMH 1.37, two forks, five 500 ms measurements, GC profiler. Inputs are the
       fixed, versioned <code>benchmark-workload-v1.tsv</code>; they are not sampled at run time.
-      Raw data: <code>results/release-1.2.0/benchmarks/jmh-workload-v1.json</code>. Methodology:
+      Raw data: <code>results/release-1.2.0/benchmarks/jmh-workload-v1.json</code> and the targeted
+      optimization rerun <code>optimization-unknown-compound.json</code>. Methodology:
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/benchmarks.md">docs/benchmarks.md</a>.</p>
       <div class="tw"><table class="data">
         <tr><th>Field</th><th>Value</th></tr>
@@ -41,11 +42,11 @@
         <tr><td>evo2Compacted</td><td>104.7</td><td>80.6</td></tr>
         <tr><td>inflectorCompacted</td><td>456.4</td><td>395.4</td></tr>
         <tr><td>evo2Unknown</td><td>80.4</td><td>73.6</td></tr>
-        <tr><td>inflectorUnknown</td><td>906.1</td><td>392.8</td></tr>
+        <tr><td>inflectorUnknown <span class="small">(optimized)</span></td><td>608.6</td><td>48.8</td></tr>
         <tr><td>evo2Uppercase</td><td>89.8</td><td>120.0</td></tr>
         <tr><td>inflectorUppercase</td><td>711.4</td><td>163.6</td></tr>
         <tr><td>evo2Compound</td><td>95.8</td><td>103.2</td></tr>
-        <tr><td>inflectorCompound</td><td>499.7</td><td>404.0</td></tr>
+        <tr><td>inflectorCompound <span class="small">(optimized)</span></td><td>442.7</td><td>197.6</td></tr>
         <tr><td>evo2Unsupported</td><td>78.6</td><td>113.1</td></tr>
         <tr><td>inflectorUnsupported</td><td>384.3</td><td>377.1</td></tr>
         <tr><td>evo2Repeated</td><td>110.9</td><td>104.8</td></tr>
@@ -55,9 +56,11 @@
         <tr><td>inflectorRulesOnly</td><td>1,032.4</td><td>910.2</td></tr>
       </table></div>
       <div class="callout warn"><strong>Measured claim:</strong> repeated lookup is 1.36× faster
-      (81.4 vs 110.9 ns) and exact lexical hits are 1.18× faster (100.7 vs 118.5 ns). Compacted,
-      unknown, uppercase, compound and unsupported paths are substantially slower — up to 11.3×
-      on unknown tokens. No general speedup is claimed.</div>
+      (81.4 vs 110.9 ns) and exact lexical hits are 1.18× faster (100.7 vs 118.5 ns). The
+      optimized unknown and compound paths are 1.49× and 1.13× faster than the release baseline,
+      but remain 7.57× and 4.62× slower than evo2; compacted, uppercase and unsupported paths are
+      also slower (up to 7.9× on uppercase). The optimized rows are a separate targeted rerun.
+      No general speedup is claimed.</div>
     </div>
     <div class="grid two">
       <div class="card">

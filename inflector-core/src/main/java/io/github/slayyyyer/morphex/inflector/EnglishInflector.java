@@ -203,7 +203,9 @@ public final class EnglishInflector {
             return renderInitialism(noun, lower, "s", policy);
         }
 
-        if (depth < MAX_COMPOUND_DEPTH) {
+        // Compound spelling always contains a hyphen or a supported single space. Avoid the compound
+        // table and suffix scans for the overwhelmingly common single-token input.
+        if (depth < MAX_COMPOUND_DEPTH && (noun.indexOf('-') >= 0 || noun.indexOf(' ') >= 0)) {
             String compound = resolveCompound(noun, lower, depth, policy, sink);
             if (compound != null) {
                 // An unchanged reconstruction is the caller's own input: preserve the instance and avoid an

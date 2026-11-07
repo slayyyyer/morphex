@@ -97,12 +97,9 @@ final class CompoundTable {
     int freeTailSuffix(String lower) {
         int best = -1;
         for (String tail : freeTails) {
-            String suffix = "-" + tail;
-            if (lower.endsWith(suffix)) {
-                int index = lower.length() - suffix.length();
-                if (index > 0 && index > best) {
-                    best = index;
-                }
+            int index = lower.length() - tail.length() - 1;
+            if (index > 0 && index > best && lower.charAt(index) == '-' && lower.endsWith(tail)) {
+                best = index;
             }
         }
         return best;

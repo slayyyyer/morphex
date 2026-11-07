@@ -1,8 +1,11 @@
 # Benchmarks
 
-JMH 1.37, two independent forks, average time, GC profiler. The current run is
-`results/release-1.2.0/benchmarks/jmh-workload-v1.json`; the log is next to it. The fixed
-input is `inflector-benchmarks/src/main/resources/benchmark-workload-v1.tsv` (version 1).
+JMH 1.37, two independent forks, average time, GC profiler. The release baseline is
+`results/release-1.2.0/benchmarks/jmh-workload-v1.json`; the log is next to it. A separate
+post-optimization targeted rerun of the unknown and compound methods is
+`results/release-1.2.0/benchmarks/optimization-unknown-compound.json`, with its log alongside.
+The fixed input is `inflector-benchmarks/src/main/resources/benchmark-workload-v1.tsv`
+(version 1).
 
 ## Setup
 
@@ -30,7 +33,8 @@ returned value is consumed through a `Blackhole`; setup is outside the timed reg
 
 ## Results
 
-`avgt` is arithmetic mean latency. Alloc is normalized GC allocation per operation.
+`avgt` is arithmetic mean latency. Alloc is normalized GC allocation per operation. This is the
+release baseline; the unknown and compound rows are superseded by the targeted rerun below.
 
 | benchmark | score ns/op | alloc B/op |
 | --- | ---: | ---: |
@@ -60,7 +64,7 @@ returned value is consumed through a `Blackhole`; setup is outside the timed reg
 | inflectorDiagnosticsWorkload | 574.171 | 423.5 |
 | inflectorRulesOnly | 1,032.422 | 910.2 |
 
-Same-run ratios:
+Release-baseline same-run ratios (unknown and compound are superseded by the targeted rerun below):
 
 | path | ratio to evo2 | reading |
 | --- | ---: | --- |
@@ -77,9 +81,34 @@ Same-run ratios:
 | diagnostics | 1.18× | slower (evo2 has no equivalent API) |
 
 The fixed workload changes the conclusion from the old corpus-only run: the library is faster
-only on repeated and exact lexical hits. Compacted, unknown, uppercase, compound and
-unsupported paths repeatedly fall through compound tables and allocate diagnostic/rule
-machinery even on the fast path. No general speedup is claimed.
+only on repeated and exact lexical hits. Compacted, uppercase and unsupported paths remain
+slower; the optimized unknown and compound paths are still 7.57x and 4.62x slower than the
+same-run evo2 references, down from 11.27x and 5.22x. No general speedup is claimed.
+
+### Post-release optimization: unknown and compound
+
+Profiling used JMH `-prof stack`, `-prof gc`, and JFR `jdk.ObjectAllocationSample`. On the
+unknown path `CompoundTable.freeTailSuffix` built a fresh `"-" + tail` string for every one
+of the known free tails on every call. That was the dominant allocation: 392.8 B/op before,
+48.8 B/op after. Plain single-token inputs also entered the compound parser even though no
+compound entry can match without a hyphen or space. The retained changes are:
+
+* test the hyphen and tail suffix without constructing a string in `freeTailSuffix`;
+* only call `resolveCompound` when the input contains `-` or a supported space.
+
+An additional head/split fast path was measured and reverted: it did not reduce the compound
+allocation count or produce a reliable latency change.
+
+| path | baseline ns/op | after ns/op | change | baseline B/op | after B/op |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| unknown token | 906.080 | 608.613 | 1.49x faster (-32.8%) | 392.8 | 48.8 |
+| compound | 499.737 | 442.657 | 1.13x faster (-11.4%) | 404.0 | 197.6 |
+
+Both runs use the same JVM and JMH settings, but they are separate runs and only the two
+methods above were selected in the second run; the ratios are point estimates, not a
+same-session A/B with a confidence interval. The after run's 99.9% JMH errors were ±36.0 ns
+for unknown and ±51.6 ns for compound. Against the release run's evo2 references (80.420 and
+95.773 ns), the optimized paths remain 7.57x and 4.62x slower.
 
 ### Concurrency
 
@@ -114,9 +143,11 @@ rather than mixing runs.
 
 ## Known gaps
 
-* The resolver is not competitive on cold/unknown/compound paths; profile-guided reuse of
-  compound parsing and avoiding diagnostic allocation on the plain fast path are the obvious
-  next steps.
+* The resolver is still not competitive on cold/unknown/compound paths. The optimized
+  unknown path is 7.57x slower and the compound path 4.62x slower than evo2; unknown lookup
+  still pays for a cold lexical table probe, and compound heads still allocate diagnostic
+  state. The experimental head/split fast path was not retained because it did not measurably
+  help.
 * Concurrency is 4.34× below evo2 in this run, despite immutability.
 * The previous historical corpus-only JMH numbers are preserved in `results/benchmarks/` but
   are not comparable to the fixed-category workload and are not used for current claims.
