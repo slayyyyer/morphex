@@ -51,9 +51,9 @@ news	news	-	-	MASS	-	curated:core-v1
 software	software	-	-	MASS	-	curated:core-v1
 research	research	-	-	MASS	-	curated:core-v1
 knowledge	knowledge	-	-	MASS	-	curated:core-v1
-money	money	-	-	MASS	-	curated:core-v1
-music	music	-	-	MASS	-	curated:core-v1
-traffic	traffic	-	-	MASS	-	curated:core-v1
+money	monies	-	moneys	MIXED	-	curated:core-v1
+music	musics	-	-	MIXED	-	curated:core-v1
+traffic	traffics	-	-	MIXED	-	curated:core-v1
 weather	weather	-	-	MASS	-	curated:core-v1
 rice	rice	-	-	MASS	-	curated:core-v1
 water	waters	-	-	MIXED	-	curated:core-v1

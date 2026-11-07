@@ -10,3 +10,5 @@ results/eval/*.tsv
 results/external/*.tsv
 results/benchmarks/*.log
 inflector-benchmarks/results/*.tmp
+__pycache__/
+*.py[cod]

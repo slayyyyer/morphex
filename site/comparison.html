@@ -32,10 +32,10 @@
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/comparison.md">docs/comparison.md</a>.</p>
       <table class="data">
         <tr><th>Dimension</th><th>evo-inflector 2.0</th><th>This library</th></tr>
-        <tr><td>P1 frozen-lexicon accuracy (34,933 records)</td><td>96.502% (1,222 errors)</td><td><strong>100.000%</strong> (0 errors)</td></tr>
-        <tr><td>P1 paired gain (95% CI)</td><td>—</td><td><strong>+4.15 pp</strong> [+3.93, +4.37], 1,461 fixes, 0 regressions</td></tr>
-        <tr><td>P2 unseen-family accuracy</td><td>96.502%</td><td>88.618% — honest, worse by construction</td></tr>
-        <tr><td>External UD EWT overall / unseen / seen</td><td>98.12% / 98.84% / 95.37%</td><td>94.55% / <strong>99.13%</strong> / 77.09% (data defect)</td></tr>
+        <tr><td>P1 frozen-lexicon accuracy (36,239 records)</td><td>96.473% (1,278 errors)</td><td><strong>100.000%</strong> (0 errors)</td></tr>
+        <tr><td>P1 paired gain (95% CI)</td><td>—</td><td><strong>+4.16 pp</strong> [+3.96, +4.37], 1,519 fixes, 0 regressions</td></tr>
+        <tr><td>P2 unseen-family accuracy</td><td>96.473%</td><td>88.714% — honest, worse by construction</td></tr>
+        <tr><td>External UD EWT overall / unseen / seen</td><td>98.12% / 98.89% / 94.41%</td><td><strong>98.76%</strong> / <strong>99.17%</strong> / 96.81% (defect fixed)</td></tr>
         <tr><td>Repeated lookup</td><td>98.2 ns/op, 113 B/op</td><td><strong>81.7 ns/op</strong>, 35 B/op (0.83×)</td></tr>
         <tr><td>Distinct-word lookup</td><td>150.7 ns/op, 137 B/op</td><td>201.1 ns/op, 29 B/op (1.34× slower)</td></tr>
         <tr><td>Runtime dependencies</td><td>none</td><td>none</td></tr>
@@ -75,7 +75,7 @@
           <tr><td><code>user_id</code>, <code>3.14</code></td><td>unchanged (<code>FALLBACK</code>)</td><td>out of scope, reported</td></tr>
           <tr><td><code>well-known</code></td><td>unchanged</td><td>unmatched compounds not guessed</td></tr>
         </table>
-        <div class="callout warn"><strong>Qualifications:</strong> P1 is dictionary coverage, not generalization. The external seen-subset (77.09%) exposes a countability data defect (<code>book</code>/<code>bag</code> stored as mass/plural-only). Distinct-word lookup is 1.34× slower than stock.</div>
+        <div class="callout warn"><strong>Qualifications:</strong> P1 is dictionary coverage, not generalization. The external seen-subset defect is fixed (96.81% — was 77.09% when <code>book</code>/<code>bag</code> were stored as mass/plural-only); remaining errors are mostly EWT annotation noise. Distinct-word lookup is 1.34× slower than stock.</div>
       </div>
     </div>
     <div class="card">
@@ -89,8 +89,8 @@ String plural = INFLECTOR.pluralize(word);</code></pre>
       <p class="small">No <code>org.atteo.evo.inflector</code> shim ships on purpose (it would duplicate the API on the benchmark classpath). Caller overrides take precedence over everything: <code>builder().override("information", "informations")</code>.</p>
       <div class="callout"><strong>Which should you use?</strong> Stay with evo-inflector 2.0 if you want the
       smallest thing that works — no data file, static API, well understood. Choose this library
-      if the rows above matter to you and you can carry the 8.1&nbsp;MB TSV (1.27&nbsp;MB gzip,
-      25.4&nbsp;MB retained) — or use the rules-only build to drop the data entirely at the cost
+      if the rows above matter to you and you can carry the 7.7&nbsp;MB TSV (1.21&nbsp;MB gzip,
+      ~24&nbsp;MB retained) — or use the rules-only build to drop the data entirely at the cost
       of irregular forms.</div>
     </div>
     <div class="card">
@@ -100,10 +100,10 @@ String plural = INFLECTOR.pluralize(word);</code></pre>
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/python-baseline.md">docs/python-baseline.md</a>.</p>
       <table class="data">
         <tr><th>System</th><th>P1 primary</th><th>Errors</th></tr>
-        <tr><td>This library</td><td><strong>100.000%</strong></td><td>0</td></tr>
-        <tr><td>evo-inflector 2.0</td><td>96.502%</td><td>1,222</td></tr>
-        <tr><td>PyPI <code>inflect</code></td><td>94.157%</td><td>2,041</td></tr>
-        <tr><td>Repaired rules only</td><td>88.618%</td><td>3,976</td></tr>
+        <tr><td>This library</td><td><strong>100.000%</strong></td><td>0 (36,239 records)</td></tr>
+        <tr><td>evo-inflector 2.0</td><td>96.473%</td><td>1,278</td></tr>
+        <tr><td>PyPI <code>inflect</code></td><td>94.169%</td><td>2,113</td></tr>
+        <tr><td>Repaired rules only</td><td>88.714%</td><td>4,090</td></tr>
       </table>
       <p class="small"><code>inflect</code> agrees on the headline irregulars (<code>German</code>,
       <code>blouse</code>, <code>person → people</code>, <code>die → dice</code>) and shares the

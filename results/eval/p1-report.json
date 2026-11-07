@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-07T05:31:39+00:00",
+  "generated": "2026-11-07T06:11:26+00:00",
   "split": "test",
   "lexicon_split": "all",
   "records": 50938,
@@ -7,28 +7,28 @@
     "evo2": {
       "overall": {
         "total": 50938,
-        "correct": 35058,
-        "errors": 15880,
-        "accuracy": 0.6882484589108327
+        "correct": 35087,
+        "errors": 15851,
+        "accuracy": 0.6888177784757941
       },
       "primary": {
-        "total": 34933,
-        "correct": 33711,
-        "errors": 1222,
-        "accuracy": 0.9650187501789139
+        "total": 36239,
+        "correct": 34961,
+        "errors": 1278,
+        "accuracy": 0.9647341262176109
       },
       "primary_plain_non_invariant": {
-        "total": 31896,
-        "correct": 30837,
-        "errors": 1059,
-        "accuracy": 0.966798344620015
+        "total": 33147,
+        "correct": 32040,
+        "errors": 1107,
+        "accuracy": 0.9666033125169698
       },
       "by_bucket": {
         "compound": {
           "total": 2600,
-          "correct": 1952,
-          "errors": 648,
-          "accuracy": 0.7507692307692307
+          "correct": 1954,
+          "errors": 646,
+          "accuracy": 0.7515384615384615
         },
         "initialism": {
           "total": 1110,
@@ -38,9 +38,9 @@
         },
         "simple": {
           "total": 46882,
-          "correct": 32130,
-          "errors": 14752,
-          "accuracy": 0.6853376562433343
+          "correct": 32157,
+          "errors": 14725,
+          "accuracy": 0.6859135702401775
         },
         "unicode": {
           "total": 346,
@@ -51,48 +51,48 @@
       },
       "by_countability": {
         "COUNTABLE": {
-          "total": 29736,
-          "correct": 28389,
-          "errors": 1347,
-          "accuracy": 0.9547013720742534
+          "total": 29593,
+          "correct": 28243,
+          "errors": 1350,
+          "accuracy": 0.9543811036393742
         },
         "MASS": {
-          "total": 14952,
-          "correct": 1309,
-          "errors": 13643,
-          "accuracy": 0.08754681647940075
+          "total": 13687,
+          "correct": 96,
+          "errors": 13591,
+          "accuracy": 0.007013954847665668
         },
         "MIXED": {
-          "total": 5461,
-          "correct": 5347,
-          "errors": 114,
-          "accuracy": 0.9791247024354514
+          "total": 6912,
+          "correct": 6743,
+          "errors": 169,
+          "accuracy": 0.9755497685185185
         },
         "PLURAL_ONLY": {
-          "total": 789,
-          "correct": 13,
-          "errors": 776,
-          "accuracy": 0.016476552598225603
+          "total": 746,
+          "correct": 5,
+          "errors": 741,
+          "accuracy": 0.006702412868632708
         }
       },
       "by_length": {
         "short": {
-          "total": 3627,
-          "correct": 3359,
-          "errors": 268,
-          "accuracy": 0.9261097325613454
+          "total": 3757,
+          "correct": 3469,
+          "errors": 288,
+          "accuracy": 0.9233430928932659
         },
         "medium": {
-          "total": 16773,
-          "correct": 16200,
-          "errors": 573,
-          "accuracy": 0.9658379538544088
+          "total": 17224,
+          "correct": 16635,
+          "errors": 589,
+          "accuracy": 0.9658035299581978
         },
         "long": {
-          "total": 14533,
-          "correct": 14152,
-          "errors": 381,
-          "accuracy": 0.9737838023807885
+          "total": 15258,
+          "correct": 14857,
+          "errors": 401,
+          "accuracy": 0.9737187049416699
         }
       },
       "predicted": 50939
@@ -105,14 +105,14 @@
         "accuracy": 1.0
       },
       "primary": {
-        "total": 34933,
-        "correct": 34933,
+        "total": 36239,
+        "correct": 36239,
         "errors": 0,
         "accuracy": 1.0
       },
       "primary_plain_non_invariant": {
-        "total": 31896,
-        "correct": 31896,
+        "total": 33147,
+        "correct": 33147,
         "errors": 0,
         "accuracy": 1.0
       },
@@ -144,46 +144,46 @@
       },
       "by_countability": {
         "COUNTABLE": {
-          "total": 29736,
-          "correct": 29736,
+          "total": 29593,
+          "correct": 29593,
           "errors": 0,
           "accuracy": 1.0
         },
         "MASS": {
-          "total": 14952,
-          "correct": 14952,
+          "total": 13687,
+          "correct": 13687,
           "errors": 0,
           "accuracy": 1.0
         },
         "MIXED": {
-          "total": 5461,
-          "correct": 5461,
+          "total": 6912,
+          "correct": 6912,
           "errors": 0,
           "accuracy": 1.0
         },
         "PLURAL_ONLY": {
-          "total": 789,
-          "correct": 789,
+          "total": 746,
+          "correct": 746,
           "errors": 0,
           "accuracy": 1.0
         }
       },
       "by_length": {
         "short": {
-          "total": 3627,
-          "correct": 3627,
+          "total": 3757,
+          "correct": 3757,
           "errors": 0,
           "accuracy": 1.0
         },
         "medium": {
-          "total": 16773,
-          "correct": 16773,
+          "total": 17224,
+          "correct": 17224,
           "errors": 0,
           "accuracy": 1.0
         },
         "long": {
-          "total": 14533,
-          "correct": 14533,
+          "total": 15258,
+          "correct": 15258,
           "errors": 0,
           "accuracy": 1.0
         }
@@ -193,28 +193,28 @@
     "rules": {
       "overall": {
         "total": 50938,
-        "correct": 32722,
-        "errors": 18216,
-        "accuracy": 0.6423887863677412
+        "correct": 32732,
+        "errors": 18206,
+        "accuracy": 0.6425851034591071
       },
       "primary": {
-        "total": 34933,
-        "correct": 30957,
-        "errors": 3976,
-        "accuracy": 0.8861821200583975
+        "total": 36239,
+        "correct": 32149,
+        "errors": 4090,
+        "accuracy": 0.8871381660641849
       },
       "primary_plain_non_invariant": {
-        "total": 31896,
-        "correct": 30694,
-        "errors": 1202,
-        "accuracy": 0.9623150238274392
+        "total": 33147,
+        "correct": 31876,
+        "errors": 1271,
+        "accuracy": 0.9616556551120765
       },
       "by_bucket": {
         "compound": {
           "total": 2600,
-          "correct": 633,
-          "errors": 1967,
-          "accuracy": 0.24346153846153845
+          "correct": 606,
+          "errors": 1994,
+          "accuracy": 0.23307692307692307
         },
         "initialism": {
           "total": 1110,
@@ -224,9 +224,9 @@
         },
         "simple": {
           "total": 46882,
-          "correct": 31840,
-          "errors": 15042,
-          "accuracy": 0.6791519133142784
+          "correct": 31877,
+          "errors": 15005,
+          "accuracy": 0.6799411287914338
         },
         "unicode": {
           "total": 346,
@@ -237,48 +237,48 @@
       },
       "by_countability": {
         "COUNTABLE": {
-          "total": 29736,
-          "correct": 26050,
-          "errors": 3686,
-          "accuracy": 0.8760425073984396
+          "total": 29593,
+          "correct": 25906,
+          "errors": 3687,
+          "accuracy": 0.8754097252728685
         },
         "MASS": {
-          "total": 14952,
-          "correct": 1702,
-          "errors": 13250,
-          "accuracy": 0.11383092562867844
+          "total": 13687,
+          "correct": 529,
+          "errors": 13158,
+          "accuracy": 0.03864981369182436
         },
         "MIXED": {
-          "total": 5461,
-          "correct": 4931,
-          "errors": 530,
-          "accuracy": 0.9029481779893792
+          "total": 6912,
+          "correct": 6268,
+          "errors": 644,
+          "accuracy": 0.9068287037037037
         },
         "PLURAL_ONLY": {
-          "total": 789,
-          "correct": 39,
-          "errors": 750,
-          "accuracy": 0.049429657794676805
+          "total": 746,
+          "correct": 29,
+          "errors": 717,
+          "accuracy": 0.0388739946380697
         }
       },
       "by_length": {
         "short": {
-          "total": 3627,
-          "correct": 2754,
-          "errors": 873,
-          "accuracy": 0.7593052109181141
+          "total": 3757,
+          "correct": 2853,
+          "errors": 904,
+          "accuracy": 0.7593824860260846
         },
         "medium": {
-          "total": 16773,
-          "correct": 15412,
-          "errors": 1361,
-          "accuracy": 0.9188576879508734
+          "total": 17224,
+          "correct": 15837,
+          "errors": 1387,
+          "accuracy": 0.9194728286112401
         },
         "long": {
-          "total": 14533,
-          "correct": 12791,
-          "errors": 1742,
-          "accuracy": 0.880134865478566
+          "total": 15258,
+          "correct": 13459,
+          "errors": 1799,
+          "accuracy": 0.8820946388779657
         }
       },
       "predicted": 50939
@@ -286,30 +286,30 @@
   },
   "comparisons": [
     {
-      "corrections": 1461,
+      "corrections": 1519,
       "regressions": 0,
-      "delta_accuracy_pp": 4.1509219535755895,
+      "delta_accuracy_pp": 4.1610738255033555,
       "ci95_pp": [
-        3.9261363636363638,
-        4.367953196444293
+        3.9596675296361905,
+        4.372748116606616
       ],
       "relative_error_reduction": 1.0,
       "iterations": 2000,
-      "families": 33318,
+      "families": 34567,
       "baseline": "evo2",
       "candidate": "lexicon"
     },
     {
-      "corrections": 467,
-      "regressions": 3222,
-      "delta_accuracy_pp": -7.8273716509929825,
+      "corrections": 479,
+      "regressions": 3291,
+      "delta_accuracy_pp": -7.703054376112862,
       "ci95_pp": [
-        -8.959578108782855,
-        -6.953499727144785
+        -8.773549052608718,
+        -6.854081519938142
       ],
-      "relative_error_reduction": -0.7468148549742477,
+      "relative_error_reduction": -0.7458885941644562,
       "iterations": 2000,
-      "families": 33318,
+      "families": 34567,
       "baseline": "evo2",
       "candidate": "rules"
     }

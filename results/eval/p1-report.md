@@ -4,16 +4,16 @@ Primary slice: countable and mixed-use, non-invariant records, accepted-form acc
 
 | system | accepted accuracy | errors | primary accuracy | primary errors |
 | --- | --- | --- | --- | --- |
-| evo2 | 68.825% | 15880 | 96.502% | 1222 |
+| evo2 | 68.882% | 15851 | 96.473% | 1278 |
 | lexicon | 100.000% | 0 | 100.000% | 0 |
-| rules | 64.239% | 18216 | 88.618% | 3976 |
+| rules | 64.259% | 18206 | 88.714% | 4090 |
 
 ## Paired comparisons (primary slice, family-clustered bootstrap)
 
 | baseline | candidate | delta pp | 95% CI | corrections | regressions |
 | --- | --- | --- | --- | --- | --- |
-| evo2 | lexicon | +4.1509 | [+3.9261, +4.3680] | 1461 | 0 |
-| evo2 | rules | -7.8274 | [-8.9596, -6.9535] | 467 | 3222 |
+| evo2 | lexicon | +4.1611 | [+3.9597, +4.3727] | 1519 | 0 |
+| evo2 | rules | -7.7031 | [-8.7735, -6.8541] | 479 | 3291 |
 
 ## Slice detail
 
@@ -21,17 +21,17 @@ Primary slice: countable and mixed-use, non-invariant records, accepted-form acc
 
 | slice | total | correct | accuracy |
 | --- | --- | --- | --- |
-| by_bucket:compound | 2600 | 1952 | 75.08% |
+| by_bucket:compound | 2600 | 1954 | 75.15% |
 | by_bucket:initialism | 1110 | 729 | 65.68% |
-| by_bucket:simple | 46882 | 32130 | 68.53% |
+| by_bucket:simple | 46882 | 32157 | 68.59% |
 | by_bucket:unicode | 346 | 247 | 71.39% |
-| by_countability:COUNTABLE | 29736 | 28389 | 95.47% |
-| by_countability:MASS | 14952 | 1309 | 8.75% |
-| by_countability:MIXED | 5461 | 5347 | 97.91% |
-| by_countability:PLURAL_ONLY | 789 | 13 | 1.65% |
-| by_length:short | 3627 | 3359 | 92.61% |
-| by_length:medium | 16773 | 16200 | 96.58% |
-| by_length:long | 14533 | 14152 | 97.38% |
+| by_countability:COUNTABLE | 29593 | 28243 | 95.44% |
+| by_countability:MASS | 13687 | 96 | 0.70% |
+| by_countability:MIXED | 6912 | 6743 | 97.55% |
+| by_countability:PLURAL_ONLY | 746 | 5 | 0.67% |
+| by_length:short | 3757 | 3469 | 92.33% |
+| by_length:medium | 17224 | 16635 | 96.58% |
+| by_length:long | 15258 | 14857 | 97.37% |
 
 ### lexicon
 
@@ -41,27 +41,27 @@ Primary slice: countable and mixed-use, non-invariant records, accepted-form acc
 | by_bucket:initialism | 1110 | 1110 | 100.00% |
 | by_bucket:simple | 46882 | 46882 | 100.00% |
 | by_bucket:unicode | 346 | 346 | 100.00% |
-| by_countability:COUNTABLE | 29736 | 29736 | 100.00% |
-| by_countability:MASS | 14952 | 14952 | 100.00% |
-| by_countability:MIXED | 5461 | 5461 | 100.00% |
-| by_countability:PLURAL_ONLY | 789 | 789 | 100.00% |
-| by_length:short | 3627 | 3627 | 100.00% |
-| by_length:medium | 16773 | 16773 | 100.00% |
-| by_length:long | 14533 | 14533 | 100.00% |
+| by_countability:COUNTABLE | 29593 | 29593 | 100.00% |
+| by_countability:MASS | 13687 | 13687 | 100.00% |
+| by_countability:MIXED | 6912 | 6912 | 100.00% |
+| by_countability:PLURAL_ONLY | 746 | 746 | 100.00% |
+| by_length:short | 3757 | 3757 | 100.00% |
+| by_length:medium | 17224 | 17224 | 100.00% |
+| by_length:long | 15258 | 15258 | 100.00% |
 
 ### rules
 
 | slice | total | correct | accuracy |
 | --- | --- | --- | --- |
-| by_bucket:compound | 2600 | 633 | 24.35% |
+| by_bucket:compound | 2600 | 606 | 23.31% |
 | by_bucket:initialism | 1110 | 0 | 0.00% |
-| by_bucket:simple | 46882 | 31840 | 67.92% |
+| by_bucket:simple | 46882 | 31877 | 67.99% |
 | by_bucket:unicode | 346 | 249 | 71.97% |
-| by_countability:COUNTABLE | 29736 | 26050 | 87.60% |
-| by_countability:MASS | 14952 | 1702 | 11.38% |
-| by_countability:MIXED | 5461 | 4931 | 90.29% |
-| by_countability:PLURAL_ONLY | 789 | 39 | 4.94% |
-| by_length:short | 3627 | 2754 | 75.93% |
-| by_length:medium | 16773 | 15412 | 91.89% |
-| by_length:long | 14533 | 12791 | 88.01% |
+| by_countability:COUNTABLE | 29593 | 25906 | 87.54% |
+| by_countability:MASS | 13687 | 529 | 3.86% |
+| by_countability:MIXED | 6912 | 6268 | 90.68% |
+| by_countability:PLURAL_ONLY | 746 | 29 | 3.89% |
+| by_length:short | 3757 | 2853 | 75.94% |
+| by_length:medium | 17224 | 15837 | 91.95% |
+| by_length:long | 15258 | 13459 | 88.21% |
 

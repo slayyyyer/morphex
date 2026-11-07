@@ -22,16 +22,16 @@ mode, matching this library's anglicized default.
 * Report: `results/eval/pyinflect-report.json` (plus the generated `.md`). Like P1, this
   measures dictionary coverage on the frozen test families, not unseen generalization.
 
-## Headline (P1, 34,933 primary records)
+## Headline (P1, 36,239 primary records)
 
 | system | primary accuracy | errors | overall accuracy | overall errors / 50,938 |
 | --- | --- | --- | --- | --- |
 | this library (rules + lexicon) | **100.000%** | **0** | **100.000%** | **0** |
-| evo-inflector 2.0 | 96.502% | 1,222 | 68.825% | 15,880 |
-| **PyPI `inflect` 7.6.0** | **94.157%** | **2,041** | **67.080%** | **16,769** |
-| repaired rules only | 88.618% | 3,976 | 64.239% | 18,216 |
+| evo-inflector 2.0 | 96.473% | 1,278 | 68.882% | 15,851 |
+| **PyPI `inflect` 7.6.0** | **94.169%** | **2,113** | **67.152%** | **16,732** |
+| repaired rules only | 88.714% | 4,090 | 64.259% | 18,206 |
 
-Paired vs evo2: **−2.3241 pp** `[-2.4966, -2.1504]`, 100 corrections, 918 regressions —
+Paired vs evo2: **−2.2846 pp** `[-2.4513, -2.1104]`, 103 corrections, 937 regressions —
 `inflect` sits between the rules-only floor and evo2 on this noun dictionary.
 
 ## Where it differs
@@ -40,14 +40,14 @@ Bucket breakdown for `pyinflect` (accepted-form accuracy):
 
 | slice | accuracy | errors / total |
 | --- | --- | --- |
-| `simple` | 68.24% | 14,889 / 46,882 |
-| `compound` | 74.19% | 671 / 2,600 |
+| `simple` | 68.32% | 14,853 / 46,882 |
+| `compound` | 74.23% | 670 / 2,600 |
 | `initialism` | **0.00%** | **1,110 / 1,110** |
 | `unicode` | 71.39% | 99 / 346 |
-| `COUNTABLE` | 93.46% | 1,944 / 29,736 |
-| `MASS` | 8.26% | 13,717 / 14,952 |
-| `MIXED` | 93.87% | 335 / 5,461 |
-| `PLURAL_ONLY` | 2.03% | 773 / 789 |
+| `COUNTABLE` | 93.46% | 1,934 / 29,593 |
+| `MASS` | 0.33% | 13,642 / 13,687 |
+| `MIXED` | 93.94% | 419 / 6,912 |
+| `PLURAL_ONLY` | 1.21% | 737 / 746 |
 
 Three patterns explain most of it:
 
@@ -59,8 +59,9 @@ Three patterns explain most of it:
    `accidens → accidenss` (`accidentia`), `accusatrix → accusatrixes`
    (`accusatrices`). This library carries these as lexical entries; `inflect`'s
    modern-mode rules don't.
-3. **Mass nouns pluralized.** Like evo2, `inflect` pluralizes most mass records, hence
-   67.08% overall — slightly below evo2's 68.825% for the same structural reason.
+3. **Mass nouns pluralized.** Like evo2, `inflect` pluralizes almost all mass records
+   (0.33% on the MASS slice — the few it gets right are identities like `information`), hence
+   67.15% overall — slightly below evo2's 68.88% for the same structural reason.
 
 ## Showcase probe (observed outputs, not scored)
 
@@ -96,5 +97,5 @@ forms, and compounds.
 * One library, one version, default mode — not a survey of Python pluralization.
 * The `.classical()` mode was not enabled (would change classical-form preferences both
   ways); worth a follow-up run.
-* P1 caveats apply unchanged: dictionary coverage, and the external EWT countability
-  defect affects all systems' interpretation (see `docs/evaluation.md`).
+* P1 caveats apply unchanged: dictionary coverage, not production accuracy
+  (see `docs/evaluation.md`).

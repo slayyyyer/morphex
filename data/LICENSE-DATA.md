@@ -59,11 +59,11 @@ Wiktionary directives are data, never labels: `{{en-noun|++}}` for `quiz` yields
 See `data/derived/manifest-v1.json` for exact numbers and checksums. The committed run:
 
 * 834,878 raw noun records read
-* 354,316 records kept, 340,560 unique lemmas
-* quarantined: 256,761 `no-attested-plural`, 223,801 `lemma-surface` (multi-word, non-Latin)
-* countability: 199,489 countable, 98,619 mass, 37,271 mixed, 5,181 plural-only
-* runtime artifact: 157,352 entries, 8,054,665 bytes raw / 1,266,667 bytes gzip (compact
-  selection; 183,215 lemmas whose plural is exactly the productive rule output are omitted and
+* 354,313 records kept, 340,558 unique lemmas
+* quarantined: 256,764 `no-attested-plural`, 223,801 `lemma-surface` (multi-word, non-Latin)
+* countability: 198,596 countable, 90,437 mass, 46,677 mixed, 4,848 plural-only
+* runtime artifact: 150,267 entries, 7,708,247 bytes raw / 1,212,308 bytes gzip (compact
+  selection; 190,298 lemmas whose plural is exactly the productive rule output are omitted and
   are still handled by rules)
 
 ## Redistribution checklist

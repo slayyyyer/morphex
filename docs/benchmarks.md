@@ -48,7 +48,7 @@ paths rather than a pure map hit.
 | inflectorAnalyze | avgt | 321.475 | ns/op | 234.9 |
 | inflectorRulesOnly | avgt | 391.191 | ns/op | 77.0 |
 
-Artifact: 157,352 entries, 8,054,665 bytes raw TSV (1,266,667 bytes gzip) in the jar; no
+Artifact: 150,267 entries, 7,708,247 bytes raw TSV (1,212,308 bytes gzip) in the jar; no
 runtime dependencies. The final JMH run did not capture the concurrent benchmarks; the
 earlier run measured 10.2M ops/s on four threads, but that number belongs to the previous
 artifact and is not claimed here.
@@ -75,8 +75,9 @@ artifact and is not claimed here.
   alternative or classical form. There is no per-entry object.
 
 The measured claim is: faster than stock 2.0 on repeated lookup (0.83×), 1.34× slower on
-distinct-word lookup, lower allocation, and a 54% smaller retained heap, with substantially
-higher accuracy (see `docs/evaluation.md`). No distinct-word speedup is claimed.
+distinct-word lookup, lower allocation, and a ~57% smaller retained heap, with substantially
+higher accuracy (see `docs/evaluation.md`). No distinct-word speedup is claimed. Per-op
+latencies were measured with the larger pre-fix artifact; the engine code is unchanged.
 
 ## Startup and retained footprint
 
@@ -87,11 +88,11 @@ higher accuracy (see `docs/evaluation.md`). No distinct-word speedup is claimed.
 | first call (class load + artifact load + first pluralize) | 392-505 ms (median 426 ms) |
 | first `pluralize` call | 2.2-3.2 ms |
 | 50,000 cold calls with unseen tokens | 60.7-61.8 ms |
-| lexicon entries | 157,352 |
-| retained heap after load | **25.4 MB** |
+| lexicon entries | 150,267 |
+| retained heap after load | **24.1 MB** (25,316,272 bytes; remeasured with the current artifact) |
 
-The previous object-graph lexicon retained **55.5 MB**; the packed layout cuts that by 54%
-(about 30 MB). Most of the remaining footprint is the key/plural character pools, the sparse
+The previous object-graph lexicon retained **55.5 MB**; the packed layout cuts that by ~57%
+(about 31 MB). Most of the remaining footprint is the key/plural character pools, the sparse
 diagnostic strings, the index table and the JVM baseline. Load is slower than the old map
 (426 ms vs 309 ms) because packing copies every column and builds the index; that is a
 one-time startup cost, not a per-lookup cost. The cold 50k loop is slower than the old map's
@@ -104,7 +105,7 @@ experiment was rejected, so the product has no model and no native bridge.
 * The distinct-word path is still 1.34× slower than stock 2.0. A packed UTF-8 key pool or a
   trie/automaton over the same columns could close the rest without giving back the footprint
   win.
-* 25.4 MB retained is much better than 55.5 MB but still larger than the 8.05 MB TSV; the
+* 24.1 MB retained is much better than 55.5 MB but still larger than the 7.71 MB TSV; the
   difference is Java array overhead, the index table and the sparse diagnostic strings.
 * `evo2Concurrent` did not appear in the recorded JSON; no comparative concurrency claim is
   made.

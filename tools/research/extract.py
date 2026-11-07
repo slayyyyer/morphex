@@ -91,13 +91,19 @@ def valid_form(form: str) -> bool:
     return valid_surface(form)
 
 
-def classify_countability(expansion: str, sense_tags: list[list[str]]) -> str:
+def classify_countability(expansion: str, sense_tags: list[list[str]],
+                          has_attested_plural: bool = False) -> str:
     low = expansion.lower()
     if "countable and uncountable" in low:
         return "MIXED"
     # Strip "uncountable" before testing for "countable": the former contains the latter.
     stripped = low.replace("uncountable", "")
     if "uncountable" in low and "countable" not in stripped:
+        # "usually uncountable" admits countable use; with an attested plural the
+        # countable sense wins (MIXED pluralizes in that sense, like water). A bare
+        # "uncountable" head, or no attested plural at all, stays MASS.
+        if "usually uncountable" in low and has_attested_plural:
+            return "MIXED"
         return "MASS"
     if "countable" in stripped:
         return "COUNTABLE"
@@ -106,7 +112,11 @@ def classify_countability(expansion: str, sense_tags: list[list[str]]) -> str:
     if has_uncountable and has_countable:
         return "MIXED"
     if has_uncountable:
-        return "MASS"
+        # A subordinate sense marked uncountable (often archaic or figurative) must not
+        # outweigh attested plural forms: "account (plural accounts)" is countable even
+        # though one archaic sense is uncountable. Without an attested plural the
+        # mass reading stands.
+        return "MASS" if not has_attested_plural else "COUNTABLE"
     if has_countable:
         return "COUNTABLE"
     return "COUNTABLE"
@@ -118,9 +128,41 @@ def is_plural_only(expansion: str, args: dict, sense_tags: list[list[str]]) -> b
         return True
     if str(args.get("1", "")).strip().lower() == "p":
         return True
-    if any("plural-normally" in tags or "plural-only" in tags for tags in sense_tags):
+    # "plural-normally" is a sense-level usage note (that sense is normally plural,
+    # e.g. "books" as financial records) and must never mark the whole lemma
+    # plural-only: "book" and "bag" attest regular plurals. Only the head-level
+    # "plural-only" marking counts here; genuine plural-only nouns (scissors,
+    # trousers) carry it at the head alongside args "p".
+    if any("plural-only" in tags for tags in sense_tags):
         return True
     return False
+
+
+def reconcile_countability(votes: list[str], forms: list[str], lemma: str,
+                           all_plural_only: bool) -> str:
+    """One spelling, several etymologies: any etymology licensing a plural wins.
+
+    A spelling-keyed pluralizer cannot do sense disambiguation (cf. die → dice), so
+    if any entry attests a non-lemma plural the lemma pluralizes; the label records
+    whether mass-only uses were also seen (MIXED) or not (COUNTABLE). With no
+    attested plural the identity label stands, preferring an explicit plural-only
+    marking over a bare mass reading. This replaces first-in-dump-order wins, which
+    made the label depend on raw record order (e.g. plate).
+    """
+    if all_plural_only:
+        return "PLURAL_ONLY"
+    has_countable = any(v in ("COUNTABLE", "MIXED") for v in votes)
+    has_mass = any(v in ("MASS", "PLURAL_ONLY") for v in votes)
+    has_plural_form = any(f.lower() != lemma.lower() for f in forms)
+    if has_countable and has_plural_form:
+        if has_mass or "MIXED" in votes:
+            return "MIXED"
+        return "COUNTABLE"
+    if any(v == "PLURAL_ONLY" for v in votes):
+        return "PLURAL_ONLY"
+    if has_mass:
+        return "MASS"
+    return "COUNTABLE"
 
 
 def normalize(obj: dict) -> tuple[Record | None, str]:
@@ -158,7 +200,8 @@ def normalize(obj: dict) -> tuple[Record | None, str]:
             accepted.append(surface)
 
     plural_only = is_plural_only(expansion, args, sense_tags)
-    countability = classify_countability(expansion, sense_tags)
+    countability = classify_countability(expansion, sense_tags,
+                                         has_attested_plural=bool(accepted))
 
     if plural_only:
         accepted = [lemma]
@@ -193,6 +236,7 @@ def merge(records: dict[str, Record]) -> list[Record]:
 def run(limit: int | None = None) -> dict:
     source = dataset.require_raw()
     merged: dict[str, Record] = {}
+    votes: dict[str, list[str]] = {}
     quarantine: Counter[str] = Counter()
     quarantine_samples: list[tuple[str, str, str]] = []
     raw_records = 0
@@ -221,6 +265,7 @@ def run(limit: int | None = None) -> dict:
             existing = merged.get(key)
             if existing is None:
                 merged[key] = record
+                votes[key] = [record.countability]
             else:
                 for form in record.forms:
                     if form not in existing.forms:
@@ -230,8 +275,11 @@ def run(limit: int | None = None) -> dict:
                 existing.senses += record.senses
                 existing.plural_only = existing.plural_only and record.plural_only
                 existing.invariant = existing.invariant and record.invariant
-                if existing.countability == "UNKNOWN":
-                    existing.countability = record.countability
+                votes[key].append(record.countability)
+
+    for key, record in merged.items():
+        record.countability = reconcile_countability(
+            votes[key], record.forms, record.lemma, record.plural_only)
 
     records = merge(merged)
     rows = []

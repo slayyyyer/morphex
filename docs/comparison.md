@@ -17,15 +17,15 @@ outputs for reproduction.
 
 | dimension | stock evo-inflector 2.0 | this library |
 | --- | --- | --- |
-| P1 frozen-lexicon accepted-form accuracy (34,933 primary records) | 96.502% (1,222 errors) | **100.000%** (0 errors) |
-| P1 paired gain (family-clustered bootstrap 95% CI) | — | **+4.1509 pp** `[+3.9261, +4.3680]`, 1,461 corrections, 0 regressions |
-| P2 family-holdout accuracy (unseen families, train-only artifact) | 96.502% (carries its exception table) | 88.618% — honest unseen-family number, worse by construction (see below) |
-| External UD English EWT overall (2,184 lemmas, no retraining) | 98.12% | 94.55% |
-| External EWT unseen lemmas (1,730) | 98.84% | **99.13%** |
-| External EWT seen lemmas (454) | 95.37% | 77.09% — data defect, not morphology (see §3) |
+| P1 frozen-lexicon accepted-form accuracy (36,239 primary records) | 96.473% (1,278 errors) | **100.000%** (0 errors) |
+| P1 paired gain (family-clustered bootstrap 95% CI) | — | **+4.1611 pp** `[+3.9597, +4.3727]`, 1,519 corrections, 0 regressions |
+| P2 family-holdout accuracy (unseen families, train-only artifact) | 96.473% (carries its exception table) | 88.714% — honest unseen-family number, worse by construction (see below) |
+| External UD English EWT overall (2,184 lemmas, no retraining) | 98.12% | **98.76%** |
+| External EWT unseen lemmas (1,808) | 98.89% | **99.17%** |
+| External EWT seen lemmas (376) | 94.41% | **96.81%** — former defect fixed (see §3) |
 | Repeated-word lookup (JMH, JDK 21) | 98.2 ns/op, 113 B/op | **81.7 ns/op**, 35 B/op (0.83×, faster) |
 | Distinct-word lookup | 150.7 ns/op, 137 B/op | 201.1 ns/op, 29 B/op (**1.34× slower**, lower allocation) |
-| Retained lexicon heap | n/a (small built-in table) | 25.4 MB for 157,352 entries (was 55.5 MB before packing) |
+| Retained lexicon heap | n/a (small built-in table) | 24.1 MB for 150,267 entries (was 55.5 MB before packing) |
 | Runtime dependencies | none | none |
 
 ## 1. Why the accuracy differs
@@ -50,7 +50,7 @@ refuses to guess otherwise (`well-known`, `jack in the box` returned unchanged).
 
 P1's 100.000% is **dictionary coverage**, not generalization: the shipped artifact covers the
 test families. P2 (family holdout, test families excluded from lexicon, training, mining
-and calibration) is the honest unseen-family number at 88.618%, where stock 2.0's built-in
+and calibration) is the honest unseen-family number at 88.714%, where stock 2.0's built-in
 exception table still applies. That inversion is expected and documented, not hidden.
 
 ## 2. Behaviour table
@@ -89,13 +89,15 @@ of the same API on the benchmark classpath.
 
 ## 3. Qualifications (read before citing the headline)
 
-* **P2 is worse than stock.** 88.618% vs 96.502%. P1 measures a frozen dictionary; P2
+* **P2 is worse than stock.** 88.714% vs 96.473%. P1 measures a frozen dictionary; P2
   measures unseen families. Both are reported; only P1 is the headline.
-* **External seen-subset failure.** 77.09% on lemmas present in the artifact because common
-  count nouns (`book`, `bag`, `account`) are misclassified as `MASS`/`PLURAL_ONLY` and
-  returned unchanged. 100 of 119 lexicon errors are such identities. P1 does not catch this
-  (its primary slice excludes those rows; its overall slice counts identity as correct).
-  Fix = correct extraction/classification + full P1/P2 rerun; not tuned on the external set.
+* **External seen-subset failure — fixed.** Was 77.09% on 454 present lemmas because common
+  count nouns (`book`, `bag`, `account`) were misclassified as `MASS`/`PLURAL_ONLY` and
+  returned unchanged. Three extraction defects caused it (sense-level `plural-normally`,
+  subordinate `uncountable` senses, first-in-dump-order multi-etymology labels) plus curated
+  `MASS` rows for `money`/`music`/`traffic`. Now 96.81% on 376 present lemmas with 27 errors
+  left, mostly EWT annotation noise and disputed subordinate uses; see `docs/evaluation.md`.
+  Nothing was tuned on the external set.
 * **Distinct-word latency.** 1.34× slower than stock 2.0 (improved from 2.4× before the
   packed layout). Repeated-word lookup is faster (0.83×) at lower allocation in all
   workloads. Concurrent throughput was not captured in the final run — no claim is made.
@@ -108,8 +110,8 @@ of the same API on the benchmark classpath.
   rows in §2.
 * Choose this library if you need the §2 repairs, explicit casing/countability policies,
   compound handling, a diagnostic API (`analyze`: source, id, alternatives, ambiguity),
-  per-instance overrides/initialisms/modes, and are willing to carry an 8.1 MB TSV
-  (1.27 MB gzip, 25.4 MB retained) — or use the rules-only build to drop the data entirely
+  per-instance overrides/initialisms/modes, and are willing to carry a 7.7 MB TSV
+  (1.21 MB gzip, ~25 MB retained) — or use the rules-only build to drop the data entirely
   at the cost of irregular forms.
 
 ## Reproduce

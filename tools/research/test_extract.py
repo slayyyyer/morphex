@@ -90,6 +90,69 @@ class NormalizeTest(unittest.TestCase):
         self.assertEqual("MASS", extract.classify_countability("", [["uncountable"]]))
         self.assertEqual("COUNTABLE", extract.classify_countability("", []))
 
+    def test_subordinate_uncountable_sense_does_not_outweigh_attested_plural(self):
+        # "account (plural accounts)": the archaic uncountable sense must not make a
+        # lemma with an attested plural mass. Without an attested plural it stands.
+        record, reason = extract.normalize(noun(
+            "account", "account (plural accounts)",
+            forms=[{"form": "accounts", "tags": ["plural"]}],
+            senses=[{"id": "account-noun-1"},
+                    {"id": "account-noun-2", "tags": ["archaic", "uncountable"]}]))
+        self.assertEqual("", reason)
+        self.assertEqual("COUNTABLE", record.countability)
+        self.assertEqual(["accounts"], record.forms)
+
+    def test_usually_uncountable_with_attested_plural_is_mixed(self):
+        # "practice (usually uncountable, plural practices)": the hedge admits
+        # countable use, and the attested plural proves it.
+        record, reason = extract.normalize(noun(
+            "practice", "practice (usually uncountable, plural practices)",
+            forms=[{"form": "practices", "tags": ["plural"]}],
+            senses=[{"id": "practice-noun-1", "tags": ["uncountable", "usually"]}]))
+        self.assertEqual("", reason)
+        self.assertEqual("MIXED", record.countability)
+        self.assertEqual(["practices"], record.forms)
+
+    def test_usually_uncountable_without_plural_stays_mass(self):
+        record, reason = extract.normalize(noun(
+            "furnituremaking", "furnituremaking (usually uncountable)", forms=[]))
+        self.assertEqual("", reason)
+        self.assertEqual("MASS", record.countability)
+        self.assertEqual(["furnituremaking"], record.forms)
+
+    def test_reconcile_prefers_any_licensed_plural(self):
+        # plate: one plural-only etymology, others with an attested plural.
+        self.assertEqual(
+            "MIXED",
+            extract.reconcile_countability(
+                ["PLURAL_ONLY", "MIXED", "COUNTABLE"], ["plates"], "plate", False))
+        # pants/scissors: plural-only votes but no non-lemma plural anywhere.
+        self.assertEqual(
+            "PLURAL_ONLY",
+            extract.reconcile_countability(
+                ["PLURAL_ONLY", "COUNTABLE"], ["pants"], "pants", False))
+        self.assertEqual(
+            "PLURAL_ONLY",
+            extract.reconcile_countability(["PLURAL_ONLY"], ["scissors"], "scissors", True))
+        # Single entries are unchanged.
+        self.assertEqual(
+            "MASS", extract.reconcile_countability(["MASS"], ["robot"], "robot", False))
+        self.assertEqual(
+            "MIXED", extract.reconcile_countability(["MIXED"], ["water", "waters"], "water", False))
+
+    def test_plural_normally_sense_is_not_lemma_plural_only(self):
+        # "book"/"bag": a sense normally used in the plural does not make the
+        # whole lemma plural-only when a regular plural is attested.
+        record, reason = extract.normalize(noun(
+            "book", "book (plural books)",
+            forms=[{"form": "books", "tags": ["plural"]}],
+            senses=[{"id": "book-noun-1"},
+                    {"id": "book-noun-2", "tags": ["slang", "plural-normally"]}]))
+        self.assertEqual("", reason)
+        self.assertEqual("COUNTABLE", record.countability)
+        self.assertFalse(record.plural_only)
+        self.assertEqual(["books"], record.forms)
+
 
 if __name__ == "__main__":
     unittest.main()

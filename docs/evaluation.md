@@ -19,21 +19,21 @@ for the headline claim.
 
 ## Protocol 1 — frozen shipped lexicon (lexical coverage)
 
-The shipped artifact (all splits, 157,352 entries) is frozen, then evaluated on the test split.
+The shipped artifact (all splits, 150,267 entries) is frozen, then evaluated on the test split.
 This measures **coverage of a frozen dictionary**, not generalization to unseen lemmas.
 
-| system | primary accuracy | errors / 34,933 | overall accuracy | overall errors / 50,938 |
+| system | primary accuracy | errors / 36,239 | overall accuracy | overall errors / 50,938 |
 | --- | --- | --- | --- | --- |
-| A. stock evo-inflector 2.0 | 96.502% | 1,222 | 68.825% | 15,880 |
+| A. stock evo-inflector 2.0 | 96.473% | 1,278 | 68.882% | 15,851 |
 | C. rules + curated + Wiktionary artifact | **100.000%** | **0** | **100.000%** | **0** |
-| B. repaired rules only (no lexicon) | 88.618% | 3,976 | 64.239% | 18,216 |
+| B. repaired rules only (no lexicon) | 88.714% | 4,090 | 64.259% | 18,206 |
 
 Paired comparison, clustered bootstrap by lemma family (95% CI):
 
-* evo2 → this library: **+4.1509 pp** `[+3.9261, +4.3680]`, 1,461 corrections, 0 regressions.
-* evo2 → rules only: `-7.8274 pp` `[-8.9596, -6.9535]`, 467 corrections, 3,222 regressions.
+* evo2 → this library: **+4.1611 pp** `[+3.9597, +4.3727]`, 1,519 corrections, 0 regressions.
+* evo2 → rules only: `-7.7031 pp` `[-8.7735, -6.8541]`, 479 corrections, 3,291 regressions.
 
-Rule source usage on the test split: 27,420 rule decisions, 23,518 lexical decisions, no fallback.
+Rule source usage on the test split: 28,512 rule decisions, 22,426 lexical decisions, no fallback.
 Mass nouns explain the overall gap: stock 2.0 pluralizes all 14,952 mass records
 (`informations`), while this library returns the lemma and reports `MASS`.
 
@@ -50,14 +50,14 @@ limit); the artifact now covers all of them.
 
 Whole lemma families are assigned to train/dev/test by a pinned hash (`splits.py`). Casing
 variants, compounds and related records stay in one family. The experimental artifact is
-built **from the train split only** (110,630 entries); dev and test lemmas are absent from
+built **from the train split only** (105,688 entries); dev and test lemmas are absent from
 every lexical resource and from all training, mining and calibration inputs.
 
-| system | primary accuracy | errors / 34,933 | note |
+| system | primary accuracy | errors / 36,239 | note |
 | --- | --- | --- | --- |
-| A. stock evo-inflector 2.0 | 96.502% | 1,222 | unchanged baseline |
-| C. train-only artifact | 88.618% | 3,976 | held-out families have almost no entries |
-| B. repaired rules | 88.618% | 3,976 | identical by construction |
+| A. stock evo-inflector 2.0 | 96.473% | 1,278 | unchanged baseline |
+| C. train-only artifact | 88.714% | 4,090 | held-out families have almost no entries |
+| B. repaired rules | 88.714% | 4,090 | identical by construction |
 
 The equality is the expected result, not a bug: on unseen families the train-only artifact
 contributes almost nothing, so the system reduces to the three productive rules. P2 is the
@@ -75,27 +75,35 @@ lemma→plural pairs (2,221 attested forms). The shipped artifact was **not retr
 on this corpus; 454 of the 2,184 lemmas happen to be present in the lexicon, and 1,730 are
 unseen.
 
-| system | overall | seen (454) | unseen (1,730) |
+| system | overall | seen (376) | unseen (1,808) |
 | --- | --- | --- | --- |
-| stock evo-inflector 2.0 | 98.12% [97.53, 98.67] | 95.37% [93.39, 97.14] | 98.84% [98.32, 99.31] |
-| shipped lexicon | **94.55%** [93.59, 95.47] | **77.09%** [73.13, 80.84] | **99.13%** [98.67, 99.54] |
-| repaired rules only | 97.71% [97.07, 98.31] | 92.29% [89.65, 94.49] | 99.13% [98.67, 99.54] |
+| stock evo-inflector 2.0 | 98.12% [97.53, 98.67] | 94.41% [92.02, 96.54] | 98.89% [98.40, 99.34] |
+| shipped lexicon | **98.76%** [98.26, 99.22] | **96.81%** [94.95, 98.40] | **99.17%** [98.73, 99.56] |
+| repaired rules only | 97.71% [97.07, 98.31] | 90.69% [87.50, 93.62] | 99.17% [98.73, 99.56] |
 
 Accepted-form accuracy; 95% percentile bootstrap over lemmas. The unseen lexicon number
 equals the rules number by construction: unseen lemmas fall through to the productive rules.
 
-The seen-subset failure is a **data defect, not a morphology result**: 100 of the 119 lexicon
-errors are identity returns, and the artifact classifies common count nouns as mass or
-plural-only — `book` is `PLURAL_ONLY`, `account` is `MASS`, `bag` is `PLURAL_ONLY`, so they
-are returned unchanged (`book`, not `books`). The identity errors break down as `MASS` 44,
-`PLURAL_ONLY` 53, `MASS/I` 3.
+The earlier seen-subset failure (77.09% on 454 lemmas) is fixed. Three extraction defects
+caused it, all corrected and re-measured with a full P1/P2 rerun:
 
-P1 did not expose this because its overall accepted-form slice counts identity as correct for
-`MASS`/`PLURAL_ONLY` rows, and its primary slice excludes those rows entirely. The external
-corpus supplies count contexts and shows that the artifact's countability classification is
-over-broad. Fixing it requires correcting extraction/classification and re-running P1/P2; it
-was deliberately **not** tuned against this external set. Until then, treat P1 as dictionary
-coverage, not production accuracy, and see `results/external/ewt-report.md` for the error list.
+1. Sense-level `plural-normally` tags promoted whole lemmas to `PLURAL_ONLY`
+   (`book`, `bag`) — now only head-level plural-only marking counts.
+2. A single subordinate `uncountable` sense outweighed attested plurals (`account`)
+   — now attested plurals win unless the head itself says uncountable.
+3. Multi-etymology labels took the first record in dump order (`plate`) — now reconciled
+   by votes, and `usually uncountable` with an attested plural maps to `MIXED`
+   (`practice`, `reality`, `sculpture`, `truth`, `stuff`, `furniture`).
+4. `money`/`music`/`traffic` moved from curated `MASS` to `MIXED` (`monies`, `musics`,
+   `traffics`), matching the `water`/`coffee` precedent.
+
+Of the remaining 27 lexicon errors, 16 are rule-source misses on EWT annotation noise
+(`aquiriums`, `bredders`, `dinasaurs`, `paraded`, `tomatos`, `thanx`, `titts`, `villians`)
+or known rule limits (`gardneri`, `mullahs`, `attys`/`cpys`); 8 are identity returns on
+disputed subordinate uses (`works`, `olds`, `offs`, `osteos`, `luggage`, `accent`,
+`amenity`, `belonging`); 3 are correct outputs scored wrong against gold typos
+(`tomatoes`, `aquariums`, `lasers`). Nothing here was tuned against the external set;
+see `results/external/ewt-report.md` for the full list.
 
 ## Candidate-oracle ceiling (P2 test)
 
@@ -104,16 +112,16 @@ always a candidate. An oracle picks a valid candidate whenever one exists.
 
 | quantity | value |
 | --- | --- |
-| records | 35,197 |
-| base accuracy | 88.022% |
-| oracle accuracy | 99.182% |
-| oracle gain | **+11.16 pp** |
-| required gain (20% fewer errors + 0.05 pp) | 2.396 pp |
+| records | 36,505 |
+| base accuracy | 88.136% |
+| oracle accuracy | 99.173% |
+| oracle gain | **+11.04 pp** |
+| required gain (20% fewer errors + 0.05 pp) | 2.373 pp |
 | ceiling clears required gain | yes |
 
-Oracle hits by edit: `base:s` 28,340, `s` 2,612, `base:other` 1,586, `base:es` 1,019,
-`man->men` 293, `is->es` 254, `um->a` 236, `lemma` 162, `es` 112, `us->i` 95, `a->ae` 51,
-`ies` 45, `base:same` 36, `ix->ices` 18, `fe->ves` 17, `ves` 14, `child->ren` 8,
+Oracle hits by edit: `base:s` 29,181, `s` 2,651, `base:other` 1,774, `base:es` 1,181,
+`man->men` 293, `is->es` 285, `um->a` 236, `lemma` 186, `es` 115, `us->i` 97, `a->ae` 51,
+`ies` 46, `base:same` 38, `ix->ices` 18, `fe->ves` 18, `ves` 14, `child->ren` 8,
 `mouse->ice` 6, `person->people` 3, `quiz->zzes` 2.
 
 Because the ceiling clears the required gain, a learned candidate selector is worth training
@@ -126,8 +134,9 @@ Because the ceiling clears the required gain, a learned candidate selector is wo
 * Singularization, verbs, sentence context: out of scope.
 * Human adjudication: no new records were adjudicated, so no claim of human review is made.
 * External generalization: UD EWT is one corpus with its own annotation noise (typos and
-  abbreviations such as `aquiriums` and `bredders` appear in the gold). The 119-error list is
-  published rather than hand-cleaned, and the defect pattern is far larger than that noise.
+  abbreviations such as `aquiriums` and `bredders` appear in the gold). The 27-error list is
+  published rather than hand-cleaned; most of it is that noise plus disputed subordinate
+  uses (`works`, `olds`).
 
 ## Reproduction
 

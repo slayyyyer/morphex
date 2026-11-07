@@ -3,8 +3,8 @@
   "source_url": "https://github.com/UniversalDependencies/UD_English-EWT",
   "license": "CC BY-SA 4.0",
   "lemmas": 2184,
-  "seen": 454,
-  "unseen": 1730,
+  "seen": 376,
+  "unseen": 1808,
   "systems": {
     "evo2": {
       "overall": {
@@ -17,50 +17,50 @@
         ]
       },
       "seen": {
-        "accepted": 433,
-        "total": 454,
-        "accuracy": 0.9537444933920705,
+        "accepted": 355,
+        "total": 376,
+        "accuracy": 0.9441489361702128,
         "ci95": [
-          0.933920704845815,
-          0.9713656387665198
+          0.9202127659574468,
+          0.9654255319148937
         ]
       },
       "unseen": {
-        "accepted": 1710,
-        "total": 1730,
-        "accuracy": 0.9884393063583815,
+        "accepted": 1788,
+        "total": 1808,
+        "accuracy": 0.9889380530973452,
         "ci95": [
-          0.9832369942196532,
-          0.9930635838150289
+          0.9839601769911505,
+          0.9933628318584071
         ]
       }
     },
     "lexicon": {
       "overall": {
-        "accepted": 2065,
+        "accepted": 2157,
         "total": 2184,
-        "accuracy": 0.9455128205128205,
+        "accuracy": 0.9876373626373627,
         "ci95": [
-          0.9358974358974359,
-          0.9546703296703297
+          0.9826007326007326,
+          0.9922161172161172
         ]
       },
       "seen": {
-        "accepted": 350,
-        "total": 454,
-        "accuracy": 0.7709251101321586,
+        "accepted": 364,
+        "total": 376,
+        "accuracy": 0.9680851063829787,
         "ci95": [
-          0.7312775330396476,
-          0.8083700440528634
+          0.949468085106383,
+          0.9840425531914894
         ]
       },
       "unseen": {
-        "accepted": 1715,
-        "total": 1730,
-        "accuracy": 0.9913294797687862,
+        "accepted": 1793,
+        "total": 1808,
+        "accuracy": 0.9917035398230089,
         "ci95": [
-          0.9867052023121388,
-          0.9953757225433526
+          0.9872787610619469,
+          0.995575221238938
         ]
       }
     },
@@ -75,21 +75,21 @@
         ]
       },
       "seen": {
-        "accepted": 419,
-        "total": 454,
-        "accuracy": 0.9229074889867841,
+        "accepted": 341,
+        "total": 376,
+        "accuracy": 0.9069148936170213,
         "ci95": [
-          0.8964757709251101,
-          0.9449339207048458
+          0.875,
+          0.9361702127659575
         ]
       },
       "unseen": {
-        "accepted": 1715,
-        "total": 1730,
-        "accuracy": 0.9913294797687862,
+        "accepted": 1793,
+        "total": 1808,
+        "accuracy": 0.9917035398230089,
         "ci95": [
-          0.9867052023121388,
-          0.9953757225433526
+          0.9872787610619469,
+          0.995575221238938
         ]
       }
     }
@@ -105,42 +105,6 @@
       "seen": true,
       "artifact_countability": "PLURAL_ONLY",
       "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "account",
-      "gold": [
-        "accounts"
-      ],
-      "selected": "account",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "accountability",
-      "gold": [
-        "accountabilities"
-      ],
-      "selected": "accountability",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "alternative",
-      "gold": [
-        "alternatives"
-      ],
-      "selected": "alternative",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
       "identity": true
     },
     {
@@ -169,18 +133,6 @@
       "identity": false
     },
     {
-      "lemma": "asset",
-      "gold": [
-        "assets"
-      ],
-      "selected": "asset",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
       "lemma": "atty",
       "gold": [
         "attys"
@@ -193,42 +145,6 @@
       "identity": false
     },
     {
-      "lemma": "bag",
-      "gold": [
-        "bags"
-      ],
-      "selected": "bag",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "ball",
-      "gold": [
-        "balls"
-      ],
-      "selected": "ball",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "behavior",
-      "gold": [
-        "behaviors"
-      ],
-      "selected": "behavior",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
       "lemma": "belonging",
       "gold": [
         "belongings"
@@ -238,54 +154,6 @@
       "seen": true,
       "artifact_countability": "PLURAL_ONLY",
       "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "blade",
-      "gold": [
-        "blades"
-      ],
-      "selected": "blade",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "bog",
-      "gold": [
-        "bogs"
-      ],
-      "selected": "bog",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "book",
-      "gold": [
-        "books"
-      ],
-      "selected": "book",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "boot",
-      "gold": [
-        "boots"
-      ],
-      "selected": "boot",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
       "identity": true
     },
     {
@@ -313,114 +181,6 @@
       "identity": false
     },
     {
-      "lemma": "case",
-      "gold": [
-        "cases"
-      ],
-      "selected": "case",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "chamber",
-      "gold": [
-        "chambers"
-      ],
-      "selected": "chamber",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "cheek",
-      "gold": [
-        "cheeks"
-      ],
-      "selected": "cheek",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "chip",
-      "gold": [
-        "chips"
-      ],
-      "selected": "chip",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "collection",
-      "gold": [
-        "collections"
-      ],
-      "selected": "collection",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "compliment",
-      "gold": [
-        "compliments"
-      ],
-      "selected": "compliment",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "connection",
-      "gold": [
-        "connections"
-      ],
-      "selected": "connection",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "copy",
-      "gold": [
-        "copies"
-      ],
-      "selected": "copy",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "corn",
-      "gold": [
-        "corns"
-      ],
-      "selected": "corn",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
       "lemma": "cpy",
       "gold": [
         "cpys"
@@ -431,30 +191,6 @@
       "artifact_countability": "NOT_IN_ARTIFACT",
       "artifact_flags": "-",
       "identity": false
-    },
-    {
-      "lemma": "crew",
-      "gold": [
-        "crews"
-      ],
-      "selected": "crew",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "curve",
-      "gold": [
-        "curves"
-      ],
-      "selected": "curve",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
     },
     {
       "lemma": "dinosaur",
@@ -469,162 +205,6 @@
       "identity": false
     },
     {
-      "lemma": "dislike",
-      "gold": [
-        "dislikes"
-      ],
-      "selected": "dislike",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "dispute",
-      "gold": [
-        "disputes"
-      ],
-      "selected": "dispute",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "effect",
-      "gold": [
-        "effects"
-      ],
-      "selected": "effect",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "element",
-      "gold": [
-        "elements"
-      ],
-      "selected": "element",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "eye",
-      "gold": [
-        "eyes"
-      ],
-      "selected": "eye",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "face",
-      "gold": [
-        "faces"
-      ],
-      "selected": "face",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "farmland",
-      "gold": [
-        "farmlands"
-      ],
-      "selected": "farmland",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "feeling",
-      "gold": [
-        "feelings"
-      ],
-      "selected": "feeling",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "field",
-      "gold": [
-        "fields"
-      ],
-      "selected": "field",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "fine",
-      "gold": [
-        "fines"
-      ],
-      "selected": "fine",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "finger",
-      "gold": [
-        "fingers"
-      ],
-      "selected": "finger",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "food",
-      "gold": [
-        "foods"
-      ],
-      "selected": "food",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "fry",
-      "gold": [
-        "fries"
-      ],
-      "selected": "fry",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
       "lemma": "gardnerus",
       "gold": [
         "gardneri"
@@ -635,126 +215,6 @@
       "artifact_countability": "NOT_IN_ARTIFACT",
       "artifact_flags": "-",
       "identity": false
-    },
-    {
-      "lemma": "gathering",
-      "gold": [
-        "gatherings"
-      ],
-      "selected": "gathering",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "group",
-      "gold": [
-        "groups"
-      ],
-      "selected": "group",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "guard",
-      "gold": [
-        "guards"
-      ],
-      "selected": "guard",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "gun",
-      "gold": [
-        "guns"
-      ],
-      "selected": "gun",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "heel",
-      "gold": [
-        "heels"
-      ],
-      "selected": "heel",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "imbalance",
-      "gold": [
-        "imbalances"
-      ],
-      "selected": "imbalance",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "instrument",
-      "gold": [
-        "instruments"
-      ],
-      "selected": "instrument",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "interest",
-      "gold": [
-        "interests"
-      ],
-      "selected": "interest",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "iron",
-      "gold": [
-        "irons"
-      ],
-      "selected": "iron",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "issue",
-      "gold": [
-        "issues"
-      ],
-      "selected": "issue",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
     },
     {
       "lemma": "laser",
@@ -769,30 +229,6 @@
       "identity": false
     },
     {
-      "lemma": "leg",
-      "gold": [
-        "legs"
-      ],
-      "selected": "leg",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "letter",
-      "gold": [
-        "letters"
-      ],
-      "selected": "letter",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
       "lemma": "luggage",
       "gold": [
         "luggages"
@@ -802,54 +238,6 @@
       "seen": true,
       "artifact_countability": "MASS",
       "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "lyric",
-      "gold": [
-        "lyrics"
-      ],
-      "selected": "lyric",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "money",
-      "gold": [
-        "monies"
-      ],
-      "selected": "money",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "move",
-      "gold": [
-        "moves"
-      ],
-      "selected": "move",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "movie",
-      "gold": [
-        "movies"
-      ],
-      "selected": "movie",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
       "identity": true
     },
     {
@@ -863,42 +251,6 @@
       "artifact_countability": "NOT_IN_ARTIFACT",
       "artifact_flags": "-",
       "identity": false
-    },
-    {
-      "lemma": "muscle",
-      "gold": [
-        "muscles"
-      ],
-      "selected": "muscle",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "myth",
-      "gold": [
-        "myths"
-      ],
-      "selected": "myth",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "national",
-      "gold": [
-        "nationals"
-      ],
-      "selected": "national",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
     },
     {
       "lemma": "off",
@@ -922,18 +274,6 @@
       "seen": true,
       "artifact_countability": "PLURAL_ONLY",
       "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "option",
-      "gold": [
-        "options"
-      ],
-      "selected": "option",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
       "identity": true
     },
     {
@@ -973,18 +313,6 @@
       "identity": false
     },
     {
-      "lemma": "peak",
-      "gold": [
-        "peaks"
-      ],
-      "selected": "peak",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
       "lemma": "pedal",
       "gold": [
         "peddles"
@@ -995,18 +323,6 @@
       "artifact_countability": "NOT_IN_ARTIFACT",
       "artifact_flags": "-",
       "identity": false
-    },
-    {
-      "lemma": "piece",
-      "gold": [
-        "pieces"
-      ],
-      "selected": "piece",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
     },
     {
       "lemma": "pinscher",
@@ -1021,163 +337,6 @@
       "identity": false
     },
     {
-      "lemma": "plate",
-      "gold": [
-        "plates"
-      ],
-      "selected": "plate",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "point",
-      "gold": [
-        "points"
-      ],
-      "selected": "point",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "practice",
-      "gold": [
-        "practices"
-      ],
-      "selected": "practice",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "premise",
-      "gold": [
-        "premises"
-      ],
-      "selected": "premise",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "project",
-      "gold": [
-        "projects"
-      ],
-      "selected": "project",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "property",
-      "gold": [
-        "properties"
-      ],
-      "selected": "property",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "puppy",
-      "gold": [
-        "puppies"
-      ],
-      "selected": "puppy",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "reality",
-      "gold": [
-        "realities"
-      ],
-      "selected": "reality",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "rifle",
-      "gold": [
-        "rifles"
-      ],
-      "selected": "rifle",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "robot",
-      "gold": [
-        "robots"
-      ],
-      "selected": "robot",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "scrap",
-      "gold": [
-        "scraps"
-      ],
-      "selected": "scrap",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "sculpture",
-      "gold": [
-        "sculptures",
-        "scupltures"
-      ],
-      "selected": "sculpture",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "second",
-      "gold": [
-        "seconds"
-      ],
-      "selected": "second",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
       "lemma": "shyster",
       "gold": [
         "sheisters"
@@ -1190,90 +349,6 @@
       "identity": false
     },
     {
-      "lemma": "sideline",
-      "gold": [
-        "sidelines"
-      ],
-      "selected": "sideline",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "sink",
-      "gold": [
-        "sinks"
-      ],
-      "selected": "sink",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "spirit",
-      "gold": [
-        "spirits"
-      ],
-      "selected": "spirit",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "stage",
-      "gold": [
-        "stages"
-      ],
-      "selected": "stage",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "street",
-      "gold": [
-        "streets"
-      ],
-      "selected": "street",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "string",
-      "gold": [
-        "strings"
-      ],
-      "selected": "string",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "stuff",
-      "gold": [
-        "stuffs"
-      ],
-      "selected": "stuff",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
       "lemma": "sussex",
       "gold": [
         "sussexs"
@@ -1284,42 +359,6 @@
       "artifact_countability": "COUNTABLE",
       "artifact_flags": "C",
       "identity": false
-    },
-    {
-      "lemma": "swap",
-      "gold": [
-        "swaps"
-      ],
-      "selected": "swap",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "tail",
-      "gold": [
-        "tails"
-      ],
-      "selected": "tail",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "talk",
-      "gold": [
-        "talks"
-      ],
-      "selected": "talk",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
     },
     {
       "lemma": "thank",
@@ -1358,91 +397,6 @@
       "identity": false
     },
     {
-      "lemma": "tongue",
-      "gold": [
-        "tongues"
-      ],
-      "selected": "tongue",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "track",
-      "gold": [
-        "tracks"
-      ],
-      "selected": "track",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "train",
-      "gold": [
-        "trains"
-      ],
-      "selected": "train",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "tree",
-      "gold": [
-        "trees",
-        "tress"
-      ],
-      "selected": "tree",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "truth",
-      "gold": [
-        "truths"
-      ],
-      "selected": "truth",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "type",
-      "gold": [
-        "types"
-      ],
-      "selected": "type",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "vessel",
-      "gold": [
-        "vessels"
-      ],
-      "selected": "vessel",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "MASS",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
       "lemma": "villain",
       "gold": [
         "villians"
@@ -1453,66 +407,6 @@
       "artifact_countability": "NOT_IN_ARTIFACT",
       "artifact_flags": "-",
       "identity": false
-    },
-    {
-      "lemma": "visitor",
-      "gold": [
-        "visitors"
-      ],
-      "selected": "visitor",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "way",
-      "gold": [
-        "ways"
-      ],
-      "selected": "way",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "-",
-      "identity": true
-    },
-    {
-      "lemma": "wetland",
-      "gold": [
-        "wetlands"
-      ],
-      "selected": "wetland",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "whisper",
-      "gold": [
-        "whispers"
-      ],
-      "selected": "whisper",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
-    },
-    {
-      "lemma": "wire",
-      "gold": [
-        "wires"
-      ],
-      "selected": "wire",
-      "source": "lexicon",
-      "seen": true,
-      "artifact_countability": "PLURAL_ONLY",
-      "artifact_flags": "I",
-      "identity": true
     },
     {
       "lemma": "work",
@@ -1528,17 +422,16 @@
     }
   ],
   "error_diagnosis": {
-    "errors": 119,
-    "identity_returns": 100,
+    "errors": 27,
+    "identity_returns": 8,
     "identity_by_artifact_class": {
-      "MASS/-": 44,
-      "PLURAL_ONLY/I": 40,
-      "PLURAL_ONLY/-": 13,
-      "MASS/I": 3
+      "PLURAL_ONLY/I": 4,
+      "MASS/I": 3,
+      "MASS/-": 1
     },
     "by_source": {
-      "lexicon": 103,
-      "rule": 16
+      "rule": 16,
+      "lexicon": 11
     }
   }
 }

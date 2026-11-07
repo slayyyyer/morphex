@@ -19,7 +19,7 @@ RESULTS = ROOT / "results"
 CORE_RESOURCE = ROOT / "inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v1.tsv"
 
 DATASET_VERSION = "nouns-v1"
-EXTRACTION_VERSION = "extract-v1"
+EXTRACTION_VERSION = "extract-v2"
 ARTIFACT_VERSION = "lexicon-v1"
 SPLIT_VERSION = "split-v1"
 

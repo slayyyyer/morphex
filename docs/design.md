@@ -153,10 +153,11 @@ Kept separate from singular→plural accuracy in the evaluator (see `docs/evalua
 * `Mode.CLASSICAL` only changes *preferences* for entries carrying an attested classical
   form (`cacti`, `formulae`, `indices`); it never invents neo-classical forms by rule.
 
-The external UD EWT check (`docs/evaluation.md`) found the artifact over-classifies common
-count nouns as `MASS`/`PLURAL_ONLY` (`book`, `bag`, `account`) — a data defect in
-extraction/classification, not a rendering bug. Fixing it requires correcting extraction
-and rerunning P1/P2; it was deliberately not tuned against the external set.
+The external UD EWT check (`docs/evaluation.md`) once found the artifact over-classifying
+common count nouns as `MASS`/`PLURAL_ONLY` (`book`, `bag`, `account`) — a data defect in
+extraction/classification, not a rendering bug. It was fixed by correcting extraction
+(sense-level tags no longer outweigh attested plurals; multi-etymology labels reconciled
+by votes) and rerunning P1/P2; it was deliberately not tuned against the external set.
 
 ## Concurrency, startup and footprint
 
