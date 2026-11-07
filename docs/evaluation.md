@@ -19,39 +19,38 @@ for the headline claim.
 
 ## Protocol 1 — frozen shipped lexicon (lexical coverage)
 
-The shipped artifact (all splits, 157,344 entries) is frozen, then evaluated on the test split.
+The shipped artifact (all splits, 157,352 entries) is frozen, then evaluated on the test split.
 This measures **coverage of a frozen dictionary**, not generalization to unseen lemmas.
 
 | system | primary accuracy | errors / 34,933 | overall accuracy | overall errors / 50,938 |
 | --- | --- | --- | --- | --- |
 | A. stock evo-inflector 2.0 | 96.502% | 1,222 | 68.825% | 15,880 |
-| C. rules + curated + Wiktionary artifact | **99.997%** | **1** | **99.996%** | **2** |
+| C. rules + curated + Wiktionary artifact | **100.000%** | **0** | **100.000%** | **0** |
 | B. repaired rules only (no lexicon) | 88.618% | 3,976 | 64.239% | 18,216 |
 
 Paired comparison, clustered bootstrap by lemma family (95% CI):
 
-* evo2 → this library: **+4.1481 pp** `[+3.9231, +4.3629]`, 1,461 corrections, 1 regression.
+* evo2 → this library: **+4.1509 pp** `[+3.9261, +4.3680]`, 1,461 corrections, 0 regressions.
 * evo2 → rules only: `-7.8274 pp` `[-8.9596, -6.9535]`, 467 corrections, 3,222 regressions.
 
-Rule source usage on the test split: 27,421 rule decisions, 23,517 lexical decisions, 1 fallback.
+Rule source usage on the test split: 27,420 rule decisions, 23,518 lexical decisions, no fallback.
 Mass nouns explain the overall gap: stock 2.0 pluralizes all 14,952 mass records
 (`informations`), while this library returns the lemma and reports `MASS`.
 
-### Residual errors (2)
+### Residual errors (0)
 
-| lemma | output | gold accepted | classification |
-| --- | --- | --- | --- |
-| `meet-her-in-the-entry-and-kiss-her-in-the-buttery` (51 chars) | lemma | `...butteries` | artifact skips lemmas longer than 40 characters |
-| `pneumonoultramicroscopicsilicovolcanokoniosis` (45 chars, MASS) | rules pluralized it | lemma | same 40-character skip; outside the primary slice |
-
-Both residual errors are the same documented limitation (an arbitrary 40-character cap on
-lexical entries), not a wrong morphological decision. They are reported rather than relabelled.
+No test record is missed. The two former residuals — the 51-character
+`meet-her-in-the-entry-and-kiss-her-in-the-buttery` and the 45-character MASS
+`pneumonoultramicroscopicsilicovolcanokoniosis` — were an arbitrary 40-character cap on
+lexical entries, not wrong morphological decisions. The cap is lifted (the longest
+validated single-token lemma is 53 characters and the packed columns impose no such
+limit); the artifact now covers all of them.
 
 ## Protocol 2 — family holdout (no lexical leakage)
 
 Whole lemma families are assigned to train/dev/test by a pinned hash (`splits.py`). Casing
 variants, compounds and related records stay in one family. The experimental artifact is
-built **from the train split only** (110,627 entries); dev and test lemmas are absent from
+built **from the train split only** (110,630 entries); dev and test lemmas are absent from
 every lexical resource and from all training, mining and calibration inputs.
 
 | system | primary accuracy | errors / 34,933 | note |

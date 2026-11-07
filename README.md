@@ -4,9 +4,9 @@ Deterministic English noun pluralization for Java 17+, inspired by and built on 
 
 - No runtime dependencies, no network calls, no model downloads.
 - Immutable per-instance configuration; thread-safe by construction.
-- A 157k-entry lexical artifact (8.1 MB TSV, 1.25 MB gzip) plus three productive rules, with explicit precedence and a documented fallback.
+- A 157,352-entry lexical artifact (8.1 MB TSV, 1.27 MB gzip) plus three productive rules, with explicit precedence and a documented fallback.
 - A diagnostic API (`analyze`) that says *why* a form was chosen.
-- Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **99.997%** vs **96.502%** accepted-form accuracy, mostly from the added lexicon. On the leakage-free family-holdout protocol this library scores **88.618%** (see `docs/evaluation.md`).
+- Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **100.000%** vs **96.502%** accepted-form accuracy, mostly from the added lexicon. On the leakage-free family-holdout protocol this library scores **88.618%** (see `docs/evaluation.md`).
 - A neural-selector investigation was run and **not adopted** based on measured gates; the shipped artifact contains no model and no training dependency (`docs/learning.md`).
 
 Status: `0.1.0-SNAPSHOT`. Publication coordinates are provisional: `io.github.slayyyyer.morphex:english-inflector:0.1.0-SNAPSHOT` (not published to Maven Central).
@@ -181,7 +181,7 @@ The lexical artifact is generated offline from a pinned Kaikki/Wiktionary dump (
 
 Headline numbers (JDK 21, recorded runs):
 
-- P1 frozen lexicon: **99.997%** accepted-form accuracy (1/34,933 errors) vs evo-inflector 2.0 at **96.502%**; paired +4.15 pp, 95% CI `[+3.92, +4.36]`. Most of the gain comes from the bundled lexicon, so this measures dictionary coverage more than a fundamental difference in approach.
+- P1 frozen lexicon: **100.000%** accepted-form accuracy (0/34,933 errors) vs evo-inflector 2.0 at **96.502%**; paired +4.15 pp, 95% CI `[+3.93, +4.37]`. Most of the gain comes from the bundled lexicon, so this measures dictionary coverage more than a fundamental difference in approach.
 - P2 family holdout: **88.618%** for both rules and train-only lexicon (no leakage possible), which is the honest unseen-family number.
 - External check (UD English EWT, CC BY-SA 4.0; 2,184 lemmas, no retraining): **94.55%** overall, **77.09%** on lemmas present in the shipped lexicon, **99.13%** on unseen lemmas. The low seen figure is a data defect: common count nouns such as `book`, `bag` and `account` are misclassified as `PLURAL_ONLY`/`MASS` and returned unchanged. P1 does not catch this because identity counts as correct for those policy rows; see `docs/evaluation.md` and `results/external/ewt-report.md`. Treat P1 as dictionary coverage, not production accuracy.
 - JMH: 82 ns/op repeated (vs 98 ns evo-inflector), 201 ns/op distinct-word (vs 151 ns; 1.34× slower), 29-51 B/op allocated. The packed lexicon retains 25.4 MB after load. Concurrent throughput was not captured in the final run.

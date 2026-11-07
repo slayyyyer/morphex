@@ -26,7 +26,7 @@ mode, matching this library's anglicized default.
 
 | system | primary accuracy | errors | overall accuracy | overall errors / 50,938 |
 | --- | --- | --- | --- | --- |
-| this library (rules + lexicon) | **99.997%** | **1** | **99.996%** | **2** |
+| this library (rules + lexicon) | **100.000%** | **0** | **100.000%** | **0** |
 | evo-inflector 2.0 | 96.502% | 1,222 | 68.825% | 15,880 |
 | **PyPI `inflect` 7.6.0** | **94.157%** | **2,041** | **67.080%** | **16,769** |
 | repaired rules only | 88.618% | 3,976 | 64.239% | 18,216 |

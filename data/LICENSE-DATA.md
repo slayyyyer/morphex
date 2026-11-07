@@ -62,8 +62,8 @@ See `data/derived/manifest-v1.json` for exact numbers and checksums. The committ
 * 354,316 records kept, 340,560 unique lemmas
 * quarantined: 256,761 `no-attested-plural`, 223,801 `lemma-surface` (multi-word, non-Latin)
 * countability: 199,489 countable, 98,619 mass, 37,271 mixed, 5,181 plural-only
-* runtime artifact: 157,344 entries, 8,053,686 bytes raw / 1,253,478 bytes gzip (compact
-  selection; 183,214 lemmas whose plural is exactly the productive rule output are omitted and
+* runtime artifact: 157,352 entries, 8,054,665 bytes raw / 1,266,667 bytes gzip (compact
+  selection; 183,215 lemmas whose plural is exactly the productive rule output are omitted and
   are still handled by rules)
 
 ## Redistribution checklist

@@ -48,7 +48,7 @@ paths rather than a pure map hit.
 | inflectorAnalyze | avgt | 321.475 | ns/op | 234.9 |
 | inflectorRulesOnly | avgt | 391.191 | ns/op | 77.0 |
 
-Artifact: 157,344 entries, 8,053,686 bytes raw TSV (1,253,478 bytes gzip) in the jar; no
+Artifact: 157,352 entries, 8,054,665 bytes raw TSV (1,266,667 bytes gzip) in the jar; no
 runtime dependencies. The final JMH run did not capture the concurrent benchmarks; the
 earlier run measured 10.2M ops/s on four threads, but that number belongs to the previous
 artifact and is not claimed here.
@@ -87,7 +87,7 @@ higher accuracy (see `docs/evaluation.md`). No distinct-word speedup is claimed.
 | first call (class load + artifact load + first pluralize) | 392-505 ms (median 426 ms) |
 | first `pluralize` call | 2.2-3.2 ms |
 | 50,000 cold calls with unseen tokens | 60.7-61.8 ms |
-| lexicon entries | 157,344 |
+| lexicon entries | 157,352 |
 | retained heap after load | **25.4 MB** |
 
 The previous object-graph lexicon retained **55.5 MB**; the packed layout cuts that by 54%

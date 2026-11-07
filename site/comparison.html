@@ -30,8 +30,8 @@
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/comparison.md">docs/comparison.md</a>.</p>
       <table class="data">
         <tr><th>Dimension</th><th>evo-inflector 2.0</th><th>This library</th></tr>
-        <tr><td>P1 frozen-lexicon accuracy (34,933 records)</td><td>96.502% (1,222 errors)</td><td><strong>99.997%</strong> (1 error)</td></tr>
-        <tr><td>P1 paired gain (95% CI)</td><td>—</td><td><strong>+4.15 pp</strong> [+3.92, +4.36], 1,461 fixes, 1 regression</td></tr>
+        <tr><td>P1 frozen-lexicon accuracy (34,933 records)</td><td>96.502% (1,222 errors)</td><td><strong>100.000%</strong> (0 errors)</td></tr>
+        <tr><td>P1 paired gain (95% CI)</td><td>—</td><td><strong>+4.15 pp</strong> [+3.93, +4.37], 1,461 fixes, 0 regressions</td></tr>
         <tr><td>P2 unseen-family accuracy</td><td>96.502%</td><td>88.618% — honest, worse by construction</td></tr>
         <tr><td>External UD EWT overall / unseen / seen</td><td>98.12% / 98.84% / 95.37%</td><td>94.55% / <strong>99.13%</strong> / 77.09% (data defect)</td></tr>
         <tr><td>Repeated lookup</td><td>98.2 ns/op, 113 B/op</td><td><strong>81.7 ns/op</strong>, 35 B/op (0.83×)</td></tr>
@@ -87,7 +87,7 @@ String plural = INFLECTOR.pluralize(word);</code></pre>
       <p class="small">No <code>org.atteo.evo.inflector</code> shim ships on purpose (it would duplicate the API on the benchmark classpath). Caller overrides take precedence over everything: <code>builder().override("information", "informations")</code>.</p>
       <div class="callout"><strong>Which should you use?</strong> Stay with evo-inflector 2.0 if you want the
       smallest thing that works — no data file, static API, well understood. Choose this library
-      if the rows above matter to you and you can carry the 8.1&nbsp;MB TSV (1.25&nbsp;MB gzip,
+      if the rows above matter to you and you can carry the 8.1&nbsp;MB TSV (1.27&nbsp;MB gzip,
       25.4&nbsp;MB retained) — or use the rules-only build to drop the data entirely at the cost
       of irregular forms.</div>
     </div>
@@ -98,7 +98,7 @@ String plural = INFLECTOR.pluralize(word);</code></pre>
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/python-baseline.md">docs/python-baseline.md</a>.</p>
       <table class="data">
         <tr><th>System</th><th>P1 primary</th><th>Errors</th></tr>
-        <tr><td>This library</td><td><strong>99.997%</strong></td><td>1</td></tr>
+        <tr><td>This library</td><td><strong>100.000%</strong></td><td>0</td></tr>
         <tr><td>evo-inflector 2.0</td><td>96.502%</td><td>1,222</td></tr>
         <tr><td>PyPI <code>inflect</code></td><td>94.157%</td><td>2,041</td></tr>
         <tr><td>Repaired rules only</td><td>88.618%</td><td>3,976</td></tr>

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-07T05:21:56+00:00",
+  "generated": "2026-11-07T05:37:36+00:00",
   "split": "test",
   "lexicon_split": "all",
   "records": 50938,
@@ -100,15 +100,15 @@
     "lexicon": {
       "overall": {
         "total": 50938,
-        "correct": 50936,
-        "errors": 2,
-        "accuracy": 0.9999607365817268
+        "correct": 50938,
+        "errors": 0,
+        "accuracy": 1.0
       },
       "primary": {
         "total": 34933,
-        "correct": 34932,
-        "errors": 1,
-        "accuracy": 0.9999713737726506
+        "correct": 34933,
+        "errors": 0,
+        "accuracy": 1.0
       },
       "primary_plain_non_invariant": {
         "total": 31896,
@@ -119,9 +119,9 @@
       "by_bucket": {
         "compound": {
           "total": 2600,
-          "correct": 2599,
-          "errors": 1,
-          "accuracy": 0.9996153846153846
+          "correct": 2600,
+          "errors": 0,
+          "accuracy": 1.0
         },
         "initialism": {
           "total": 1110,
@@ -131,9 +131,9 @@
         },
         "simple": {
           "total": 46882,
-          "correct": 46881,
-          "errors": 1,
-          "accuracy": 0.9999786698519688
+          "correct": 46882,
+          "errors": 0,
+          "accuracy": 1.0
         },
         "unicode": {
           "total": 346,
@@ -145,15 +145,15 @@
       "by_countability": {
         "COUNTABLE": {
           "total": 29736,
-          "correct": 29735,
-          "errors": 1,
-          "accuracy": 0.9999663707290826
+          "correct": 29736,
+          "errors": 0,
+          "accuracy": 1.0
         },
         "MASS": {
           "total": 14952,
-          "correct": 14951,
-          "errors": 1,
-          "accuracy": 0.9999331193151418
+          "correct": 14952,
+          "errors": 0,
+          "accuracy": 1.0
         },
         "MIXED": {
           "total": 5461,
@@ -183,9 +183,9 @@
         },
         "long": {
           "total": 14533,
-          "correct": 14532,
-          "errors": 1,
-          "accuracy": 0.9999311910823643
+          "correct": 14533,
+          "errors": 0,
+          "accuracy": 1.0
         }
       },
       "predicted": 50939
@@ -380,13 +380,13 @@
   "comparisons": [
     {
       "corrections": 1461,
-      "regressions": 1,
-      "delta_accuracy_pp": 4.148080802341108,
+      "regressions": 0,
+      "delta_accuracy_pp": 4.1509219535755895,
       "ci95_pp": [
-        3.923085740486015,
-        4.362922275663831
+        3.9261363636363638,
+        4.367953196444293
       ],
-      "relative_error_reduction": 0.9986320109439124,
+      "relative_error_reduction": 1.0,
       "iterations": 2000,
       "families": 33318,
       "baseline": "evo2",

@@ -5,7 +5,7 @@ Primary slice: countable and mixed-use, non-invariant records, accepted-form acc
 | system | accepted accuracy | errors | primary accuracy | primary errors |
 | --- | --- | --- | --- | --- |
 | evo2 | 68.825% | 15880 | 96.502% | 1222 |
-| lexicon | 99.996% | 2 | 99.997% | 1 |
+| lexicon | 100.000% | 0 | 100.000% | 0 |
 | pyinflect | 67.080% | 16769 | 94.157% | 2041 |
 | rules | 64.239% | 18216 | 88.618% | 3976 |
 
@@ -13,7 +13,7 @@ Primary slice: countable and mixed-use, non-invariant records, accepted-form acc
 
 | baseline | candidate | delta pp | 95% CI | corrections | regressions |
 | --- | --- | --- | --- | --- | --- |
-| evo2 | lexicon | +4.1481 | [+3.9231, +4.3629] | 1461 | 1 |
+| evo2 | lexicon | +4.1509 | [+3.9261, +4.3680] | 1461 | 0 |
 | evo2 | pyinflect | -2.3241 | [-2.4966, -2.1504] | 100 | 918 |
 | evo2 | rules | -7.8274 | [-8.9596, -6.9535] | 467 | 3222 |
 
@@ -39,17 +39,17 @@ Primary slice: countable and mixed-use, non-invariant records, accepted-form acc
 
 | slice | total | correct | accuracy |
 | --- | --- | --- | --- |
-| by_bucket:compound | 2600 | 2599 | 99.96% |
+| by_bucket:compound | 2600 | 2600 | 100.00% |
 | by_bucket:initialism | 1110 | 1110 | 100.00% |
-| by_bucket:simple | 46882 | 46881 | 100.00% |
+| by_bucket:simple | 46882 | 46882 | 100.00% |
 | by_bucket:unicode | 346 | 346 | 100.00% |
-| by_countability:COUNTABLE | 29736 | 29735 | 100.00% |
-| by_countability:MASS | 14952 | 14951 | 99.99% |
+| by_countability:COUNTABLE | 29736 | 29736 | 100.00% |
+| by_countability:MASS | 14952 | 14952 | 100.00% |
 | by_countability:MIXED | 5461 | 5461 | 100.00% |
 | by_countability:PLURAL_ONLY | 789 | 789 | 100.00% |
 | by_length:short | 3627 | 3627 | 100.00% |
 | by_length:medium | 16773 | 16773 | 100.00% |
-| by_length:long | 14533 | 14532 | 99.99% |
+| by_length:long | 14533 | 14533 | 100.00% |
 
 ### pyinflect
 

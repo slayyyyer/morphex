@@ -127,7 +127,11 @@ def build(split_filter: str = "all", selection: str = "compact") -> list[list[st
         key = lemma.lower()
         if key in seen:
             continue
-        if len(lemma) > 40 or " " in lemma:
+        # Space-containing lemmas stay out: they belong to compound handling or the
+        # documented fallback, never to whole-word lexicon lookup. Length is not capped:
+        # the longest validated single-token lemma is 53 characters and the packed
+        # columns impose no 40-character limit.
+        if " " in lemma:
             skipped += 1
             continue
         if split_filter != "all" and not _split_allowed(lemma, split_filter, assignments):

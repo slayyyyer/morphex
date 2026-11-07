@@ -17,15 +17,15 @@ outputs for reproduction.
 
 | dimension | stock evo-inflector 2.0 | this library |
 | --- | --- | --- |
-| P1 frozen-lexicon accepted-form accuracy (34,933 primary records) | 96.502% (1,222 errors) | **99.997%** (1 error) |
-| P1 paired gain (family-clustered bootstrap 95% CI) | — | **+4.1481 pp** `[+3.9231, +4.3629]`, 1,461 corrections, 1 regression |
+| P1 frozen-lexicon accepted-form accuracy (34,933 primary records) | 96.502% (1,222 errors) | **100.000%** (0 errors) |
+| P1 paired gain (family-clustered bootstrap 95% CI) | — | **+4.1509 pp** `[+3.9261, +4.3680]`, 1,461 corrections, 0 regressions |
 | P2 family-holdout accuracy (unseen families, train-only artifact) | 96.502% (carries its exception table) | 88.618% — honest unseen-family number, worse by construction (see below) |
 | External UD English EWT overall (2,184 lemmas, no retraining) | 98.12% | 94.55% |
 | External EWT unseen lemmas (1,730) | 98.84% | **99.13%** |
 | External EWT seen lemmas (454) | 95.37% | 77.09% — data defect, not morphology (see §3) |
 | Repeated-word lookup (JMH, JDK 21) | 98.2 ns/op, 113 B/op | **81.7 ns/op**, 35 B/op (0.83×, faster) |
 | Distinct-word lookup | 150.7 ns/op, 137 B/op | 201.1 ns/op, 29 B/op (**1.34× slower**, lower allocation) |
-| Retained lexicon heap | n/a (small built-in table) | 25.4 MB for 157,344 entries (was 55.5 MB before packing) |
+| Retained lexicon heap | n/a (small built-in table) | 25.4 MB for 157,352 entries (was 55.5 MB before packing) |
 | Runtime dependencies | none | none |
 
 ## 1. Why the accuracy differs
@@ -48,7 +48,7 @@ Compounds are the third systematic gap: stock 2.0 inflects the wrong constituent
 bounded, reviewed compound table (exact entries, free tails, curated postposed heads) and
 refuses to guess otherwise (`well-known`, `jack in the box` returned unchanged).
 
-P1's 99.997% is **dictionary coverage**, not generalization: the shipped artifact covers the
+P1's 100.000% is **dictionary coverage**, not generalization: the shipped artifact covers the
 test families. P2 (family holdout, test families excluded from lexicon, training, mining
 and calibration) is the honest unseen-family number at 88.618%, where stock 2.0's built-in
 exception table still applies. That inversion is expected and documented, not hidden.
@@ -99,8 +99,8 @@ of the same API on the benchmark classpath.
 * **Distinct-word latency.** 1.34× slower than stock 2.0 (improved from 2.4× before the
   packed layout). Repeated-word lookup is faster (0.83×) at lower allocation in all
   workloads. Concurrent throughput was not captured in the final run — no claim is made.
-* **Residual P1 errors (2)** are the documented 40-character lexical cap, not wrong
-  morphology.
+* **Residual P1 errors:** none — the former 40-character cap is lifted, so the artifact
+  covers all validated lemmas.
 
 ## 4. When to choose which
 
@@ -109,7 +109,7 @@ of the same API on the benchmark classpath.
 * Choose this library if you need the §2 repairs, explicit casing/countability policies,
   compound handling, a diagnostic API (`analyze`: source, id, alternatives, ambiguity),
   per-instance overrides/initialisms/modes, and are willing to carry an 8.1 MB TSV
-  (1.25 MB gzip, 25.4 MB retained) — or use the rules-only build to drop the data entirely
+  (1.27 MB gzip, 25.4 MB retained) — or use the rules-only build to drop the data entirely
   at the cost of irregular forms.
 
 ## Reproduce
