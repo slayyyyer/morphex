@@ -4,16 +4,15 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>english-inflector — deterministic English noun pluralization for Java</title>
-  <meta name="description" content="Deterministic English noun pluralization for Java 17+. More correct than evo-inflector 2.0, with predictable runtime behaviour, zero dependencies, and a diagnostic API." />
+  <meta name="description" content="Deterministic English noun pluralization for Java 17+, in the spirit of evo-inflector: predictable runtime behaviour, zero dependencies, and a diagnostic API." />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="./index.html">english-<span>inflector</span></a>
-    <nav>
-      <a href="./index.html" class="active">Home</a>
-      <a href="./comparison.html">vs evo-inflector</a>
+    <nav>        <a href="./index.html" class="active">Home</a>
+        <a href="./comparison.html">Comparisons</a>
       <a href="./benchmarks.html">Benchmarks</a>
       <a href="./design.html">Design</a>
       <a href="./javadoc/">Javadoc</a>
@@ -25,8 +24,8 @@
   <div class="wrap">
     <h1>Pluralize English nouns. <span>Deterministically.</span></h1>
     <p class="lede">
-      A Java 17+ library that is more correct than evo-inflector 2.0 without giving up
-      predictable runtime behaviour. No dependencies, no network calls, no model downloads —
+      A Java 17+ library in the spirit of evo-inflector — predictable runtime behaviour,
+      no dependencies, no network calls, no model downloads —
       a 157k-entry auditable lexicon, three productive rules, and a diagnostic API that
       says <em>why</em> a form was chosen.
     </p>
@@ -39,7 +38,7 @@
     </div>
     <div class="cta-row">
       <a class="btn" href="#install">Get started</a>
-      <a class="btn ghost" href="./comparison.html">See the evo-inflector comparison</a>
+      <a class="btn ghost" href="./comparison.html">See comparisons</a>
       <a class="btn ghost" href="https://github.com/slayyyyer/morphex">GitHub</a>
     </div>
   </div>
@@ -130,13 +129,18 @@ r.source();          // LEXICON — "lex:die"</code></pre>
 
   <section class="block" id="why">
     <div class="card">
-      <h2>Why not just evo-inflector 2.0?</h2>
+      <h2>How does it compare?</h2>
       <p>
-        Every row below is reproduced from stock 2.0 in
-        <a href="https://github.com/slayyyyer/morphex/blob/main/docs/upstream-probe.md">docs/upstream-probe.md</a>
-        and fixed here. Two structural root causes: lookup/casing conflation
-        (<code>CHILD → CHILDren</code>) and lexical exceptions expressed as suffix rules
-        (<code>carp</code> infecting <code>scarp</code>, <code>louse</code> infecting <code>blouse</code>).
+        evo-inflector is a compact, well-loved library; this project grew out of wanting a few
+        more edge cases covered. Each row below pairs stock 2.0 output (reproduced in
+        <a href="https://github.com/slayyyyer/morphex/blob/main/docs/upstream-probe.md">docs/upstream-probe.md</a>)
+        with this library's output. The differences come down to two design choices: keeping
+        lookup normalization separate from output case restoration
+        (<code>CHILD → CHILDREN</code>), and storing lexical exceptions as whole-word edits
+        rather than suffix rules (so <code>carp</code> can't affect <code>scarp</code> and
+        <code>louse</code> can't affect <code>blouse</code>). That trades a larger data file for
+        fewer surprises — evo-inflector's rule-based approach is smaller and simpler, and may be
+        the better fit if you don't need the extra coverage.
       </p>
       <table class="data">
         <tr><th>Input</th><th>evo-inflector 2.0</th><th>This library</th></tr>
@@ -187,9 +191,9 @@ r.source();          // LEXICON — "lex:die"</code></pre>
     <h2 style="margin-bottom:0">Reports</h2>
     <div class="report-grid">
       <a class="card report-card" href="./comparison.html">
-        <div class="kicker">Comparison</div>
-        <h3>vs evo-inflector 2.0</h3>
-        <p class="small">Head-to-head accuracy, latency, behaviour tables, migration notes — with qualifications.</p>
+        <div class="kicker">Comparisons</div>
+        <h3>Against evo-inflector 2.0</h3>
+        <p class="small">Accuracy, latency, behaviour differences and migration notes — with qualifications.</p>
       </a>
       <a class="card report-card" href="./benchmarks.html">
         <div class="kicker">Performance</div>

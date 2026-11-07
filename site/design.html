@@ -12,8 +12,7 @@
   <div class="wrap">
     <a class="brand" href="./index.html">english-<span>inflector</span></a>
     <nav>
-      <a href="./index.html">Home</a>
-      <a href="./comparison.html">vs evo-inflector</a>
+      <a href="./index.html">Home</a>        <a href="./comparison.html">Comparisons</a>
       <a href="./benchmarks.html">Benchmarks</a>
       <a href="./design.html" class="active">Design</a>
       <a href="./javadoc/">Javadoc</a>
@@ -46,9 +45,9 @@
           <tr><td><code>rule:consonant-y-ies</code></td><td>consonant + <code>y</code> (incl. <code>qu+y</code>)</td><td><code>y → ies</code></td></tr>
           <tr><td><code>rule:default-s</code></td><td>otherwise</td><td>append <code>s</code></td></tr>
         </table>
-        <p class="small">Nothing word-specific is expressible as a rule — that is what structurally prevents the <code>carp/scarp</code> and <code>louse/blouse</code> failures.</p>
+        <p class="small">Nothing word-specific is expressible as a rule — so <code>carp</code> can't cover <code>scarp</code> and <code>louse</code> can't reach <code>blouse</code>, unlike the stock 2.0 behaviour documented in the comparisons page.</p>
         <h3>Casing</h3>
-        <p class="small">Lookup normalization and output restoration are separate. <code>PRESERVE</code> (default) maps
+        <p class="small">Lookup normalization and output restoration are separate operations (stock 2.0 combines them, hence <code>CHILD → CHILDren</code>). <code>PRESERVE</code> (default) maps
         <code>CHILD → CHILDREN</code>, <code>Child → Children</code>, <code>iPhone → iPhones</code>;
         <code>LOWERCASE</code>/<code>UPPERCASE</code> force the shape. Initialisms append their attested
         suffix without whole-token re-casing (<code>UFO → UFOs</code>, <code>SMS → SMSes</code>).</p>

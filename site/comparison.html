@@ -3,17 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>vs evo-inflector 2.0 — english-inflector</title>
-  <meta name="description" content="Head-to-head comparison of english-inflector against evo-inflector 2.0: accuracy, latency, behaviour, and migration." />
+  <title>Comparisons — english-inflector</title>
+  <meta name="description" content="How english-inflector compares with evo-inflector 2.0: accuracy, latency, behaviour differences, and migration." />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
 <header class="site-header">
   <div class="wrap">
     <a class="brand" href="./index.html">english-<span>inflector</span></a>
-    <nav>
-      <a href="./index.html">Home</a>
-      <a href="./comparison.html" class="active">vs evo-inflector</a>
+    <nav>        <a href="./index.html">Home</a>
+        <a href="./comparison.html" class="active">Comparisons</a>
       <a href="./benchmarks.html">Benchmarks</a>
       <a href="./design.html">Design</a>
       <a href="./javadoc/">Javadoc</a>
@@ -23,8 +22,11 @@
 <main class="wrap">
   <section class="block">
     <div class="card">
-      <h2>english-inflector vs evo-inflector 2.0</h2>
-      <p class="small">Stock <code>org.atteo:evo-inflector:2.0</code>, measured in this repository. Full detail in
+      <h2>Comparisons</h2>
+      <p class="small">How this library differs from <code>org.atteo:evo-inflector:2.0</code> (stock outputs
+      reproduced and measured in this repository). evo-inflector is the compact, rule-based
+      starting point this project builds on — smaller and simpler, and the better fit when you
+      don't need the extra coverage below. Full detail in
       <a href="https://github.com/slayyyyer/morphex/blob/main/docs/comparison.md">docs/comparison.md</a>.</p>
       <table class="data">
         <tr><th>Dimension</th><th>evo-inflector 2.0</th><th>This library</th></tr>
@@ -38,16 +40,16 @@
       </table>
     </div>
     <div class="card">
-      <h3>Why the accuracy differs</h3>
+      <h3>Where the differences come from</h3>
       <ol>
-        <li><strong>Lookup/casing conflation in stock 2.0.</strong> The exception table is reached lower-cased but re-cased as a suffix edit: <code>German → Germen</code>, <code>CHILD → CHILDren</code>. Fixed here by separating lookup normalization from output case restoration.</li>
-        <li><strong>Lexical exceptions as suffix rules.</strong> <code>carp</code> (invariant) infects <code>scarp</code>; <code>louse → lice</code> reaches <code>blouse → blice</code>. Fixed here: lexical knowledge is whole-word edits; only three productive rules exist.</li>
-        <li><strong>Compounds.</strong> Stock inflects the wrong constituent (<code>mother-in-laws</code>, <code>attorney generals</code>). Fixed here with a bounded reviewed table; unmatched input is left unchanged.</li>
+        <li><strong>Lookup and casing in one step.</strong> Stock 2.0 reaches its exception table lower-cased but re-cases the result as a suffix edit: <code>German → Germen</code>, <code>CHILD → CHILDren</code>. This library separates lookup normalization from output case restoration.</li>
+        <li><strong>Lexical exceptions that behave like suffix rules.</strong> <code>carp</code> (invariant) covers <code>scarp</code>; <code>louse → lice</code> reaches <code>blouse → blice</code>. This library stores lexical knowledge as whole-word edits and keeps only three productive rules.</li>
+        <li><strong>Compounds.</strong> Stock 2.0 inflects a different constituent (<code>mother-in-laws</code>, <code>attorney generals</code>). This library uses a bounded reviewed table and leaves unmatched input unchanged rather than guessing.</li>
       </ol>
     </div>
     <div class="grid two">
       <div class="card">
-        <h3>Correctness repairs</h3>
+        <h3>Outputs that differ</h3>
         <table class="data">
           <tr><th>Input</th><th>2.0</th><th>Here</th></tr>
           <tr><td><code>German</code></td><td><code>Germen</code></td><td><code>Germans</code></td></tr>
@@ -62,7 +64,7 @@
         </table>
       </div>
       <div class="card">
-        <h3>Intentional changes (not bugs)</h3>
+        <h3>Intentional policy differences</h3>
         <table class="data">
           <tr><th>Input</th><th>Here</th><th>Reason</th></tr>
           <tr><td><code>information</code></td><td>unchanged</td><td>mass-noun policy (<code>MASS</code>)</td></tr>
@@ -83,6 +85,11 @@ String plural = org.atteo.evo.inflector.English.plural(word);
 private static final EnglishInflector INFLECTOR = EnglishInflector.standard();
 String plural = INFLECTOR.pluralize(word);</code></pre>
       <p class="small">No <code>org.atteo.evo.inflector</code> shim ships on purpose (it would duplicate the API on the benchmark classpath). Caller overrides take precedence over everything: <code>builder().override("information", "informations")</code>.</p>
+      <div class="callout"><strong>Which should you use?</strong> Stay with evo-inflector 2.0 if you want the
+      smallest thing that works — no data file, static API, well understood. Choose this library
+      if the rows above matter to you and you can carry the 8.1&nbsp;MB TSV (1.25&nbsp;MB gzip,
+      25.4&nbsp;MB retained) — or use the rules-only build to drop the data entirely at the cost
+      of irregular forms.</div>
     </div>
   </section>
 </main>
