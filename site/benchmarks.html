@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Benchmarks — english-inflector</title>
+  <meta name="description" content="JMH methodology, raw numbers, allocation, startup and footprint for english-inflector vs evo-inflector 2.0." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./index.html">english-<span>inflector</span></a>
+    <nav>
+      <a href="./index.html">Home</a>
+      <a href="./comparison.html">vs evo-inflector</a>
+      <a href="./benchmarks.html" class="active">Benchmarks</a>
+      <a href="./design.html">Design</a>
+      <a href="./javadoc/">Javadoc</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <section class="block">
+    <div class="card">
+      <h2>Benchmarks</h2>
+      <p class="small">JMH 1.37, independent forks, average time with GC profiler. Raw data:
+      <code>results/benchmarks/jmh-packed.json</code>. Full methodology in
+      <a href="https://github.com/slayyyyer/morphex/blob/main/docs/benchmarks.md">docs/benchmarks.md</a>.</p>
+      <table class="data">
+        <tr><th>Field</th><th>Value</th></tr>
+        <tr><td>CPU / RAM / OS</td><td>12th Gen Intel i5-12500H (12c/16t) · 16 GB · Windows 11</td></tr>
+        <tr><td>JDK / Maven / JMH</td><td>Temurin 21.0.13 · 3.9.9 (wrapper) · 1.37 (<code>-f 2 -wi 3 -i 5 -w 1s -r 1s -prof gc</code>)</td></tr>
+        <tr><td>Compare</td><td><code>org.atteo:evo-inflector:2.0</code> from Maven Central, same-run ratios</td></tr>
+      </table>
+      <table class="data">
+        <tr><th>Benchmark</th><th>Mode</th><th>Score</th><th>Unit</th><th>Alloc</th></tr>
+        <tr><td>evo2Repeated</td><td>avgt</td><td>98.211</td><td>ns/op</td><td>113.3 B/op</td></tr>
+        <tr><td><strong>inflectorRepeated</strong></td><td>avgt</td><td><strong>81.696</strong></td><td>ns/op</td><td>35.3 B/op</td></tr>
+        <tr><td>evo2Unique</td><td>avgt</td><td>150.706</td><td>ns/op</td><td>136.6 B/op</td></tr>
+        <tr><td><strong>inflectorUnique</strong></td><td>avgt</td><td><strong>201.128</strong></td><td>ns/op</td><td>29.3 B/op</td></tr>
+        <tr><td>evo2MixedCase</td><td>avgt</td><td>169.060</td><td>ns/op</td><td>151.3 B/op</td></tr>
+        <tr><td><strong>inflectorMixedCase</strong></td><td>avgt</td><td><strong>267.856</strong></td><td>ns/op</td><td>50.8 B/op</td></tr>
+        <tr><td>evo2Count</td><td>avgt</td><td>170.932</td><td>ns/op</td><td>136.5 B/op</td></tr>
+        <tr><td><strong>inflectorCount</strong></td><td>avgt</td><td><strong>216.921</strong></td><td>ns/op</td><td>29.3 B/op</td></tr>
+        <tr><td>evo2AnalyzeEquivalent</td><td>avgt</td><td>269.945</td><td>ns/op</td><td>273.1 B/op</td></tr>
+        <tr><td><strong>inflectorAnalyze</strong></td><td>avgt</td><td><strong>321.475</strong></td><td>ns/op</td><td>234.9 B/op</td></tr>
+        <tr><td>inflectorRulesOnly</td><td>avgt</td><td>391.191</td><td>ns/op</td><td>77.0 B/op</td></tr>
+      </table>
+      <div class="callout"><strong>Measured claim:</strong> faster than stock 2.0 on repeated lookup (0.83×),
+      1.34× slower on distinct-word lookup (down from 2.4× before the packed layout), lower
+      allocation everywhere, 54% smaller retained heap, substantially higher accuracy. No
+      distinct-word speedup is claimed.</div>
+    </div>
+    <div class="grid two">
+      <div class="card">
+        <h3>Startup &amp; footprint</h3>
+        <table class="data">
+          <tr><td>First call (load + first pluralize)</td><td>392–505 ms (median 426 ms)</td></tr>
+          <tr><td>50,000 cold miss-heavy calls</td><td>60.7–61.8 ms</td></tr>
+          <tr><td>Lexicon entries</td><td>157,344 (8.05 MB TSV, 1.25 MB gzip)</td></tr>
+          <tr><td>Retained heap after load</td><td><strong>25.4 MB</strong> (was 55.5 MB)</td></tr>
+        </table>
+        <p class="small">Load is slower than the old map (426 vs 309 ms) — one-time column packing + index
+        build, not per-lookup cost. No model or native memory: the learning experiment was rejected.</p>
+      </div>
+      <div class="card">
+        <h3>Reproduce</h3>
+<pre><code>./mvnw -q -pl inflector-benchmarks -am package
+java -jar inflector-benchmarks/target/benchmarks.jar \
+  -f 2 -wi 3 -i 5 -w 1s -r 1s -prof gc \
+  -rf json -rff results/benchmarks/jmh.json</code></pre>
+        <p class="small">Same-run ratios are the fair comparison; cross-run absolutes are noisy (the rules-only
+        control moved 476 → 391 ns between runs). The final run did not capture concurrent
+        benchmarks — no concurrency claim is made.</p>
+      </div>
+    </div>
+  </section>
+</main>
+<footer class="site-footer"><div class="wrap"><span>english-inflector — deterministic English noun pluralization for Java.</span><span class="spacer"></span><a href="https://github.com/slayyyyer/morphex">GitHub</a><a href="./javadoc/">Javadoc</a></div></footer>
+<script src="./site.js"></script>
+</body>
+</html>

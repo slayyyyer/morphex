@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>english-inflector — deterministic English noun pluralization for Java</title>
+  <meta name="description" content="Deterministic English noun pluralization for Java 17+. More correct than evo-inflector 2.0, with predictable runtime behaviour, zero dependencies, and a diagnostic API." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./index.html">english-<span>inflector</span></a>
+    <nav>
+      <a href="./index.html" class="active">Home</a>
+      <a href="./comparison.html">vs evo-inflector</a>
+      <a href="./benchmarks.html">Benchmarks</a>
+      <a href="./design.html">Design</a>
+      <a href="./javadoc/">Javadoc</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="wrap">
+    <h1>Pluralize English nouns. <span>Deterministically.</span></h1>
+    <p class="lede">
+      A Java 17+ library that is more correct than evo-inflector 2.0 without giving up
+      predictable runtime behaviour. No dependencies, no network calls, no model downloads —
+      a 157k-entry auditable lexicon, three productive rules, and a diagnostic API that
+      says <em>why</em> a form was chosen.
+    </p>
+    <div class="badges">
+      <span class="badge pending">Maven Central: 0.1.0 pending — see Install</span>
+      <span class="badge">Java 17+</span>
+      <span class="badge">Zero runtime deps</span>
+      <span class="badge">MIT code · CC BY-SA 3.0 data</span>
+      <span class="badge">Thread-safe · immutable</span>
+    </div>
+    <div class="cta-row">
+      <a class="btn" href="#install">Get started</a>
+      <a class="btn ghost" href="./comparison.html">See the evo-inflector comparison</a>
+      <a class="btn ghost" href="https://github.com/slayyyyer/morphex">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="block" id="install">
+    <div class="card">
+      <h2>Install</h2>
+      <p class="small">
+        Release <code>0.1.0</code> is on its way to Maven Central (group
+        <code>io.github.morphex</code>, artifact <code>english-inflector-core</code>).
+        Until the first sync completes, build from source with <code>./mvnw install</code>
+        — the snippets below already use the release coordinates.
+      </p>
+      <div data-tabs>
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="tab-maven">Maven</button>
+          <button class="tab-btn" data-tab="tab-gradle-kts">Gradle (Kotlin)</button>
+          <button class="tab-btn" data-tab="tab-gradle">Gradle (Groovy)</button>
+          <button class="tab-btn" data-tab="tab-source">From source</button>
+        </div>
+        <div class="tab-panel active" id="tab-maven">
+<pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;io.github.morphex&lt;/groupId&gt;
+  &lt;artifactId&gt;english-inflector-core&lt;/artifactId&gt;
+  &lt;version&gt;0.1.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+        </div>
+        <div class="tab-panel" id="tab-gradle-kts">
+<pre><code>implementation("io.github.morphex:english-inflector-core:0.1.0")</code></pre>
+        </div>
+        <div class="tab-panel" id="tab-gradle">
+<pre><code>implementation 'io.github.morphex:english-inflector-core:0.1.0'</code></pre>
+        </div>
+        <div class="tab-panel" id="tab-source">
+<pre><code>./mvnw install   # JDK 17+; wrapper pins Maven 3.9.9</code></pre>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Rules-only build</strong> (no bundled Wiktionary data, no CC BY-SA obligation):
+        <code>EnglishInflector.builder().withoutBundledLexicon().build()</code> —
+        three productive rules plus your overrides. It loses irregular forms by design.
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="quickstart">
+    <div class="grid two">
+      <div class="card">
+        <h3>Quickstart</h3>
+<pre><code>EnglishInflector inflector = EnglishInflector.standard();
+
+inflector.pluralize("child");          // "children"
+inflector.pluralize("CHILD");          // "CHILDREN"
+inflector.pluralize("UFO");            // "UFOs"
+inflector.pluralize("mother-in-law");  // "mothers-in-law"
+inflector.pluralize("cat", 1);         // "cat" (source instance kept)
+inflector.pluralize("cat", 3);         // "cats"
+
+Inflection r = inflector.analyze("die");
+r.plural();          // "dice"
+r.alternatives();    // ["dies"]
+r.ambiguous();       // true
+r.source();          // LEXICON — "lex:die"</code></pre>
+      </div>
+      <div class="card">
+        <h3>Try it (browser sketch)</h3>
+        <p class="small">
+          Approximation of the three productive rules plus a few irregulars.
+          The real engine is the Java library (full lexicon, compounds, casing policy).
+        </p>
+        <div class="demo-row">
+          <input id="demo-input" value="mother-in-law" maxlength="60" aria-label="Singular noun" />
+        </div>
+        <div class="demo-row">
+          <button data-demo="child">child</button>
+          <button data-demo="CHILD">CHILD</button>
+          <button data-demo="blouse">blouse</button>
+          <button data-demo="UFO">UFO</button>
+          <button data-demo="mother-in-law">mother-in-law</button>
+        </div>
+        <p>Result: <span class="demo-out" id="demo-output">—</span></p>
+        <p class="demo-note">Runs entirely in your browser. No data leaves the page.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="why">
+    <div class="card">
+      <h2>Why not just evo-inflector 2.0?</h2>
+      <p>
+        Every row below is reproduced from stock 2.0 in
+        <a href="https://github.com/slayyyyer/morphex/blob/main/docs/upstream-probe.md">docs/upstream-probe.md</a>
+        and fixed here. Two structural root causes: lookup/casing conflation
+        (<code>CHILD → CHILDren</code>) and lexical exceptions expressed as suffix rules
+        (<code>carp</code> infecting <code>scarp</code>, <code>louse</code> infecting <code>blouse</code>).
+      </p>
+      <table class="data">
+        <tr><th>Input</th><th>evo-inflector 2.0</th><th>This library</th></tr>
+        <tr><td><code>German</code></td><td><code>Germen</code></td><td><code>Germans</code></td></tr>
+        <tr><td><code>blouse</code></td><td><code>blice</code></td><td><code>blouses</code></td></tr>
+        <tr><td><code>scarp</code></td><td><code>scarp</code></td><td><code>scarps</code></td></tr>
+        <tr><td><code>UFO</code></td><td><code>UFOes</code></td><td><code>UFOs</code></td></tr>
+        <tr><td><code>mother-in-law</code></td><td><code>mother-in-laws</code></td><td><code>mothers-in-law</code></td></tr>
+        <tr><td><code>CHILD</code></td><td><code>CHILDren</code></td><td><code>CHILDREN</code></td></tr>
+      </table>
+      <p><a href="./comparison.html">Full head-to-head with qualifications →</a></p>
+    </div>
+  </section>
+
+  <section class="block" id="numbers">
+    <div class="card">
+      <h2>Measured, not claimed</h2>
+      <div class="grid four">
+        <div class="stat"><div class="num good">99.997%</div><div class="lbl">P1 frozen-lexicon accuracy (1/34,933 errors) vs 96.502% stock</div></div>
+        <div class="stat"><div class="num">88.618%</div><div class="lbl">P2 unseen-family accuracy — the honest generalization number</div></div>
+        <div class="stat"><div class="num good">82 ns</div><div class="lbl">repeated lookup vs 98 ns stock (0.83×, faster)</div></div>
+        <div class="stat"><div class="num warn">201 ns</div><div class="lbl">distinct-word lookup vs 151 ns stock (1.34× slower)</div></div>
+      </div>
+      <p class="small">
+        JMH 1.37 on JDK 21 (2 forks, GC profiler). 29–51 B/op allocated vs 113–151 B/op stock.
+        Packed lexicon retains 25.4 MB (was 55.5 MB). External UD English EWT check: 94.55%
+        overall, 99.13% on unseen lemmas — with a known countability data defect on seen
+        lemmas (77.09%). Details in <a href="./benchmarks.html">Benchmarks</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="block" id="how">
+    <div class="card">
+      <h2>How it works</h2>
+      <ol class="pipeline">
+        <li><strong>Caller override</strong> — exact, case-sensitive whole-input match wins.</li>
+        <li><strong>Exact lexical entry</strong> — 157k-entry TSV, case-insensitive lookup with case-sensitive entries where needed.</li>
+        <li><strong>Supported compound</strong> — bounded table (exact entries, free tails, curated postposed heads). Unmatched input is left alone, not guessed.</li>
+        <li><strong>Productive spelling rule</strong> — only three: <code>+es</code> after sibilants, consonant-<code>y → ies</code>, default <code>+s</code>.</li>
+        <li><strong>Documented fallback</strong> — unsupported shapes returned unchanged and identified by <code>analyze</code>.</li>
+      </ol>
+      <p><a href="./design.html">Read the design report →</a></p>
+    </div>
+  </section>
+
+  <section class="block" id="reports">
+    <h2 style="margin-bottom:0">Reports</h2>
+    <div class="report-grid">
+      <a class="card report-card" href="./comparison.html">
+        <div class="kicker">Comparison</div>
+        <h3>vs evo-inflector 2.0</h3>
+        <p class="small">Head-to-head accuracy, latency, behaviour tables, migration notes — with qualifications.</p>
+      </a>
+      <a class="card report-card" href="./benchmarks.html">
+        <div class="kicker">Performance</div>
+        <h3>Benchmarks</h3>
+        <p class="small">JMH methodology, raw numbers, allocation, startup and retained footprint.</p>
+      </a>
+      <a class="card report-card" href="./design.html">
+        <div class="kicker">Architecture</div>
+        <h3>Design</h3>
+        <p class="small">Precedence, packed lexicon layout, casing, compounds, countability, tradeoffs.</p>
+      </a>
+      <a class="card report-card" href="https://github.com/slayyyyer/morphex/blob/main/docs/evaluation.md">
+        <div class="kicker">Evaluation · GitHub</div>
+        <h3>Accuracy protocols &amp; learning</h3>
+        <p class="small">P1/P2 definitions, residual errors, external validation, and the rejected neural selector.</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="block" id="license">
+    <div class="card">
+      <h2>License &amp; data</h2>
+      <p>
+        <strong>Code: MIT.</strong> <strong>Data: CC BY-SA 3.0</strong> (Wiktionary contributors via
+        Kaikki.org/Wiktextract; see <code>NOTICE</code> and
+        <code>data/LICENSE-DATA.md</code>). The lexicon ships as a separate redistributable file;
+        the rules-only build avoids it entirely.
+      </p>
+      <p class="small">Status: <code>0.1.0</code> heading to Maven Central. Publication coordinates are
+      <code>io.github.morphex:english-inflector-core:0.1.0</code>.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>english-inflector — deterministic English noun pluralization for Java.</span>
+    <span class="spacer"></span>
+    <a href="https://github.com/slayyyyer/morphex">GitHub</a>
+    <a href="./javadoc/">Javadoc</a>
+    <a href="https://github.com/slayyyyer/morphex/blob/main/NOTICE">Attribution</a>
+  </div>
+</footer>
+<script src="./site.js"></script>
+</body>
+</html>

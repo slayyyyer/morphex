@@ -11,6 +11,8 @@ Deterministic English noun pluralization for Java 17+, inspired by and built on 
 
 Status: `0.1.0-SNAPSHOT`. Publication coordinates are provisional: `io.github.morphex:english-inflector:0.1.0-SNAPSHOT` (not published to Maven Central).
 
+Website: https://slayyyyer.github.io/morphex/ (install, quickstart, comparison, benchmarks, design, Javadoc).
+
 ## Why
 
 evo-inflector is a compact, well-loved library, and this project grew out of wanting a few more edge cases covered: mixed and upper-case input, hyphenated compounds, and irregulars that share a suffix with regular words. `docs/upstream-probe.md` lists the specific inputs we compared (for example `German`, `blouse`, `UFO`, `mother-in-law`, `CHILD`).
@@ -173,6 +175,8 @@ The lexical artifact is generated offline from a pinned Kaikki/Wiktionary dump (
 | `docs/benchmarks.md`     | JMH methodology, raw numbers, honest interpretation                         |
 | `docs/learning.md`       | candidate-oracle ceiling, learners, routing, seeds, decision                |
 | `docs/compatibility.md`  | differences from evo-inflector, intentional changes, migration recipe       |
+| `docs/design.md`         | engine architecture, precedence, lexicon layout, casing, compounds           |
+| `docs/comparison.md`     | head-to-head vs evo-inflector 2.0, with qualifications                      |
 
 Headline numbers (JDK 21, recorded runs):
 

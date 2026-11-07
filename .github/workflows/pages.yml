@@ -1,0 +1,70 @@
+name: Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "inflector-core/src/main/java/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build site + Javadoc
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Build Javadoc for inflector-core
+        run: |
+          chmod +x mvnw
+          ./mvnw -B -q -pl inflector-core -am -DskipTests \
+            org.apache.maven.plugins:maven-javadoc-plugin:3.6.3:javadoc
+
+      - name: Assemble Pages artifact
+        run: |
+          rm -rf _pages && mkdir -p _pages
+          cp -r site/* _pages/
+          if [ -d inflector-core/target/site/apidocs ]; then
+            rm -rf _pages/javadoc && mkdir -p _pages/javadoc
+            cp -r inflector-core/target/site/apidocs/* _pages/javadoc/
+          else
+            mkdir -p _pages/javadoc
+            printf '%s\n' '<!doctype html><title>Javadoc pending</title><p>Javadoc was not generated for this build. See the <a href="https://github.com/slayyyyer/morphex">repository</a>.</p>' > _pages/javadoc/index.html
+          fi
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _pages
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>vs evo-inflector 2.0 — english-inflector</title>
+  <meta name="description" content="Head-to-head comparison of english-inflector against evo-inflector 2.0: accuracy, latency, behaviour, and migration." />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./index.html">english-<span>inflector</span></a>
+    <nav>
+      <a href="./index.html">Home</a>
+      <a href="./comparison.html" class="active">vs evo-inflector</a>
+      <a href="./benchmarks.html">Benchmarks</a>
+      <a href="./design.html">Design</a>
+      <a href="./javadoc/">Javadoc</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <section class="block">
+    <div class="card">
+      <h2>english-inflector vs evo-inflector 2.0</h2>
+      <p class="small">Stock <code>org.atteo:evo-inflector:2.0</code>, measured in this repository. Full detail in
+      <a href="https://github.com/slayyyyer/morphex/blob/main/docs/comparison.md">docs/comparison.md</a>.</p>
+      <table class="data">
+        <tr><th>Dimension</th><th>evo-inflector 2.0</th><th>This library</th></tr>
+        <tr><td>P1 frozen-lexicon accuracy (34,933 records)</td><td>96.502% (1,222 errors)</td><td><strong>99.997%</strong> (1 error)</td></tr>
+        <tr><td>P1 paired gain (95% CI)</td><td>—</td><td><strong>+4.15 pp</strong> [+3.92, +4.36], 1,461 fixes, 1 regression</td></tr>
+        <tr><td>P2 unseen-family accuracy</td><td>96.502%</td><td>88.618% — honest, worse by construction</td></tr>
+        <tr><td>External UD EWT overall / unseen / seen</td><td>98.12% / 98.84% / 95.37%</td><td>94.55% / <strong>99.13%</strong> / 77.09% (data defect)</td></tr>
+        <tr><td>Repeated lookup</td><td>98.2 ns/op, 113 B/op</td><td><strong>81.7 ns/op</strong>, 35 B/op (0.83×)</td></tr>
+        <tr><td>Distinct-word lookup</td><td>150.7 ns/op, 137 B/op</td><td>201.1 ns/op, 29 B/op (1.34× slower)</td></tr>
+        <tr><td>Runtime dependencies</td><td>none</td><td>none</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>Why the accuracy differs</h3>
+      <ol>
+        <li><strong>Lookup/casing conflation in stock 2.0.</strong> The exception table is reached lower-cased but re-cased as a suffix edit: <code>German → Germen</code>, <code>CHILD → CHILDren</code>. Fixed here by separating lookup normalization from output case restoration.</li>
+        <li><strong>Lexical exceptions as suffix rules.</strong> <code>carp</code> (invariant) infects <code>scarp</code>; <code>louse → lice</code> reaches <code>blouse → blice</code>. Fixed here: lexical knowledge is whole-word edits; only three productive rules exist.</li>
+        <li><strong>Compounds.</strong> Stock inflects the wrong constituent (<code>mother-in-laws</code>, <code>attorney generals</code>). Fixed here with a bounded reviewed table; unmatched input is left unchanged.</li>
+      </ol>
+    </div>
+    <div class="grid two">
+      <div class="card">
+        <h3>Correctness repairs</h3>
+        <table class="data">
+          <tr><th>Input</th><th>2.0</th><th>Here</th></tr>
+          <tr><td><code>German</code></td><td><code>Germen</code></td><td><code>Germans</code></td></tr>
+          <tr><td><code>blouse</code></td><td><code>blice</code></td><td><code>blouses</code></td></tr>
+          <tr><td><code>scarp</code></td><td><code>scarp</code></td><td><code>scarps</code></td></tr>
+          <tr><td><code>UFO</code></td><td><code>UFOes</code></td><td><code>UFOs</code></td></tr>
+          <tr><td><code>mother-in-law</code></td><td><code>mother-in-laws</code></td><td><code>mothers-in-law</code></td></tr>
+          <tr><td><code>passer-by</code></td><td><code>passer-bies</code></td><td><code>passers-by</code></td></tr>
+          <tr><td><code>CHILD / CITY</code></td><td><code>CHILDren / CITIes</code></td><td><code>CHILDREN / CITIES</code></td></tr>
+          <tr><td><code>drive-by</code></td><td><code>drive-bies</code></td><td><code>drive-bys</code></td></tr>
+          <tr><td><code>attorney general</code></td><td><code>attorney generals</code></td><td><code>attorneys general</code></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Intentional changes (not bugs)</h3>
+        <table class="data">
+          <tr><th>Input</th><th>Here</th><th>Reason</th></tr>
+          <tr><td><code>information</code></td><td>unchanged</td><td>mass-noun policy (<code>MASS</code>)</td></tr>
+          <tr><td><code>person</code></td><td><code>people</code> (accepts <code>persons</code>)</td><td>preferred form modelled</td></tr>
+          <tr><td><code>die</code></td><td><code>dice</code> (accepts <code>dies</code>)</td><td>ambiguous sense flagged</td></tr>
+          <tr><td><code>user_id</code>, <code>3.14</code></td><td>unchanged (<code>FALLBACK</code>)</td><td>out of scope, reported</td></tr>
+          <tr><td><code>well-known</code></td><td>unchanged</td><td>unmatched compounds not guessed</td></tr>
+        </table>
+        <div class="callout warn"><strong>Qualifications:</strong> P1 is dictionary coverage, not generalization. The external seen-subset (77.09%) exposes a countability data defect (<code>book</code>/<code>bag</code> stored as mass/plural-only). Distinct-word lookup is 1.34× slower than stock.</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Migrate</h3>
+<pre><code>// before
+String plural = org.atteo.evo.inflector.English.plural(word);
+
+// after — build once, share (construction loads the lexicon)
+private static final EnglishInflector INFLECTOR = EnglishInflector.standard();
+String plural = INFLECTOR.pluralize(word);</code></pre>
+      <p class="small">No <code>org.atteo.evo.inflector</code> shim ships on purpose (it would duplicate the API on the benchmark classpath). Caller overrides take precedence over everything: <code>builder().override("information", "informations")</code>.</p>
+    </div>
+  </section>
+</main>
+<footer class="site-footer"><div class="wrap"><span>english-inflector — deterministic English noun pluralization for Java.</span><span class="spacer"></span><a href="https://github.com/slayyyyer/morphex">GitHub</a><a href="./javadoc/">Javadoc</a></div></footer>
+<script src="./site.js"></script>
+</body>
+</html>
