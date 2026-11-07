@@ -110,6 +110,23 @@ same-session A/B with a confidence interval. The after run's 99.9% JMH errors we
 for unknown and ±51.6 ns for compound. Against the release run's evo2 references (80.420 and
 95.773 ns), the optimized paths remain 7.57x and 4.62x slower.
 
+### CI smoke gate
+
+The CI workflow runs `BenchmarkSmoke` after the normal Maven verification. It is a coarse gate,
+not a benchmark: a 20,000-call warmup per category, then three 30,000-call measurements, with
+the best reported. A category fails only when it exceeds **50,000 ns/op** or when its output
+checksum changes between rounds. That ceiling is intentionally far above the release run
+(roughly 55-500x the reported path times) so CI scheduling noise does not create a false
+failure; it catches order-of-magnitude breakage, not small regressions. The command is:
+
+```bash
+java -cp inflector-benchmarks/target/benchmarks.jar \
+  io.github.slayyyyer.morphex.inflector.bench.BenchmarkSmoke
+```
+
+`BenchmarkSmoke` timings must not be cited as performance measurements or compared with the
+JMH results above.
+
 ### Concurrency
 
 Four threads sharing one immutable instance, throughput over the mixed workload:

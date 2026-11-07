@@ -34,6 +34,11 @@ jobs:
           chmod +x mvnw
           ./mvnw -B verify
 
+      - name: Run coarse benchmark smoke gate
+        run: |
+          java -cp inflector-benchmarks/target/benchmarks.jar \
+            io.github.slayyyyer.morphex.inflector.bench.BenchmarkSmoke
+
   python:
     name: Python research tests
     runs-on: ubuntu-latest
