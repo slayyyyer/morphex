@@ -1,0 +1,87 @@
+== extract / splits / artifacts ==
+  read 100,000 raw records
+  read 200,000 raw records
+  read 300,000 raw records
+  read 400,000 raw records
+  read 500,000 raw records
+  read 600,000 raw records
+  read 700,000 raw records
+  read 800,000 raw records
+extracted 340,560 lemmas from 354,316 noun records (834,878 raw, 480,562 quarantined)
+normalized dataset: data/derived/nouns-v1.tsv.gz
+records: 340560
+splits: {'version': 'split-v1', 'lemmas': {'train': 238812, 'dev': 50810, 'test': 50938}}
+artifact: selection=compact entries=157344 excluded_rule_reproducible=183214 skipped=9
+artifact: {'version': 'lexicon-v1', 'split': 'all', 'selection': 'compact', 'entries': 157344, 'bytes': 8053686}
+artifact: selection=compact entries=110627 excluded_rule_reproducible=128181 skipped=9
+artifact: {'version': 'lexicon-v1', 'split': 'train', 'selection': 'compact', 'entries': 110627, 'bytes': 5665870}
+== install core + evaluator ==
+== protocol P1 (frozen shipped lexicon) ==
+records=50938 -> results/eval/test-records.tsv; gold -> results/eval/test-gold.tsv
+        evo2: primary accepted accuracy 96.502% (1222 errors of 34933)
+     lexicon: primary accepted accuracy 99.997% (1 errors of 34933)
+       rules: primary accepted accuracy 88.618% (3976 errors of 34933)
+evo2 -> lexicon: +4.1481pp CI95 [+3.9231, +4.3629] corrections=1461 regressions=1
+evo2 -> rules: -7.8274pp CI95 [-8.9596, -6.9535] corrections=467 regressions=3222
+== protocol P2 (family holdout, train-only artifact) ==
+records=238812 -> results/eval/p2-train-records.tsv; gold -> results/eval/p2-train-gold.tsv
+records=50810 -> results/eval/p2-dev-records.tsv; gold -> results/eval/p2-dev-gold.tsv
+records=50938 -> results/eval/p2-test-records.tsv; gold -> results/eval/p2-test-gold.tsv
+        evo2: primary accepted accuracy 96.502% (1222 errors of 34933)
+     lexicon: primary accepted accuracy 88.618% (3976 errors of 34933)
+       rules: primary accepted accuracy 88.618% (3976 errors of 34933)
+evo2 -> lexicon: -7.8274pp CI95 [-8.9596, -6.9535] corrections=467 regressions=3222
+evo2 -> rules: -7.8274pp CI95 [-8.9596, -6.9535] corrections=467 regressions=3222
+== learning experiment (P2 test, 3 seeds) ==
+# Learning experiment (test split)
+
+Generated 2026-11-07T03:41:23+00:00. Runtime: python research code only; no Java inference path.
+
+## Candidate ceiling
+
+* records: 35197
+* deterministic C accuracy: 88.022% (4216 errors)
+* candidate-oracle accuracy: 99.182% (+11.160pp)
+* required gain: 2.396pp -> cleared
+
+| edit | oracle hits |
+| --- | --- |
+| base:s | 28340 |
+| s | 2612 |
+| base:other | 1586 |
+| base:es | 1019 |
+| man->men | 293 |
+| is->es | 254 |
+| um->a | 236 |
+| lemma | 162 |
+| es | 112 |
+| us->i | 95 |
+| a->ae | 51 |
+| ies | 45 |
+| base:same | 36 |
+| ix->ices | 18 |
+| fe->ves | 17 |
+| ves | 14 |
+| child->ren | 8 |
+| mouse->ice | 6 |
+| person->people | 3 |
+| quiz->zzes | 2 |
+
+## Selectors
+
+| selector | seed | params | dev threshold | test accuracy | errors | corrections | regressions | CI95 pp | invocation | overrides |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| linear | 0 | 4096 | 0.40 | 88.110% | 4185 | 42 | 11 | [+0.040, +0.134] | 100.0% | 0.3% |
+| mlp-seed0 | 0 | 12589 | 0.00 | 88.022% | 4216 | 0 | 0 | [+0.000, +0.000] | 100.0% | 0.0% |
+| mlp-seed1 | 1 | 12589 | 0.00 | 88.022% | 4216 | 0 | 0 | [+0.000, +0.000] | 100.0% | 0.0% |
+| mlp-seed2 | 2 | 12589 | 0.00 | 88.022% | 4216 | 0 | 0 | [+0.000, +0.000] | 100.0% | 0.0% |
+
+## Decision
+
+**reject** - learned selector did not clear the frozen gates; deterministic library ships
+
+* gain 0.0881pp below required 2.3957pp
+* residual errors reduced by only 0.7% (need 20%)
+* runtime microsecond/size gates require a Java scorer and were not demonstrated
+
+== done ==

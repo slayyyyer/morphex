@@ -1,0 +1,120 @@
+# english-inflector regression suite v1
+# Source-backed expectations, author-reviewed in this repository (NOT externally human-reviewed).
+# Executed by inflector-core's normal test run; no network and no external corpus required.
+# Columns: lemma, expected, mode, category, source
+lemma	expected	mode	category	source
+German	Germans	anglicized	upstream-fix	dictionary: ordinary English demonym plural
+blouse	blouses	anglicized	upstream-fix	dictionary: no -louse inheritance
+scarp	scarps	anglicized	upstream-fix	dictionary: no -carp inheritance
+UFO	UFOs	anglicized	upstream-fix	policy: initialism appends s
+mother-in-law	mothers-in-law	anglicized	upstream-fix	dictionary: head-first compound
+passer-by	passers-by	anglicized	upstream-fix	dictionary: exact compound entry
+CHILD	CHILDREN	anglicized	casing	policy: whole-token upper-case restoration
+CITY	CITIES	anglicized	casing	policy: whole-token upper-case restoration
+MOUSE	MICE	anglicized	casing	policy: whole-token upper-case restoration
+Child	Children	anglicized	casing	policy: capitalized restoration
+City	Cities	anglicized	casing	policy: capitalized restoration
+SMS	SMSes	anglicized	initialism	policy: initialism; final S takes es
+CD	CDs	anglicized	initialism	policy: initialism appends s
+FAQ	FAQs	anglicized	initialism	policy: initialism appends s
+ID	IDs	anglicized	initialism	policy: initialism appends s
+URL	URLs	anglicized	initialism	policy: initialism appends s
+cat	cats	anglicized	rule	rule: default s
+dog	dogs	anglicized	rule	rule: default s
+bus	buses	anglicized	rule	rule: sibilant es
+gas	gases	anglicized	rule	rule: sibilant es
+lens	lenses	anglicized	rule	rule: sibilant es
+box	boxes	anglicized	rule	rule: sibilant es
+church	churches	anglicized	rule	rule: sibilant es
+dish	dishes	anglicized	rule	rule: sibilant es
+quiz	quizzes	anglicized	lexicon	Wiktionary: lexical z-doubling
+fez	fezzes	anglicized	lexicon	Wiktionary: lexical z-doubling
+boy	boys	anglicized	rule	rule: vowel + y appends s
+day	days	anglicized	rule	rule: vowel + y appends s
+soliloquy	soliloquies	anglicized	lexicon	rule: qu + y -> ies
+café	cafés	anglicized	unicode	dictionary: Latin-1 letters
+naïve	naïves	anglicized	unicode	dictionary: Latin-1 letters
+child	children	anglicized	lexicon	dictionary: irregular
+man	men	anglicized	lexicon	dictionary: irregular
+woman	women	anglicized	lexicon	dictionary: irregular
+person	people	anglicized	alternatives	dictionary: persons also accepted
+mouse	mice	anglicized	lexicon	dictionary: irregular
+goose	geese	anglicized	lexicon	dictionary: irregular
+tooth	teeth	anglicized	lexicon	dictionary: irregular
+foot	feet	anglicized	lexicon	dictionary: irregular
+ox	oxen	anglicized	lexicon	dictionary: irregular
+louse	lice	anglicized	lexicon	dictionary: irregular
+die	dice	anglicized	alternatives	dictionary: game piece; dies also accepted
+carp	carps	anglicized	lexicon	dictionary: regular despite louse/carp trap
+roof	roofs	anglicized	lexicon	dictionary: no -ves
+chief	chiefs	anglicized	lexicon	dictionary: no -ves
+chef	chefs	anglicized	lexicon	dictionary: no -ves
+knife	knives	anglicized	lexicon	dictionary: -fe -> ves
+wife	wives	anglicized	lexicon	dictionary: -fe -> ves
+leaf	leaves	anglicized	lexicon	dictionary: -f -> ves
+half	halves	anglicized	lexicon	dictionary: -f -> ves
+shelf	shelves	anglicized	lexicon	dictionary: -f -> ves
+scarf	scarves	anglicized	alternatives	dictionary: scarfs also accepted
+potato	potatoes	anglicized	lexicon	dictionary: -o -> oes
+tomato	tomatoes	anglicized	lexicon	dictionary: -o -> oes
+hero	heroes	anglicized	lexicon	dictionary: -o -> oes
+echo	echoes	anglicized	lexicon	dictionary: -o -> oes
+piano	pianos	anglicized	lexicon	dictionary: -o -> s
+photo	photos	anglicized	lexicon	dictionary: -o -> s
+analysis	analyses	anglicized	lexicon	dictionary: -is -> es
+crisis	crises	anglicized	lexicon	dictionary: -is -> es
+axis	axes	anglicized	lexicon	dictionary: -is -> es
+matrix	matrices	anglicized	lexicon	dictionary: -ix -> ices
+octopus	octopuses	anglicized	alternatives	dictionary: octopi also accepted
+status	statuses	anglicized	lexicon	dictionary: not Latin -us -> i
+virus	viruses	anglicized	lexicon	dictionary: not Latin -us -> i
+cactus	cactuses	anglicized	alternatives	dictionary: anglicized preference; cacti accepted
+cactus	cacti	classical	mode	policy: classical preference
+index	indexes	anglicized	alternatives	dictionary: anglicized preference; indices accepted
+index	indices	classical	mode	policy: classical preference
+formula	formulas	anglicized	alternatives	dictionary: anglicized preference; formulae accepted
+formula	formulae	classical	mode	policy: classical preference
+medium	mediums	anglicized	alternatives	dictionary: anglicized preference; media accepted
+medium	media	classical	mode	policy: classical preference
+focus	foci	classical	mode	policy: classical preference
+scissors	scissors	anglicized	countability	policy: plural-only lemma returned unchanged
+trousers	trousers	anglicized	countability	policy: plural-only lemma returned unchanged
+police	police	anglicized	countability	policy: plural-only lemma returned unchanged
+clothes	clothes	anglicized	countability	policy: plural-only lemma returned unchanged
+information	information	anglicized	countability	policy: mass noun returned unchanged
+furniture	furniture	anglicized	countability	policy: mass noun returned unchanged
+advice	advice	anglicized	countability	policy: mass noun returned unchanged
+luggage	luggage	anglicized	countability	policy: mass noun returned unchanged
+homework	homework	anglicized	countability	policy: mass noun returned unchanged
+news	news	anglicized	countability	policy: mass noun returned unchanged
+sheep	sheep	anglicized	countability	policy: invariant noun
+deer	deer	anglicized	countability	policy: invariant noun
+aircraft	aircraft	anglicized	countability	policy: invariant noun
+species	species	anglicized	countability	policy: invariant noun
+series	series	anglicized	countability	policy: invariant noun
+water	waters	anglicized	countability	policy: mixed mass/countable pluralizes
+coffee	coffees	anglicized	countability	policy: mixed mass/countable pluralizes
+cheese	cheeses	anglicized	countability	policy: mixed mass/countable pluralizes
+fish	fish	anglicized	alternatives	dictionary: invariant preferred; fishes accepted
+stand-in	stand-ins	anglicized	compound	dictionary: verb + particle is not head-first
+drive-by	drive-bys	anglicized	compound	dictionary: counterexample to -by compounds
+close-up	close-ups	anglicized	compound	dictionary: counterexample to -up transforms
+hanger-on	hangers-on	anglicized	compound	dictionary: head-first
+runner-up	runners-up	anglicized	compound	dictionary: head-first
+go-between	go-betweens	anglicized	compound	dictionary: counterexample to postposed -between
+jack-in-the-box	jack-in-the-boxes	anglicized	compound	dictionary: exact entry
+man-of-war	men-of-war	anglicized	compound	dictionary: irregular head inherited
+attorney general	attorneys general	anglicized	compound	dictionary: postposed modifier
+court-martial	courts-martial	anglicized	compound	dictionary: postposed modifier
+heir apparent	heirs apparent	anglicized	compound	dictionary: postposed modifier
+governor-elect	governors-elect	anglicized	compound	dictionary: postposed modifier
+major general	major generals	anglicized	compound	dictionary: counterexample to free postposed heads
+child-in-law	children-in-law	anglicized	compound	dictionary: irregular head inherited
+zork-in-law	zorks-in-law	anglicized	compound	policy: structural pattern with unseen head
+ice cream	ice creams	anglicized	compound	policy: space compound final token
+high school	high schools	anglicized	compound	policy: space compound final token
+jack in the box	jack in the box	anglicized	fallback	policy: preposition blocks guessing; unchanged
+user_id	user_id	anglicized	fallback	policy: identifier-like token unchanged
+3.14	3.14	anglicized	fallback	policy: numeric token unchanged
+mother's	mother's	anglicized	fallback	policy: possessive unsupported; unchanged
+well-known	well-known	anglicized	fallback	policy: unmatched hyphenated token unchanged

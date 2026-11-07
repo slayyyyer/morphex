@@ -1,0 +1,43 @@
+== ordinary words ==
+child        -> children
+city         -> cities
+mouse        -> mice
+cat          -> cats
+analysis     -> analyses
+quiz         -> quizzes
+blouse       -> blouses
+German       -> Germans
+
+== alternatives and ambiguity ==
+person: preferred=people alternatives=[persons] source=LEXICON id=lex:person
+die: preferred=dice alternatives=[dies] ambiguous=true
+
+== countability ==
+information  -> information  countability=MASS note=mass noun: returned unchanged by policy
+water        -> waters       countability=MIXED note=mixed mass/countable noun: pluralized in its countable sense
+sheep        -> sheep        countability=COUNTABLE note=invariant plural: singular and plural are identical
+scissors     -> scissors     countability=PLURAL_ONLY note=plural-only lemma: returned unchanged by policy
+
+== casing ==
+CHILD   -> CHILDREN
+iPhone  -> iPhones
+UFO     -> UFOs
+SMS     -> SMSes
+
+== compounds ==
+mother-in-law    -> mothers-in-law       (LEXICON)
+passer-by        -> passers-by           (LEXICON)
+stand-in         -> stand-ins            (LEXICON)
+attorney general -> attorneys general    (LEXICON)
+ice cream        -> ice creams           (COMPOUND)
+
+== count-aware call and classical mode ==
+1 child -> child
+3 child -> children
+cactus (anglicized) -> cactuses
+cactus (classical)  -> cacti
+
+== per-instance configuration ==
+goose (overridden) -> goosen
+xyz (initialism)   -> XYZS
+shared engine is unchanged: geese

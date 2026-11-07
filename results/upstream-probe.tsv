@@ -1,0 +1,29 @@
+evo-inflector artifact location: file:/C:/Users/justin/.m2/repository/org/atteo/evo-inflector/2.0/evo-inflector-2.0.jar
+java.version=21.0.13 vendor=Eclipse Adoptium
+input	evo_pluralize	evo_pluralize(count=2)	evo_pluralize(count=1)
+German	Germen	Germen	German
+blouse	blice	blice	blouse
+scarp	scarp	scarp	scarp
+UFO	UFOes	UFOes	UFO
+mother-in-law	mother-in-laws	mother-in-laws	mother-in-law
+passer-by	passer-bies	passer-bies	passer-by
+child	children	children	child
+CHILD	CHILDren	CHILDren	CHILD
+city	cities	cities	city
+CITY	CITIes	CITIes	CITY
+mouse	mice	mice	mouse
+MOUSE	MICE	MICE	MOUSE
+SMS	SMSes	SMSes	SMS
+scissors	scissors	scissors	scissors
+information	informations	informations	information
+analysis	analyses	analyses	analysis
+quiz	quizzes	quizzes	quiz
+die	dies	dies	die
+person	persons	persons	person
+sheep	sheep	sheep	sheep
+cactus	cactuses	cactuses	cactus
+stand-in	stand-ins	stand-ins	stand-in
+drive-by	drive-bies	drive-bies	drive-by
+attorney general	attorney generals	attorney generals	attorney general
+ice cream	ice creams	ice creams	ice cream
+café	cafés	cafés	café

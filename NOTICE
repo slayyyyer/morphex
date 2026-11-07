@@ -1,0 +1,33 @@
+english-inflector
+=================
+
+Source code: MIT (see LICENSE).
+
+Bundled lexical data
+--------------------
+The file
+
+    inflector-core/src/main/resources/io/github/morphex/inflector/lexicon-v1.tsv
+
+is generated from the English noun extract published by Kaikki.org, itself derived from
+English Wiktionary by Wiktextract. That data is licensed under Creative Commons
+Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0):
+
+    https://creativecommons.org/licenses/by-sa/3.0/
+
+Attribution: Wiktionary contributors, via Kaikki.org (Tatu Ylonen) and Wiktextract.
+See data/LICENSE-DATA.md for the exact snapshot, checksum and obligations.
+
+The code and the data are separately licensed. The data file is distributed next to the
+code in the jar; it is not relicensed by the MIT license. Consumers who cannot accept
+CC BY-SA 3.0 for the data can build without it: the engine runs with the three productive
+rules only (see README, "Rules-only build").
+
+Reference implementations and prior art
+---------------------------------------
+This project was specified against atteo/evo-inflector. No evo-inflector code or data is
+bundled. Stock evo-inflector 2.0 is used only as a benchmark/evaluation dependency in
+non-published modules (inflector-benchmarks, inflector-eval), under its own license.
+
+JUnit 5 (test scope) and JMH (benchmark module only) are used under their respective
+licenses and are not runtime dependencies of the published artifact.

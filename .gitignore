@@ -1,0 +1,10 @@
+target/
+.tools/
+.idea/
+*.iml
+data/raw/
+data/derived/
+build/
+.freebuff/
+results/eval/*.tsv
+inflector-benchmarks/results/*.tmp

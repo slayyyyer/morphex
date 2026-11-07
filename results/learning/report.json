@@ -1,0 +1,715 @@
+{
+  "generated": "2026-11-07T03:41:23+00:00",
+  "split": "test",
+  "protocol": "P2 family holdout; lexicon built from train families only",
+  "budget": {
+    "epochs": 3,
+    "train_records": 6000,
+    "available_train_records": 166053,
+    "seeds": 3
+  },
+  "oracle": {
+    "records": 35197,
+    "base_accuracy": 0.8802170639543143,
+    "base_errors": 4216,
+    "oracle_accuracy": 0.991817484444697,
+    "oracle_gain_pp": 11.160042049038266,
+    "required_gain_pp": 2.3956587209137137,
+    "ceiling_clears_required_gain": true,
+    "oracle_hits_by_edit": {
+      "base:s": 28340,
+      "s": 2612,
+      "base:other": 1586,
+      "base:es": 1019,
+      "man->men": 293,
+      "is->es": 254,
+      "um->a": 236,
+      "lemma": 162,
+      "es": 112,
+      "us->i": 95,
+      "a->ae": 51,
+      "ies": 45,
+      "base:same": 36,
+      "ix->ices": 18,
+      "fe->ves": 17,
+      "ves": 14,
+      "child->ren": 8,
+      "mouse->ice": 6,
+      "person->people": 3,
+      "quiz->zzes": 2
+    },
+    "by_bucket": {
+      "compound": {
+        "hits": 1975,
+        "total": 2014,
+        "accuracy": 0.980635551142006
+      },
+      "initialism": {
+        "hits": 792,
+        "total": 792,
+        "accuracy": 1.0
+      },
+      "simple": {
+        "hits": 31882,
+        "total": 32124,
+        "accuracy": 0.9924666915701656
+      },
+      "unicode": {
+        "hits": 260,
+        "total": 267,
+        "accuracy": 0.9737827715355806
+      }
+    }
+  },
+  "oracle_dev": {
+    "records": 35510,
+    "base_accuracy": 0.8789636722050127,
+    "base_errors": 4298,
+    "oracle_accuracy": 0.9917488031540411,
+    "oracle_gain_pp": 11.278513094902841,
+    "required_gain_pp": 2.420726555899746,
+    "ceiling_clears_required_gain": true,
+    "oracle_hits_by_edit": {
+      "base:s": 28526,
+      "s": 2618,
+      "base:other": 1660,
+      "base:es": 999,
+      "man->men": 282,
+      "is->es": 266,
+      "um->a": 243,
+      "lemma": 204,
+      "us->i": 89,
+      "es": 86,
+      "a->ae": 77,
+      "ies": 75,
+      "base:same": 27,
+      "ix->ices": 19,
+      "ves": 15,
+      "fe->ves": 11,
+      "child->ren": 10,
+      "quiz->zzes": 5,
+      "mouse->ice": 4,
+      "person->people": 1
+    },
+    "by_bucket": {
+      "compound": {
+        "hits": 1990,
+        "total": 2023,
+        "accuracy": 0.9836875926841325
+      },
+      "initialism": {
+        "hits": 775,
+        "total": 775,
+        "accuracy": 1.0
+      },
+      "simple": {
+        "hits": 32204,
+        "total": 32459,
+        "accuracy": 0.99214393542623
+      },
+      "unicode": {
+        "hits": 248,
+        "total": 253,
+        "accuracy": 0.9802371541501976
+      }
+    }
+  },
+  "base": {
+    "test_accuracy": 0.8802170639543143,
+    "base_errors": 4216
+  },
+  "selectors": {
+    "linear": {
+      "seed": 0,
+      "parameters": 4096,
+      "artifact_bytes_estimate": 16384,
+      "train_seconds": 4.767964124679565,
+      "threshold": 0.4,
+      "dev_trials": [
+        {
+          "threshold": 0.0,
+          "accuracy": 0.8794987327513376,
+          "overrides": 120
+        },
+        {
+          "threshold": 0.05,
+          "accuracy": 0.8794987327513376,
+          "overrides": 120
+        },
+        {
+          "threshold": 0.1,
+          "accuracy": 0.8794987327513376,
+          "overrides": 120
+        },
+        {
+          "threshold": 0.15,
+          "accuracy": 0.8794987327513376,
+          "overrides": 120
+        },
+        {
+          "threshold": 0.2,
+          "accuracy": 0.8794987327513376,
+          "overrides": 120
+        },
+        {
+          "threshold": 0.25,
+          "accuracy": 0.8794987327513376,
+          "overrides": 119
+        },
+        {
+          "threshold": 0.3,
+          "accuracy": 0.8794987327513376,
+          "overrides": 119
+        },
+        {
+          "threshold": 0.35,
+          "accuracy": 0.8794987327513376,
+          "overrides": 115
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.8794987327513376,
+          "overrides": 111
+        },
+        {
+          "threshold": 0.45,
+          "accuracy": 0.8794424105885666,
+          "overrides": 107
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.879301605181639,
+          "overrides": 96
+        },
+        {
+          "threshold": 0.55,
+          "accuracy": 0.8789918332863982,
+          "overrides": 65
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.8789355111236271,
+          "overrides": 39
+        },
+        {
+          "threshold": 0.65,
+          "accuracy": 0.8788510278794706,
+          "overrides": 22
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.8788791889608562,
+          "overrides": 21
+        },
+        {
+          "threshold": 0.75,
+          "accuracy": 0.8788510278794706,
+          "overrides": 18
+        },
+        {
+          "threshold": 0.8,
+          "accuracy": 0.8788510278794706,
+          "overrides": 16
+        },
+        {
+          "threshold": 0.85,
+          "accuracy": 0.8789636722050127,
+          "overrides": 7
+        },
+        {
+          "threshold": 0.9,
+          "accuracy": 0.8789355111236271,
+          "overrides": 5
+        },
+        {
+          "threshold": 0.95,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        }
+      ],
+      "test": {
+        "accuracy": 0.8810978208370032,
+        "errors": 4185,
+        "corrections": 42,
+        "regressions": 11,
+        "delta_accuracy_pp": 0.08807568826888655,
+        "ci95_pp": [
+          0.040237978903802485,
+          0.13431081761710223
+        ],
+        "relative_error_reduction": 0.5849056603773585,
+        "iterations": 2000,
+        "families": 33318,
+        "invoked": 35185,
+        "invocation_rate": 0.9996590618518624,
+        "overrides": 101,
+        "override_rate": 0.002870541423902231
+      },
+      "calibration": [
+        {
+          "ece": 0.1236872588454398,
+          "bins": [
+            {
+              "bin": 0.2,
+              "count": 3,
+              "mean_confidence": 0.24232790478674635,
+              "accuracy": 0.0
+            },
+            {
+              "bin": 0.3,
+              "count": 6,
+              "mean_confidence": 0.356358903689767,
+              "accuracy": 0.6666666666666666
+            },
+            {
+              "bin": 0.4,
+              "count": 23,
+              "mean_confidence": 0.46082103234808836,
+              "accuracy": 0.391304347826087
+            },
+            {
+              "bin": 0.5,
+              "count": 52,
+              "mean_confidence": 0.5309727495560358,
+              "accuracy": 0.46153846153846156
+            },
+            {
+              "bin": 0.6,
+              "count": 14,
+              "mean_confidence": 0.6452327755494478,
+              "accuracy": 0.5714285714285714
+            },
+            {
+              "bin": 0.7,
+              "count": 6,
+              "mean_confidence": 0.7529987591834467,
+              "accuracy": 0.5
+            },
+            {
+              "bin": 0.8,
+              "count": 5,
+              "mean_confidence": 0.8362886939126509,
+              "accuracy": 0.2
+            },
+            {
+              "bin": 0.9,
+              "count": 1,
+              "mean_confidence": 0.9253934224993541,
+              "accuracy": 1.0
+            }
+          ]
+        }
+      ]
+    },
+    "mlp-seed0": {
+      "seed": 0,
+      "parameters": 12589,
+      "artifact_bytes_estimate": 50356,
+      "train_seconds": 11.526342630386353,
+      "threshold": 0.0,
+      "dev_trials": [
+        {
+          "threshold": 0.0,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.05,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.1,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.15,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.2,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.25,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.3,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.35,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.45,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.55,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.65,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.75,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.8,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.85,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.9,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.95,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        }
+      ],
+      "test": {
+        "accuracy": 0.8802170639543143,
+        "errors": 4216,
+        "corrections": 0,
+        "regressions": 0,
+        "delta_accuracy_pp": 0.0,
+        "ci95_pp": [
+          0.0,
+          0.0
+        ],
+        "relative_error_reduction": 0.0,
+        "iterations": 2000,
+        "families": 33318,
+        "invoked": 35185,
+        "invocation_rate": 0.9996590618518624,
+        "overrides": 0,
+        "override_rate": 0.0
+      },
+      "calibration": [
+        {
+          "ece": 0.0,
+          "bins": []
+        }
+      ]
+    },
+    "mlp-seed1": {
+      "seed": 1,
+      "parameters": 12589,
+      "artifact_bytes_estimate": 50356,
+      "train_seconds": 8.193686246871948,
+      "threshold": 0.0,
+      "dev_trials": [
+        {
+          "threshold": 0.0,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.05,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.1,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.15,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.2,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.25,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.3,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.35,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.45,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.55,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.65,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.75,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.8,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.85,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.9,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.95,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        }
+      ],
+      "test": {
+        "accuracy": 0.8802170639543143,
+        "errors": 4216,
+        "corrections": 0,
+        "regressions": 0,
+        "delta_accuracy_pp": 0.0,
+        "ci95_pp": [
+          0.0,
+          0.0
+        ],
+        "relative_error_reduction": 0.0,
+        "iterations": 2000,
+        "families": 33318,
+        "invoked": 35185,
+        "invocation_rate": 0.9996590618518624,
+        "overrides": 0,
+        "override_rate": 0.0
+      },
+      "calibration": [
+        {
+          "ece": 0.0,
+          "bins": []
+        }
+      ]
+    },
+    "mlp-seed2": {
+      "seed": 2,
+      "parameters": 12589,
+      "artifact_bytes_estimate": 50356,
+      "train_seconds": 9.692433595657349,
+      "threshold": 0.0,
+      "dev_trials": [
+        {
+          "threshold": 0.0,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.05,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.1,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.15,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.2,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.25,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.3,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.35,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.45,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.55,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.65,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.75,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.8,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.85,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.9,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        },
+        {
+          "threshold": 0.95,
+          "accuracy": 0.8789636722050127,
+          "overrides": 0
+        }
+      ],
+      "test": {
+        "accuracy": 0.8802170639543143,
+        "errors": 4216,
+        "corrections": 0,
+        "regressions": 0,
+        "delta_accuracy_pp": 0.0,
+        "ci95_pp": [
+          0.0,
+          0.0
+        ],
+        "relative_error_reduction": 0.0,
+        "iterations": 2000,
+        "families": 33318,
+        "invoked": 35185,
+        "invocation_rate": 0.9996590618518624,
+        "overrides": 0,
+        "override_rate": 0.0
+      },
+      "calibration": [
+        {
+          "ece": 0.0,
+          "bins": []
+        }
+      ]
+    }
+  },
+  "decision": {
+    "decision": "reject",
+    "headline": "learned selector did not clear the frozen gates; deterministic library ships",
+    "reasons": [
+      "gain 0.0881pp below required 2.3957pp",
+      "residual errors reduced by only 0.7% (need 20%)",
+      "runtime microsecond/size gates require a Java scorer and were not demonstrated"
+    ],
+    "measured_gain_pp": 0.0880756882688849,
+    "required_gain_pp": 2.3956587209137137
+  }
+}
