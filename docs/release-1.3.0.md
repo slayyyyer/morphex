@@ -22,8 +22,9 @@ rule precedence, or pluralization policy.
   top library frames are `WordShape.isPlainLatinToken`, `WordShape.casingOf`, `Lexicon.find`,
   and `WordShape.hasUpper`.
 - **Corrected evidence labels.** The release baseline, compound stage, ASCII stage, and
-  flattened stage are reported separately. The release evidence for P1/P2 and EWT remains
-  frozen under `results/release-1.2.0/`; no new P1/P2 run was performed for 1.3.0.
+  flattened stage are reported separately. The release-time P1/P2 and EWT reports remain
+  frozen under `results/release-1.2.0/`; a post-release rerun against the published 1.3.0
+  JAR is recorded separately in `results/release-1.3.0/`.
 
 ## Compatibility
 
@@ -46,6 +47,16 @@ rule precedence, or pluralization policy.
   `results/release-1.2.0/benchmarks/optimization-compacted-flat-clean.json` and the
   accompanying log/profile files.
 
+## Post-release P1/P2 revalidation
+
+The published Maven Central 1.3.0 JAR was rerun against the frozen P1/P2 inputs. All three
+prediction files are byte-identical to the frozen 1.2.0 evidence, and the system and
+comparison payloads are identical. P1 remains **0/36,241**, P2 test remains **955/36,241**,
+and P2 dev remains **955/36,473**. See
+[`results/release-1.3.0/EVALUATION.md`](../results/release-1.3.0/EVALUATION.md) for the
+artifact hash, comparison, commands, and recorded outputs. This is a post-release
+revalidation, not a new evaluation protocol.
+
 ## Coordinates
 
 ```xml
@@ -63,5 +74,6 @@ rule precedence, or pluralization policy.
 - The AGID unseen slice is 261 lemmas; the one-lemma lead over evo2 is not a broad
   state-of-the-art claim.
 - The compacted path remains slower than evo2 and compound/unknown paths are unchanged.
-- Full evaluation evidence remains under `results/release-1.2.0/` because 1.3.0 adds
-  evidence and performance work, not a new evaluation run.
+- Release-time full evaluation evidence remains under `results/release-1.2.0/`. The
+  post-release P1/P2 revalidation in `results/release-1.3.0/` is additive and does not
+  replace it; EWT, AGID, and benchmarks were not rerun for that revalidation.

@@ -1,0 +1,5 @@
+        evo2: primary accepted accuracy 96.400% (1313 errors of 36473)
+     lexicon: primary accepted accuracy 97.382% (955 errors of 36473)
+       rules: primary accepted accuracy 95.257% (1730 errors of 36473)
+evo2 -> lexicon: +0.9815pp CI95 [+0.8079, +1.1374] corrections=543 regressions=185
+evo2 -> rules: -1.1433pp CI95 [-1.3594, -0.9387] corrections=469 regressions=886
