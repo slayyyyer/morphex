@@ -1,70 +1,31 @@
-// Install-snippet tabs + a small in-browser pluralization sketch.
-(function () {
-  // ---- tabs ----
-  document.querySelectorAll("[data-tabs]").forEach(function (group) {
-    var buttons = group.querySelectorAll(".tab-btn");
-    var panels = group.querySelectorAll(".tab-panel");
-    buttons.forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        buttons.forEach(function (b) { b.classList.remove("active"); });
-        panels.forEach(function (p) { p.classList.remove("active"); });
-        btn.classList.add("active");
-        var panel = group.querySelector('#' + btn.getAttribute("data-tab"));
-        if (panel) panel.classList.add("active");
-      });
-    });
-  });
+// morphex browser sketch: tabs + three-rule demo
+const SN={
+ "Maven":'<dependency>\n  <groupId>io.github.slayyyyer.morphex</groupId>\n  <artifactId>english-inflector-core</artifactId>\n  <version>0.1.0</version>\n</dependency>',
+ "Gradle (Kotlin)":'implementation("io.github.slayyyyer.morphex:english-inflector-core:0.1.0")',
+ "Gradle (Groovy)":"implementation 'io.github.slayyyyer.morphex:english-inflector-core:0.1.0'",
+ "From source":'./mvnw install   # JDK 17+; wrapper pins Maven 3.9.9'
+};
+const tabs=document.getElementById('tabs'),snip=document.getElementById('snip');
+function pick(k){if(!snip||!tabs)return;snip.textContent=SN[k];[...tabs.children].forEach(b=>b.setAttribute('aria-selected',b.textContent===k))}
+if(tabs){
+Object.keys(SN).forEach(k=>{const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.textContent=k;b.onclick=()=>pick(k);tabs.appendChild(b)});
+pick("Maven");
+}
 
-  // ---- demo: browser-side approximation of the three productive rules ----
-  // The real engine is the Java library (157k-entry lexicon + compounds +
-  // casing policy). This sketch covers a few irregulars + the 3 rules only.
-  var IRREGULAR = {
-    child: "children", person: "people", mouse: "mice", die: "dice",
-    man: "men", woman: "women", tooth: "teeth", foot: "feet", goose: "geese",
-    ox: "oxen", analysis: "analyses", cactus: "cactuses", quiz: "quizzes",
-    mother: "mothers", passer: "passers", city: "cities", blouse: "blouses",
-    scarf: "scarves", life: "lives", knife: "knives"
-  };
-
-  function pluralize(word) {
-    if (!word) return "";
-    var lower = word.toLowerCase();
-    // compound head demo: mother-in-law -> mothers-in-law
-    var inl = lower.indexOf("-in-law");
-    if (inl !== -1) {
-      return pluralize(word.slice(0, inl)) + word.slice(inl);
-    }
-    if (IRREGULAR[lower]) {
-      var p = IRREGULAR[lower];
-      if (word === word.toUpperCase()) return p.toUpperCase();
-      if (word[0] === word[0].toUpperCase()) return p[0].toUpperCase() + p.slice(1);
-      return p;
-    }
-    var out;
-    if (/([^aeiou]y)$/.test(lower)) out = lower.slice(0, -1) + "ies";
-    else if (/(s|x|z|ch|sh)$/.test(lower)) out = lower + "es";
-    else out = lower + "s";
-    if (word === word.toUpperCase()) return out.toUpperCase();
-    if (word[0] === word[0].toUpperCase()) return out[0].toUpperCase() + out.slice(1);
-    return out;
-  }
-
-  var input = document.getElementById("demo-input");
-  var out = document.getElementById("demo-output");
-  var btns = document.querySelectorAll("[data-demo]");
-  function run() {
-    if (!input || !out) return;
-    var w = input.value.trim();
-    out.textContent = w ? pluralize(w) : "—";
-  }
-  if (input) {
-    input.addEventListener("input", run);
-    input.addEventListener("keydown", function (e) { if (e.key === "Enter") run(); });
-  }
-  btns.forEach(function (b) {
-    b.addEventListener("click", function () {
-      if (input) { input.value = b.getAttribute("data-demo"); run(); }
-    });
-  });
-  run();
-})();
+const IRR={child:"children",man:"men",woman:"women",foot:"feet",tooth:"teeth",mouse:"mice",louse:"lice",goose:"geese",ox:"oxen",person:"people",die:"dice",sheep:"sheep",fish:"fish",datum:"data",cactus:"cacti",criterion:"criteria",German:"Germans"};
+function restore(src,out){return src.length>1&&src===src.toUpperCase()&&/[A-Z]/.test(src)&&!/^[A-Z]{2,4}$/.test(src.replace(/[^A-Za-z]/g,''))?out.toUpperCase():out}
+function plural(w){
+ const s=w.trim();if(!s)return["—",""];
+ const low=s.toLowerCase();
+ if(Object.prototype.hasOwnProperty.call(IRR,low))return[restore(s,IRR[low]),"lexicon entry · lex:"+low];
+ if(/^(.+)-in-law$/i.test(s)){const h=plural(s.replace(/-in-law$/i,''))[0];return[h+s.slice(s.length-7),"supported compound · postposed head"]}
+ if(/^[A-Z]{2,5}$/.test(s)&&!(s in IRR)){return[s+"s","productive rule · acronym +s"]}
+ if(/(s|x|z|ch|sh)$/i.test(s))return[s+"es","productive rule · +es after sibilant"];
+ if(/[^aeiou]y$/i.test(s))return[s.slice(0,-1)+"ies","productive rule · consonant-y → ies"];
+ return[s+"s","productive rule · default +s"];
+}
+const w=document.getElementById('w'),o=document.getElementById('o'),y=document.getElementById('y');
+function run(){if(!w||!o)return;const r=plural(w.value);o.textContent=r[0];if(y)y.textContent=r[1]?"→ "+r[1]:""}
+if(w){w.addEventListener('input',run);}
+["child","CHILD","blouse","UFO","mother-in-law","city","box","die"].forEach(t=>{const c=document.getElementById('chips');if(!c)return;const b=document.createElement('button');b.className='chip';b.textContent=t;b.onclick=()=>{w.value=t;run()};c.appendChild(b)});
+run();
