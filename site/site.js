@@ -4,7 +4,7 @@ const SN = {
   "Maven": '<dependency>\n  <groupId>io.github.slayyyyer.morphex</groupId>\n  <artifactId>english-inflector-core</artifactId>\n  <version>1.3.0</version>\n</dependency>',
   "Gradle (Kotlin)": 'implementation("io.github.slayyyyer.morphex:english-inflector-core:1.3.0")',
   "Gradle (Groovy)": "implementation 'io.github.slayyyyer.morphex:english-inflector-core:1.3.0'",
-  "npm (pending)": 'npm install morphex\n# not yet published — build from this repository instead:\ncd morphex-ts && npm install && npm run build',
+  "npm": 'npm install morphex\n# or build from a checkout:\ncd morphex-ts && npm install && npm run build',
   "From source": './mvnw install   # JDK 17+; wrapper pins Maven 3.9.9'
 };
 const tabs = document.getElementById('tabs');
