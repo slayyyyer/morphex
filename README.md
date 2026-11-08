@@ -11,7 +11,14 @@ Deterministic English noun pluralization for Java 17+, inspired by and built on 
 
 Status: `1.3.0` release.
 
-Website: https://slayyyyer.github.io/morphex/ (install, quickstart, comparison, benchmarks, design, Javadoc).
+Website: https://slayyyyer.github.io/morphex/ (install, quickstart, comparison, benchmarks, design, Javadoc, live TypeScript demo).
+
+## Two implementations
+
+- **Java 17+** — the original library in `inflector-core/`, with the Maven coordinates in Install below and the JMH evidence on the site.
+- **TypeScript** — a native port in [`morphex-ts/`](morphex-ts/README.md) for Node 18+ and browsers: the same precedence pipeline, the same 147,338-entry lexicon, the same bounded compound table, and a typed `analyze()` API. `npm install morphex` is pending publication; build it from `morphex-ts/` until then.
+
+Both implementations are generated from the same committed data (`inflector-core/src/main/resources/.../lexicon-v2.tsv`), and the TypeScript suite is checked against fixtures exported from the Java engine by `morphex-ts/scripts/export-fixtures/`. CI regenerates those fixtures and fails on any diff, so the ports cannot drift silently. TypeScript timings and bundle sizes are measured separately in [`morphex-ts/BENCHMARKS.md`](morphex-ts/BENCHMARKS.md); they are not comparable to the Java JMH results.
 
 ## What's new in 1.3.0
 

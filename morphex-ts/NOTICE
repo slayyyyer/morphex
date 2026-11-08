@@ -1,0 +1,23 @@
+morphex-ts — TypeScript port of morphex
+======================================
+
+Code: MIT (see LICENSE in this directory).
+Lexical data: CC BY-SA 3.0.
+
+The generated lexicon artifacts (dist/lexicon-delta.txt, dist/lexicon-full.txt, the membership
+table, and the browser demo bundle that embeds the full lexicon) are derived from the same
+permitted corpus as the Java library's resources:
+
+    inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-v2.tsv
+    inflector-core/src/main/resources/io/github/slayyyyer/morphex/inflector/lexicon-membership-v2.bin
+
+That data is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported licence
+(CC BY-SA 3.0): https://creativecommons.org/licenses/by-sa/3.0/
+
+Attribution: Wiktionary contributors, via Kaikki.org / Wiktextract.
+
+The authoritative attribution and data-licence statements for the whole repository are the root
+NOTICE and data/LICENSE-DATA.md; this file is a pointer, not a replacement. If you redistribute a
+build of this package, keep this NOTICE, the root attribution, and the CC BY-SA 3.0 terms with it.
+
+The `morphex/rules` entry point contains no lexicon data and therefore no CC BY-SA 3.0 material.

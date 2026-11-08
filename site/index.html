@@ -15,26 +15,27 @@
     <a href="./comparison.html">Comparisons</a>
     <a href="./benchmarks.html">Benchmarks</a>
     <a href="./design.html">Design</a>
+    <a href="#typescript">TypeScript</a>
     <a href="./javadoc/">Javadoc</a>
     <a href="https://github.com/slayyyyer/morphex">GitHub</a>
   </nav>
 </header>
 
 <div class="hero" id="top">
-  <div class="eyebrow">english-inflector · Java 17+</div>
+  <div class="eyebrow">english-inflector · Java 17+ · TypeScript</div>
   <h1>Pluralize English nouns. <em>Deterministically.</em></h1>
-  <p class="lede">A Java library in the spirit of evo-inflector: predictable runtime behaviour, no dependencies, no network calls, no model downloads. A 147,338-entry auditable lexicon, three productive rules, and a diagnostic API that says <i>why</i> a form was chosen.</p>
+  <p class="lede">A Java library in the spirit of evo-inflector, plus a native TypeScript port with the same pipeline, lexicon and compound table: predictable runtime behaviour, no dependencies, no network calls, no model downloads. A 147,338-entry auditable lexicon, three productive rules, and a diagnostic API that says <i>why</i> a form was chosen.</p>
 
   <div class="demo">
     <div class="row">
-      <input id="w" value="mother-in-law" spellcheck="false" autocapitalize="off" aria-label="Search verified catalog examples" placeholder="Search verified examples…">
+      <input id="w" value="mother-in-law" spellcheck="false" autocapitalize="off" aria-label="Pluralize an English noun" placeholder="Type an English noun…">
       <div class="out" id="o" aria-live="polite">—</div>
     </div>
     <div class="why" id="y"></div>
     <div class="why" id="detail"></div>
     <div class="chips" id="chips"></div>
-    <div class="catalog-results" id="list" aria-label="Verified catalog matches"></div>
-    <div class="why catalog-note" id="catalog-note">Loading verified catalog…</div>
+    <label class="why rules-toggle"><input type="checkbox" id="rules-only"> rules-only build · no lexicon data</label>
+    <div class="why" id="catalog-note">Loading the real TypeScript engine…</div>
   </div>
 
   <div class="cta">
@@ -50,6 +51,7 @@
   <div class="tabs" role="tablist" id="tabs"></div>
   <pre id="snip"></pre>
   <p class="note"><b>Rules-only runtime mode:</b> <code>EnglishInflector.builder().withoutBundledLexicon().build()</code> disables loading the packaged lexicon and uses three productive rules plus your overrides. The lexical resources still ship inside the JAR, so the CC BY-SA 3.0 data attribution and distribution terms still apply.</p>
+  <p class="note"><b>TypeScript / JavaScript:</b> the native port lives in <code>morphex-ts/</code> and shares this lexicon and compound table. <code>npm install morphex</code> is <b>pending publication</b>; until then build it from this repository. See <a href="#typescript">TypeScript / JavaScript</a> below.</p>
   <p class="note"><b>New in 1.3.0:</b> independent AGID unseen-lemma evidence, ASCII shape fast paths, and a flattened ordered rule dispatch that brings compacted lookup to 79.4 ns/op. The public API and rule precedence are unchanged. The 1.2.0 compound/casing work remains the foundation; the linear selector is still not shipped.</p>
 
   <h3 style="margin:34px 0 12px;font-size:24px">Quickstart</h3>
@@ -67,6 +69,36 @@ r.plural();          // "dice"
 r.alternatives();    // ["dies"]
 r.ambiguous();       // true
 r.source();          // LEXICON — "lex:die"</pre>
+</section>
+
+<section id="typescript">
+  <h2>TypeScript / JavaScript</h2>
+  <p class="sub">A native port in <code>morphex-ts/</code>: same precedence, same 147,338-entry lexicon, same bounded compound table, zero runtime dependencies. Node 18+ and browsers.</p>
+<pre class="solo">import { EnglishInflector } from 'morphex';
+
+const inflector = EnglishInflector.standard();
+inflector.pluralize('CHILD');           // 'CHILDREN'
+inflector.pluralize('UFO');             // 'UFOs'
+inflector.pluralize('mother-in-law');   // 'mothers-in-law'
+inflector.pluralize('cat', 1);          // 'cat'
+
+const result = inflector.analyze('die');
+result.plural;        // 'dice'
+result.alternatives;  // ['dies']
+result.ambiguous;     // true
+result.stage;         // 'LEXICON'
+result.source;        // 'lex:die'</pre>
+  <p class="note"><b>Install:</b> <code>npm install morphex</code> is pending publication. Until then: <code>cd morphex-ts &amp;&amp; npm install &amp;&amp; npm run build</code>. Full API and conformance notes are in <a href="https://github.com/slayyyyer/morphex/blob/main/morphex-ts/README.md">morphex-ts/README.md</a>.</p>
+  <p class="note"><b>Rules-only vs bundled lexicon.</b> The rules-only entry point (<code>morphex/rules</code>, or <code>withoutBundledLexicon()</code>) ships no data at all and loses irregular forms by design. The default package ships a delta artifact containing only entries the three rules do not reproduce; <code>morphex/full</code> is opt-in for complete <code>analyze()</code> metadata. Sizes below are measured by the build scripts on this machine, not estimates.</p>
+  <div class="tw"><table>
+    <tr><th>Artifact</th><th>Raw</th><th>Gzip</th></tr>
+    <tr><td><code>morphex/rules</code> (no data)</td><td><b>0 B</b></td><td><b>0 B</b></td></tr>
+    <tr><td>Delta lexicon for <code>pluralize()</code> (124,883 entries)</td><td>1,962,900 B</td><td>562,893 B</td></tr>
+    <tr><td>Full lexicon for <code>analyze()</code> (147,338 entries)</td><td>3,707,556 B</td><td>785,131 B</td></tr>
+    <tr><td>Membership sidecar (340,726 hashes, base64)</td><td>1,817,208 B</td><td>1,333,152 B</td></tr>
+    <tr><td>This page's demo bundle (full lexicon, minified ESM)</td><td>3,735,241 B</td><td>794,191 B</td></tr>
+  </table></div>
+  <p class="note">The demo above loads the full lexicon but not the membership sidecar, so uppercase-initialism inference for unknown acronyms is disabled in the browser; that is why the toggle and the note say so. Node builds can load the sidecar with <code>createBundledFullLexicon()</code>.</p>
 </section>
 
 <section>

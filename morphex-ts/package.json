@@ -1,0 +1,103 @@
+{
+  "name": "morphex",
+  "version": "1.0.1",
+  "description": "Deterministic English noun pluralization in TypeScript: auditable lexicon, three productive rules, compound handling, and a diagnostic analyze() API.",
+  "license": "MIT",
+  "author": "Justin Baker",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "pluralize",
+    "plural",
+    "inflector",
+    "english",
+    "nouns",
+    "morphology",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/slayyyyer/morphex.git",
+    "directory": "morphex-ts"
+  },
+  "homepage": "https://slayyyyer.github.io/morphex/",
+  "bugs": {
+    "url": "https://github.com/slayyyyer/morphex/issues"
+  },
+  "files": [
+    "dist/*.js",
+    "dist/*.cjs",
+    "dist/*.d.ts",
+    "dist/*.d.cts",
+    "LICENSE",
+    "NOTICE",
+    "README.md",
+    "BENCHMARKS.md"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./full": {
+      "import": {
+        "types": "./dist/full.d.ts",
+        "default": "./dist/full.js"
+      },
+      "require": {
+        "types": "./dist/full.d.cts",
+        "default": "./dist/full.cjs"
+      }
+    },
+    "./rules": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/rules.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/rules.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build:data": "tsx scripts/build-lexicon.ts",
+    "build": "npm run build:data && tsup",
+    "build:site": "npm run build:data && tsx scripts/build-site.ts",
+    "typecheck": "npm run build:data && tsc --noEmit",
+    "lint": "npm run build:data && eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test": "npm run build:data && vitest run",
+    "fixtures": "tsx scripts/export-fixtures.ts",
+    "bench": "npm run build:data && tsx scripts/bench.ts",
+    "check:package": "publint && attw --pack . --profile node16"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@eslint/js": "^9.20.0",
+    "@types/node": "^22.13.4",
+    "esbuild": "^0.25.0",
+    "eslint": "^9.20.1",
+    "eslint-config-prettier": "^10.0.1",
+    "prettier": "^3.5.1",
+    "publint": "^0.3.6",
+    "tsup": "^8.3.6",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.0",
+    "vitest": "^3.0.5"
+  }
+}

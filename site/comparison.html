@@ -1,124 +1,721 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Comparisons — english-inflector</title>
-  <meta name="description" content="How english-inflector compares with evo-inflector 2.0: accuracy, latency, behaviour differences, and migration." />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&display=swap">
-  <link rel="stylesheet" href="./styles.css" />
-</head>
-<body>
-<div class="wrap">
-<header>
-    <a class="logo" href="./index.html">morph<b>ex</b></a>
-    <nav>
-      <a href="./comparison.html" class="active" aria-current="page">Comparisons</a>
-      <a href="./benchmarks.html">Benchmarks</a>
-      <a href="./design.html">Design</a>
-      <a href="./javadoc/">Javadoc</a>
-      <a href="https://github.com/slayyyyer/morphex">GitHub</a>
-    </nav>
-</header>
-<main>
-  <section class="block">
-    <div class="card">
-      <h2>Comparisons</h2>
-      <p class="small">How this library differs from <code>org.atteo:evo-inflector:2.0</code> (stock outputs
-      reproduced and measured in this repository). evo-inflector is the compact, rule-based
-      starting point this project builds on — smaller and simpler, and the better fit when you
-      don't need the extra coverage below. Full detail in
-      <a href="https://github.com/slayyyyer/morphex/blob/main/docs/comparison.md">docs/comparison.md</a>.</p>
-      <div class="tw"><table class="data">
-        <tr><th>Dimension</th><th>evo-inflector 2.0</th><th>This library</th></tr>
-        <tr><td>P1 frozen-lexicon accuracy (36,241 records)</td><td>96.474% (1,278 errors)</td><td><strong>100.000%</strong> (0 errors)</td></tr>
-        <tr><td>P1 paired gain (95% CI)</td><td>—</td><td><strong>+3.5264 pp</strong> [+3.3318, +3.7132], 1,278 fixes, 0 regressions</td></tr>
-        <tr><td>P2 family-holdout accuracy (36,241)</td><td>96.474% (1,278 errors)</td><td><strong>97.365%</strong> (955 errors; +0.8913 pp; +4 vs historical v1)</td></tr>
-        <tr><td>External UD EWT selected overall / full-vocab seen (2,148) / artifact hit (363)</td><td>98.12% / 98.23% / 94.21%</td><td><strong>98.76%</strong> / <strong>98.88%</strong> / <strong>96.69%</strong>; 98.99% alternative coverage</td></tr>
-        <tr><td>Repeated lookup (fixed workload)</td><td>110.9 ns/op</td><td><strong>81.4 ns/op</strong> (0.73×)</td></tr>
-        <tr><td>Compacted regular-word lookup (flattened dispatch)</td><td>59.8 ns/op</td><td>79.4 ns/op (1.33× slower)</td></tr>
-        <tr><td>Concurrent throughput, 4 threads</td><td><strong>20.91M ops/s</strong></td><td>4.82M ops/s (4.34× lower)</td></tr>
-        <tr><td>Runtime dependencies</td><td>none</td><td>none</td></tr>
-      </table></div>
-    </div>
-    <div class="card">
-      <h3>Where the differences come from</h3>
-      <ol>
-        <li><strong>Lookup and casing in one step.</strong> Stock 2.0 reaches its exception table lower-cased but re-cases the result as a suffix edit: <code>German → Germen</code>, <code>CHILD → CHILDren</code>. This library separates lookup normalization from output case restoration.</li>
-        <li><strong>Lexical exceptions that behave like suffix rules.</strong> <code>carp</code> (invariant) covers <code>scarp</code>; <code>louse → lice</code> reaches <code>blouse → blice</code>. This library stores lexical knowledge as whole-word edits and keeps only three productive rules.</li>
-        <li><strong>Compounds.</strong> Stock 2.0 inflects a different constituent (<code>mother-in-laws</code>, <code>attorney generals</code>). This library uses a bounded reviewed table and leaves unmatched input unchanged rather than guessing.</li>
-      </ol>
-    </div>
-    <div class="grid two">
-      <div class="card">
-        <h3>Outputs that differ</h3>
-        <div class="tw"><table class="data">
-          <tr><th>Input</th><th>2.0</th><th>Here</th></tr>
-          <tr><td><code>German</code></td><td><code>Germen</code></td><td><code>Germans</code></td></tr>
-          <tr><td><code>blouse</code></td><td><code>blice</code></td><td><code>blouses</code></td></tr>
-          <tr><td><code>scarp</code></td><td><code>scarp</code></td><td><code>scarps</code></td></tr>
-          <tr><td><code>UFO</code></td><td><code>UFOes</code></td><td><code>UFOs</code></td></tr>
-          <tr><td><code>mother-in-law</code></td><td><code>mother-in-laws</code></td><td><code>mothers-in-law</code></td></tr>
-          <tr><td><code>passer-by</code></td><td><code>passer-bies</code></td><td><code>passers-by</code></td></tr>
-          <tr><td><code>CHILD / CITY</code></td><td><code>CHILDren / CITIes</code></td><td><code>CHILDREN / CITIES</code></td></tr>
-          <tr><td><code>drive-by</code></td><td><code>drive-bies</code></td><td><code>drive-bys</code></td></tr>
-          <tr><td><code>attorney general</code></td><td><code>attorney generals</code></td><td><code>attorneys general</code></td></tr>
-        </table></div>
-      </div>
-      <div class="card">
-        <h3>Intentional policy differences</h3>
-        <div class="tw"><table class="data">
-          <tr><th>Input</th><th>Here</th><th>Reason</th></tr>
-          <tr><td><code>information</code></td><td>unchanged</td><td>mass-noun policy (<code>MASS</code>)</td></tr>
-          <tr><td><code>person</code></td><td><code>people</code> (accepts <code>persons</code>)</td><td>preferred form modelled</td></tr>
-          <tr><td><code>die</code></td><td><code>dice</code> (accepts <code>dies</code>)</td><td>ambiguous sense flagged</td></tr>
-          <tr><td><code>user_id</code>, <code>3.14</code></td><td>unchanged (<code>FALLBACK</code>)</td><td>out of scope, reported</td></tr>
-          <tr><td><code>well-known</code></td><td>unchanged</td><td>unmatched compounds not guessed</td></tr>
-        </table></div>
-        <div class="callout warn"><strong>Qualifications:</strong> P1 is dictionary coverage, not generalization. External EWT overall accuracy is 98.76% vs 98.12%; 98.88% on full-vocabulary-seen lemmas and 96.69% on compact-artifact hits, but only 36 EWT lemmas are genuinely unseen. The larger AGID 2016.01.19 stress test has 261 unseen lemmas, where the lexicon and rules-only tie at 95.40% (249/261); AGID is automatically generated, and its 93.84% lexicon overall is dominated by MASS/invariant identity returns, not natural-text accuracy. Current P2 has 4 more errors than the historical v1 measurement (955 vs 951).</div>
-      </div>
-    </div>
-    <div class="card">
-      <h3>Migrate</h3>
-<pre><code>// before
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Comparisons — english-inflector</title>
+    <meta
+      name="description"
+      content="How english-inflector compares with evo-inflector 2.0: accuracy, latency, behaviour differences, and migration, with side-by-side charts."
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&display=swap"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <a class="logo" href="./index.html">morph<b>ex</b></a>
+        <nav>
+          <a href="./comparison.html" class="active" aria-current="page"
+            >Comparisons</a
+          >
+          <a href="./benchmarks.html">Benchmarks</a>
+          <a href="./design.html">Design</a>
+          <a href="./javadoc/">Javadoc</a>
+          <a href="https://github.com/slayyyyer/morphex">GitHub</a>
+        </nav>
+      </header>
+      <main>
+        <section class="block">
+          <div class="card page-head">
+            <div class="eyebrow">Accuracy · latency · behaviour</div>
+            <h2>Comparisons</h2>
+            <p class="small">
+              How this library differs from
+              <code>org.atteo:evo-inflector:2.0</code> (stock outputs reproduced
+              and measured in this repository). evo-inflector is the compact,
+              rule-based starting point this project builds on — smaller and
+              simpler, and the better fit when you don't need the extra coverage
+              below. Full detail in
+              <a
+                href="https://github.com/slayyyyer/morphex/blob/main/docs/comparison.md"
+                >docs/comparison.md</a
+              >.
+            </p>
+
+            <div class="scorecard">
+              <div class="score">
+                <span class="k">P1 frozen lexicon</span>
+                <span class="v">100%</span>
+                <span class="d win">+3.53 pp · evo2 96.474</span>
+              </div>
+              <div class="score">
+                <span class="k">P2 family holdout</span>
+                <span class="v">97.365%</span>
+                <span class="d win">+0.89 pp · evo2 96.474</span>
+              </div>
+              <div class="score">
+                <span class="k">External EWT overall</span>
+                <span class="v">98.76%</span>
+                <span class="d win">+0.64 pp · evo2 98.12</span>
+              </div>
+              <div class="score">
+                <span class="k">Repeated lookup</span>
+                <span class="v">81.4 <small>ns/op</small></span>
+                <span class="d win">1.36× faster · evo2 110.9</span>
+              </div>
+              <div class="score">
+                <span class="k">Compacted regular</span>
+                <span class="v">79.4 <small>ns/op</small></span>
+                <span class="d loss">1.33× slower · evo2 59.8</span>
+              </div>
+            </div>
+
+            <nav class="jump" aria-label="Comparison sections">
+              <a href="#accuracy">Accuracy</a>
+              <a href="#speed">Speed</a>
+              <a href="#typescript">TypeScript</a>
+              <a href="#behaviour">Behaviour</a>
+              <a href="#migrate">Migrate</a>
+              <a href="#python">Python baseline</a>
+            </nav>
+
+            <h3>All recorded comparisons</h3>
+            <div class="tw">
+              <table class="data">
+                <tr>
+                  <th>Dimension</th>
+                  <th>evo-inflector 2.0</th>
+                  <th>This library</th>
+                </tr>
+                <tr>
+                  <td>P1 frozen-lexicon accuracy (36,241 records)</td>
+                  <td>96.474% (1,278 errors)</td>
+                  <td><strong>100.000%</strong> (0 errors)</td>
+                </tr>
+                <tr>
+                  <td>P1 paired gain (95% CI)</td>
+                  <td>—</td>
+                  <td>
+                    <strong>+3.5264 pp</strong> [+3.3318, +3.7132], 1,278 fixes,
+                    0 regressions
+                  </td>
+                </tr>
+                <tr>
+                  <td>P2 family-holdout accuracy (36,241)</td>
+                  <td>96.474% (1,278 errors)</td>
+                  <td>
+                    <strong>97.365%</strong> (955 errors; +0.8913 pp; +4 vs
+                    historical v1)
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    External UD EWT selected overall / full-vocab seen (2,148) /
+                    artifact hit (363)
+                  </td>
+                  <td>98.12% / 98.23% / 94.21%</td>
+                  <td>
+                    <strong>98.76%</strong> / <strong>98.88%</strong> /
+                    <strong>96.69%</strong>; 98.99% alternative coverage
+                  </td>
+                </tr>
+                <tr>
+                  <td>Repeated lookup (fixed workload)</td>
+                  <td>110.9 ns/op</td>
+                  <td><strong>81.4 ns/op</strong> (0.73×)</td>
+                </tr>
+                <tr>
+                  <td>Compacted regular-word lookup (flattened dispatch)</td>
+                  <td>59.8 ns/op</td>
+                  <td>79.4 ns/op (1.33× slower)</td>
+                </tr>
+                <tr>
+                  <td>Concurrent throughput, 4 threads</td>
+                  <td><strong>20.91M ops/s</strong></td>
+                  <td>4.82M ops/s (4.34× lower)</td>
+                </tr>
+                <tr>
+                  <td>Runtime dependencies</td>
+                  <td>none</td>
+                  <td>none</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="block" id="accuracy">
+          <div class="card">
+            <h3>Accuracy, side by side</h3>
+            <p class="small">
+              Same protocol, same records, same run. P1 is the frozen-lexicon
+              dictionary-coverage protocol; P2 hides each lemma's word family;
+              external EWT is a separate corpus with no retraining.
+            </p>
+            <figure
+              class="chart"
+              role="group"
+              aria-label="Recorded accuracy percentages for morphex and evo-inflector 2.0 on P1, P2 and three external EWT slices"
+            >
+              <div class="chart-head">
+                <span class="chart-title">accuracy % · higher is better</span>
+                <div class="legend">
+                  <span><i class="evo"></i>evo-inflector 2.0</span>
+                  <span><i class="ours"></i>morphex</span>
+                </div>
+              </div>
+              <div class="chart-rows">
+                <div class="bar-group">
+                  <div class="bar-name">
+                    P1 frozen lexicon <small>+3.53 pp · 36,241 records</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 41.2%"></span>
+                      </div>
+                      <span class="bar-val">96.474</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 100%"></span>
+                      </div>
+                      <span class="bar-val us">100.000</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    P2 family holdout <small>+0.89 pp · 36,241 records</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 41.2%"></span>
+                      </div>
+                      <span class="bar-val">96.474</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 56.1%"></span>
+                      </div>
+                      <span class="bar-val us">97.365</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    External EWT overall <small>+0.64 pp · 2,184 lemmas</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 68.7%"></span>
+                      </div>
+                      <span class="bar-val">98.12</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 79.3%"></span>
+                      </div>
+                      <span class="bar-val us">98.76</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    EWT full-vocabulary seen
+                    <small>+0.65 pp · 2,148 lemmas</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 70.5%"></span>
+                      </div>
+                      <span class="bar-val">98.23</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 81.3%"></span>
+                      </div>
+                      <span class="bar-val us">98.88</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    EWT compact-artifact hits
+                    <small>+2.48 pp · 363 lemmas</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 3.5%"></span>
+                      </div>
+                      <span class="bar-val">94.21</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 44.8%"></span>
+                      </div>
+                      <span class="bar-val us">96.69</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-axis" aria-hidden="true">
+                <span>94</span><span>95</span><span>96</span><span>97</span
+                ><span>98</span><span>99</span><span>100</span>
+              </div>
+              <figcaption>
+                Axis starts at 94%, not zero: bar length shows distance above
+                94% so the close results stay distinguishable. Printed values
+                are the recorded scores. P1 is dictionary coverage, not
+                generalization; only 36 EWT lemmas are genuinely unseen.
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section class="block" id="speed">
+          <div class="grid two">
+            <div class="card">
+              <h3>Latency</h3>
+              <p class="small">
+                Arithmetic mean latency in ns/op, lower is better. Repeated
+                lookup uses the release workload; compacted is the
+                flattened-dispatch rerun with its own same-run evo2 reference.
+              </p>
+              <figure
+                class="chart"
+                role="group"
+                aria-label="Latency in nanoseconds per operation for repeated and compacted lookups, morphex compared with evo-inflector 2.0"
+              >
+                <div class="chart-head">
+                  <span class="chart-title">ns/op · lower is better</span>
+                  <div class="legend">
+                    <span><i class="evo"></i>evo2</span>
+                    <span><i class="ours"></i>morphex</span>
+                  </div>
+                </div>
+                <div class="chart-rows">
+                  <div class="bar-group">
+                    <div class="bar-name">
+                      Repeated lookup
+                      <small>release baseline · 1.36× faster</small>
+                    </div>
+                    <div class="bar-pair">
+                      <div class="bar">
+                        <div class="bar-track" aria-hidden="true">
+                          <span class="bar-fill evo" style="--w: 92.4%"></span>
+                        </div>
+                        <span class="bar-val">110.9</span>
+                      </div>
+                      <div class="bar">
+                        <div class="bar-track" aria-hidden="true">
+                          <span class="bar-fill" style="--w: 67.8%"></span>
+                        </div>
+                        <span class="bar-val us">81.4</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar-name">
+                      Compacted regular
+                      <small>targeted rerun · 1.33× slower</small>
+                    </div>
+                    <div class="bar-pair">
+                      <div class="bar">
+                        <div class="bar-track" aria-hidden="true">
+                          <span class="bar-fill evo" style="--w: 49.8%"></span>
+                        </div>
+                        <span class="bar-val">59.8</span>
+                      </div>
+                      <div class="bar">
+                        <div class="bar-track" aria-hidden="true">
+                          <span class="bar-fill" style="--w: 66.2%"></span>
+                        </div>
+                        <span class="bar-val us">79.4</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="chart-axis" aria-hidden="true">
+                  <span>0</span><span>30</span><span>60</span><span>90</span
+                  ><span>120</span>
+                </div>
+                <figcaption>
+                  Bars share a 0–120 ns axis. The two rows come from different
+                  runs and are not a same-session A/B.
+                </figcaption>
+              </figure>
+            </div>
+            <div class="card">
+              <h3>Concurrency</h3>
+              <p class="small">
+                Four threads sharing one immutable instance, throughput over the
+                mixed workload in the same run.
+              </p>
+              <figure
+                class="chart wide-vals"
+                role="group"
+                aria-label="Concurrent throughput in millions of operations per second, evo-inflector 2.0 at 20.91 and morphex at 4.82"
+              >
+                <div class="chart-head">
+                  <span class="chart-title">M ops/s · higher is better</span>
+                </div>
+                <div class="chart-rows">
+                  <div class="bar-group">
+                    <div class="bar-name">
+                      evo-inflector 2.0 <small>reference</small>
+                    </div>
+                    <div class="bar-pair">
+                      <div class="bar">
+                        <div class="bar-track" aria-hidden="true">
+                          <span class="bar-fill evo" style="--w: 99.6%"></span>
+                        </div>
+                        <span class="bar-val">20.91 M</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar-name">
+                      morphex
+                      <small
+                        >thread-safe, but more allocation and probing per
+                        call</small
+                      >
+                    </div>
+                    <div class="bar-pair">
+                      <div class="bar">
+                        <div class="bar-track" aria-hidden="true">
+                          <span class="bar-fill" style="--w: 23%"></span>
+                        </div>
+                        <span class="bar-val us">4.82 M</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <figcaption>
+                  4.34× lower throughput in this run. The instance is immutable
+                  and thread-safe; the gap is a measured concurrency limitation,
+                  not a safety issue.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
+
+        <section class="block" id="typescript">
+          <div class="card">
+            <div class="eyebrow">Node.js · V8 · measured separately</div>
+            <h3>The TypeScript port</h3>
+            <p class="small">
+              The same pipeline also ships as a native TypeScript package in
+              <code>morphex-ts/</code>. Its numbers below are Node
+              micro-benchmarks on an Intel Core i5-12500H with Node.js 24.20.0,
+              not JVM measurements; they are deliberately kept out of the JMH
+              tables above and are not comparable with them. Only recorded
+              values appear.
+            </p>
+            <div class="tw">
+              <table class="data">
+                <tr>
+                  <th>Node workload</th>
+                  <th>Delta engine</th>
+                  <th>Full engine</th>
+                  <th>Rules-only</th>
+                </tr>
+                <tr>
+                  <td>Repeated lexical word (<code>child</code>)</td>
+                  <td>111–119 ns</td>
+                  <td>269–280 ns</td>
+                  <td>130–139 ns</td>
+                </tr>
+                <tr>
+                  <td>Repeated rule word (<code>cat</code>)</td>
+                  <td>112–118 ns</td>
+                  <td>174–188 ns</td>
+                  <td>104–116 ns</td>
+                </tr>
+                <tr>
+                  <td>Repeated compound (<code>mother-in-law</code>)</td>
+                  <td>258–289 ns</td>
+                  <td>434–457 ns</td>
+                  <td>358–378 ns</td>
+                </tr>
+                <tr>
+                  <td>Distinct fixture lemmas (4,000 words)</td>
+                  <td>354–432 ns</td>
+                  <td>1,006–1,057 ns</td>
+                  <td>327–355 ns</td>
+                </tr>
+                <tr>
+                  <td><code>analyze()</code> repeated (<code>die</code>)</td>
+                  <td>258–278 ns</td>
+                  <td>421–441 ns</td>
+                  <td>221–228 ns</td>
+                </tr>
+              </table>
+            </div>
+            <p class="small">
+              The delta engine answers <code>pluralize()</code> from 1,962,900 B
+              raw / 562,893 B gzip; the full engine is 3,707,556 B raw / 785,131
+              B gzip; the rules-only entry point ships no data. The delta engine
+              builds a 1 MiB open-addressed hash index over its 124,883 keys,
+              taking its rule-word path from 673–678 ns (four binary searches)
+              through 286–293 ns (one merged binary search) to 112–118 ns.
+              Provider construction measures 50–51 ms end to end (32–33 ms
+              parsing, 17–19 ms building the index), down from 77–81 ms before
+              the construction changes. Method and spread:
+              <a
+                href="https://github.com/slayyyyer/morphex/blob/main/morphex-ts/BENCHMARKS.md"
+                >morphex-ts/BENCHMARKS.md</a
+              >.
+            </p>
+          </div>
+        </section>
+
+        <section class="block" id="behaviour">
+          <div class="card">
+            <h3>Where the differences come from</h3>
+            <ol>
+              <li>
+                <strong>Lookup and casing in one step.</strong> Stock 2.0
+                reaches its exception table lower-cased but re-cases the result
+                as a suffix edit: <code>German → Germen</code>,
+                <code>CHILD → CHILDren</code>. This library separates lookup
+                normalization from output case restoration.
+              </li>
+              <li>
+                <strong
+                  >Lexical exceptions that behave like suffix rules.</strong
+                >
+                <code>carp</code> (invariant) covers <code>scarp</code>;
+                <code>louse → lice</code> reaches <code>blouse → blice</code>.
+                This library stores lexical knowledge as whole-word edits and
+                keeps only three productive rules.
+              </li>
+              <li>
+                <strong>Compounds.</strong> Stock 2.0 inflects a different
+                constituent (<code>mother-in-laws</code>,
+                <code>attorney generals</code>). This library uses a bounded
+                reviewed table and leaves unmatched input unchanged rather than
+                guessing.
+              </li>
+            </ol>
+          </div>
+          <div class="grid two">
+            <div class="card">
+              <h3>Outputs that differ</h3>
+              <div class="tw">
+                <table class="data">
+                  <tr>
+                    <th>Input</th>
+                    <th>2.0</th>
+                    <th>Here</th>
+                  </tr>
+                  <tr>
+                    <td><code>German</code></td>
+                    <td><code>Germen</code></td>
+                    <td><code>Germans</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>blouse</code></td>
+                    <td><code>blice</code></td>
+                    <td><code>blouses</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>scarp</code></td>
+                    <td><code>scarp</code></td>
+                    <td><code>scarps</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>UFO</code></td>
+                    <td><code>UFOes</code></td>
+                    <td><code>UFOs</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>mother-in-law</code></td>
+                    <td><code>mother-in-laws</code></td>
+                    <td><code>mothers-in-law</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>passer-by</code></td>
+                    <td><code>passer-bies</code></td>
+                    <td><code>passers-by</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>CHILD / CITY</code></td>
+                    <td><code>CHILDren / CITIes</code></td>
+                    <td><code>CHILDREN / CITIES</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>drive-by</code></td>
+                    <td><code>drive-bies</code></td>
+                    <td><code>drive-bys</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>attorney general</code></td>
+                    <td><code>attorney generals</code></td>
+                    <td><code>attorneys general</code></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Intentional policy differences</h3>
+              <div class="tw">
+                <table class="data">
+                  <tr>
+                    <th>Input</th>
+                    <th>Here</th>
+                    <th>Reason</th>
+                  </tr>
+                  <tr>
+                    <td><code>information</code></td>
+                    <td>unchanged</td>
+                    <td>mass-noun policy (<code>MASS</code>)</td>
+                  </tr>
+                  <tr>
+                    <td><code>person</code></td>
+                    <td><code>people</code> (accepts <code>persons</code>)</td>
+                    <td>preferred form modelled</td>
+                  </tr>
+                  <tr>
+                    <td><code>die</code></td>
+                    <td><code>dice</code> (accepts <code>dies</code>)</td>
+                    <td>ambiguous sense flagged</td>
+                  </tr>
+                  <tr>
+                    <td><code>user_id</code>, <code>3.14</code></td>
+                    <td>unchanged (<code>FALLBACK</code>)</td>
+                    <td>out of scope, reported</td>
+                  </tr>
+                  <tr>
+                    <td><code>well-known</code></td>
+                    <td>unchanged</td>
+                    <td>unmatched compounds not guessed</td>
+                  </tr>
+                </table>
+              </div>
+              <div class="callout warn">
+                <strong>Qualifications:</strong> P1 is dictionary coverage, not
+                generalization. External EWT overall accuracy is 98.76% vs
+                98.12%; 98.88% on full-vocabulary-seen lemmas and 96.69% on
+                compact-artifact hits, but only 36 EWT lemmas are genuinely
+                unseen. The larger AGID 2016.01.19 stress test has 261 unseen
+                lemmas, where the lexicon and rules-only tie at 95.40%
+                (249/261); AGID is automatically generated, and its 93.84%
+                lexicon overall is dominated by MASS/invariant identity returns,
+                not natural-text accuracy. Current P2 has 4 more errors than the
+                historical v1 measurement (955 vs 951).
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="block" id="migrate">
+          <div class="card">
+            <h3>Migrate</h3>
+            <pre><code>// before
 String plural = org.atteo.evo.inflector.English.plural(word);
 
 // after — build once, share (construction loads the lexicon)
 private static final EnglishInflector INFLECTOR = EnglishInflector.standard();
 String plural = INFLECTOR.pluralize(word);</code></pre>
-      <p class="small">No <code>org.atteo.evo.inflector</code> shim ships on purpose (it would duplicate the API on the benchmark classpath). Caller overrides take precedence over everything: <code>builder().override("information", "informations")</code>.</p>
-      <div class="callout"><strong>Which should you use?</strong> Stay with evo-inflector 2.0 if you want the
-      smallest thing that works — no data file, static API, well understood. Choose this library
-      if the rows above matter to you and you can carry the 7.55&nbsp;MB TSV (1.18&nbsp;MB gzip,
-      ~18.2&nbsp;MiB retained) — or use the rules-only runtime mode, which does not load the data
-      but does not remove it from the JAR or its CC BY-SA obligations. It loses irregular forms.</div>
+            <p class="small">
+              No <code>org.atteo.evo.inflector</code> shim ships on purpose (it
+              would duplicate the API on the benchmark classpath). Caller
+              overrides take precedence over everything:
+              <code>builder().override("information", "informations")</code>.
+            </p>
+            <div class="callout">
+              <strong>Which should you use?</strong> Stay with evo-inflector 2.0
+              if you want the smallest thing that works — no data file, static
+              API, well understood. Choose this library if the rows above matter
+              to you and you can carry the 7.55&nbsp;MB TSV (1.18&nbsp;MB gzip,
+              ~18.2&nbsp;MiB retained) — or use the rules-only runtime mode,
+              which does not load the data but does not remove it from the JAR
+              or its CC BY-SA obligations. It loses irregular forms.
+            </div>
+          </div>
+        </section>
+
+        <section class="block" id="python">
+          <div class="card">
+            <h3>Python baseline: <code>inflect</code> 7.6.0</h3>
+            <p class="small">
+              The most widely used Python pluralization engine, scored on the
+              <b>historical v1</b>
+              P1 protocol (36,239 primary / 50,938 overall, default modern
+              mode). These baseline numbers are retained as historical evidence
+              and are not current v2 measurements. Full write-up in
+              <a
+                href="https://github.com/slayyyyer/morphex/blob/main/docs/python-baseline.md"
+                >docs/python-baseline.md</a
+              >.
+            </p>
+            <div class="tw">
+              <table class="data">
+                <tr>
+                  <th>System</th>
+                  <th>P1 primary</th>
+                  <th>Errors</th>
+                </tr>
+                <tr>
+                  <td>This library (historical v1 run)</td>
+                  <td><strong>100.000%</strong></td>
+                  <td>0 (36,239 records)</td>
+                </tr>
+                <tr>
+                  <td>evo-inflector 2.0 (historical v1 run)</td>
+                  <td>96.473%</td>
+                  <td>1,278</td>
+                </tr>
+                <tr>
+                  <td>PyPI <code>inflect</code></td>
+                  <td>94.169%</td>
+                  <td>2,113</td>
+                </tr>
+                <tr>
+                  <td>Repaired rules only</td>
+                  <td>95.168%</td>
+                  <td>1,751</td>
+                </tr>
+              </table>
+            </div>
+            <p class="small">
+              <code>inflect</code> agrees on the headline irregulars
+              (<code>German</code>, <code>blouse</code>,
+              <code>person → people</code>, <code>die → dice</code>) and shares
+              the <code>passer-by → passer-bies</code> weakness. Its misses
+              concentrate in initialism casing (<code>UFO → UFOS</code>, 0/1,110
+              on the initialism slice), classical <code>-us</code> forms, and
+              mass nouns pluralized — the same structural overall-accuracy story
+              (67.08% vs 68.83% evo2).
+            </p>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <div>
+          <b>Code: MIT.</b> <b>Data: CC BY-SA 3.0</b> (Wiktionary contributors
+          via Kaikki.org/Wiktextract).
+        </div>
+        <div>
+          <a href="https://github.com/slayyyyer/morphex">GitHub</a> ·
+          <a href="./javadoc/">Javadoc</a> ·
+          <a href="https://github.com/slayyyyer/morphex/blob/main/NOTICE"
+            >Attribution</a
+          >
+        </div>
+      </footer>
     </div>
-    <div class="card">
-      <h3>Python baseline: <code>inflect</code> 7.6.0</h3>
-      <p class="small">The most widely used Python pluralization engine, scored on the <b>historical v1</b>
-      P1 protocol (36,239 primary / 50,938 overall, default modern mode). These baseline numbers are
-      retained as historical evidence and are not current v2 measurements. Full write-up in
-      <a href="https://github.com/slayyyyer/morphex/blob/main/docs/python-baseline.md">docs/python-baseline.md</a>.</p>
-      <div class="tw"><table class="data">
-        <tr><th>System</th><th>P1 primary</th><th>Errors</th></tr>
-        <tr><td>This library (historical v1 run)</td><td><strong>100.000%</strong></td><td>0 (36,239 records)</td></tr>
-        <tr><td>evo-inflector 2.0 (historical v1 run)</td><td>96.473%</td><td>1,278</td></tr>
-        <tr><td>PyPI <code>inflect</code></td><td>94.169%</td><td>2,113</td></tr>
-        <tr><td>Repaired rules only</td><td>95.168%</td><td>1,751</td></tr>
-      </table></div>
-      <p class="small"><code>inflect</code> agrees on the headline irregulars (<code>German</code>,
-      <code>blouse</code>, <code>person → people</code>, <code>die → dice</code>) and shares the
-      <code>passer-by → passer-bies</code> weakness. Its misses concentrate in initialism casing
-      (<code>UFO → UFOS</code>, 0/1,110 on the initialism slice), classical <code>-us</code> forms,
-      and mass nouns pluralized — the same structural overall-accuracy story (67.08% vs 68.83% evo2).</p>
-    </div>
-  </section>
-</main>
-<footer>
-  <div><b>Code: MIT.</b> <b>Data: CC BY-SA 3.0</b> (Wiktionary contributors via Kaikki.org/Wiktextract).</div>
-  <div><a href="https://github.com/slayyyyer/morphex">GitHub</a> · <a href="./javadoc/">Javadoc</a> · <a href="https://github.com/slayyyyer/morphex/blob/main/NOTICE">Attribution</a></div>
-</footer>
-</div>
-<script src="./site.js"></script>
-</body>
+    <script src="./site.js"></script>
+  </body>
 </html>

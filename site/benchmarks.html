@@ -1,102 +1,1178 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Benchmarks — english-inflector</title>
-  <meta name="description" content="Fixed-workload JMH, startup, memory and concurrency results for english-inflector vs evo-inflector 2.0." />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&display=swap">
-  <link rel="stylesheet" href="./styles.css" />
-</head>
-<body>
-<div class="wrap">
-<header>
-    <a class="logo" href="./index.html">morph<b>ex</b></a>
-    <nav>
-      <a href="./comparison.html">Comparisons</a>
-      <a href="./benchmarks.html" class="active" aria-current="page">Benchmarks</a>
-      <a href="./design.html">Design</a>
-      <a href="./javadoc/">Javadoc</a>
-      <a href="https://github.com/slayyyyer/morphex">GitHub</a>
-    </nav>
-</header>
-<main>
-  <section class="block">
-    <div class="card">
-      <h2>Benchmarks</h2>
-      <p class="small">JMH 1.37, two forks, five 500 ms measurements, GC profiler. Inputs are the
-      fixed, versioned <code>benchmark-workload-v1.tsv</code>; they are not sampled at run time.
-      Raw data: <code>results/release-1.2.0/benchmarks/jmh-workload-v1.json</code> and the targeted
-      optimization reruns <code>optimization-unknown-compound.json</code>,
-      <code>optimization-compacted.json</code>, <code>optimization-compacted-ascii.json</code>
-      and <code>optimization-compacted-flat-clean.json</code>. Methodology:
-      <a href="https://github.com/slayyyyer/morphex/blob/main/docs/benchmarks.md">docs/benchmarks.md</a>.</p>
-      <div class="tw"><table class="data">
-        <tr><th>Field</th><th>Value</th></tr>
-        <tr><td>CPU / RAM / OS</td><td>12th Gen Intel i5-12500H (12c/16t) · 16 GB · Windows 11</td></tr>
-        <tr><td>JDK / Maven / JMH</td><td>Temurin 21.0.13 · 3.9.9 · 1.37 (<code>-f 2 -wi 3 -i 5 -w 500ms -r 500ms -prof gc</code>)</td></tr>
-        <tr><td>Compare</td><td><code>org.atteo:evo-inflector:2.0</code>, same run and inputs</td></tr>
-      </table></div>
-      <div class="tw"><table class="data">
-        <tr><th>Benchmark</th><th>Score ns/op</th><th>Alloc B/op</th></tr>
-        <tr><td>evo2LexicalHit</td><td>118.5</td><td>121.7</td></tr>
-        <tr><td><strong>inflectorLexicalHit</strong></td><td><strong>100.7</strong></td><td>65.7</td></tr>
-        <tr><td>evo2Compacted <span class="small">(flattened dispatch)</span></td><td>59.8</td><td>80.6</td></tr>
-        <tr><td>inflectorCompacted <span class="small">(flattened dispatch)</span></td><td>79.4</td><td>51.4</td></tr>
-        <tr><td>evo2Unknown</td><td>80.4</td><td>73.6</td></tr>
-        <tr><td>inflectorUnknown <span class="small">(optimized)</span></td><td>608.6</td><td>48.8</td></tr>
-        <tr><td>evo2Uppercase</td><td>89.8</td><td>120.0</td></tr>
-        <tr><td>inflectorUppercase</td><td>711.4</td><td>163.6</td></tr>
-        <tr><td>evo2Compound</td><td>95.8</td><td>103.2</td></tr>
-        <tr><td>inflectorCompound <span class="small">(optimized)</span></td><td>442.7</td><td>197.6</td></tr>
-        <tr><td>evo2Unsupported</td><td>78.6</td><td>113.1</td></tr>
-        <tr><td>inflectorUnsupported</td><td>384.3</td><td>377.1</td></tr>
-        <tr><td>evo2Repeated</td><td>110.9</td><td>104.8</td></tr>
-        <tr><td><strong>inflectorRepeated</strong></td><td><strong>81.4</strong></td><td>17.3</td></tr>
-        <tr><td>evo2AnalyzeEquivalent</td><td>327.7</td><td>269.6</td></tr>
-        <tr><td>inflectorAnalyze</td><td>387.4</td><td>236.7</td></tr>
-        <tr><td>inflectorRulesOnly</td><td>1,032.4</td><td>910.2</td></tr>
-      </table></div>
-      <div class="callout warn"><strong>Measured claim:</strong> repeated lookup is 1.36× faster
-      (81.4 vs 110.9 ns) and exact lexical hits are 1.18× faster (100.7 vs 118.5 ns). The
-      optimized unknown and compound paths are 1.49× and 1.13× faster than the release baseline,
-      but remain 7.57× and 4.62× slower than evo2; compacted is 1.3× slower after flattening
-      the rule dispatch, and uppercase and unsupported remain up to 7.9× slower. The optimized
-      rows are separate targeted reruns. No general speedup is claimed.</div>
-    </div>
-    <div class="grid two">
-      <div class="card">
-        <h3>Startup, footprint, concurrency</h3>
-        <div class="tw"><table class="data">
-          <tr><td>Startup (load + first call)</td><td>718–726 ms</td></tr>
-          <tr><td>First pluralize after load</td><td>2.5–3.6 ms</td></tr>
-          <tr><td>Retained heap after GC</td><td><strong>~18.2 MiB</strong> (19.08 MB)</td></tr>
-          <tr><td>Cold 50k unseen-token calls</td><td>428–449 ms</td></tr>
-          <tr><td>lexicon entries</td><td>147,338</td></tr>
-          <tr><td>Concurrent throughput, 4 threads</td><td>4.82M vs evo2 20.91M ops/s (4.34× lower)</td></tr>
-        </table></div>
-        <p class="small">The instance is immutable and thread-safe, but concurrency throughput is
-        lower in the same run. Startup was slower than the historical 426 ms median; figures are
-        not mixed across runs.</p>
-      </div>
-      <div class="card">
-        <h3>Reproduce</h3>
-<pre><code>./mvnw -q -pl inflector-benchmarks -am package
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Benchmarks — english-inflector</title>
+    <meta
+      name="description"
+      content="Fixed-workload JMH, startup, memory and concurrency results for english-inflector vs evo-inflector 2.0, with latency, allocation and optimization charts."
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;600&display=swap"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <a class="logo" href="./index.html">morph<b>ex</b></a>
+        <nav>
+          <a href="./comparison.html">Comparisons</a>
+          <a href="./benchmarks.html" class="active" aria-current="page"
+            >Benchmarks</a
+          >
+          <a href="./design.html">Design</a>
+          <a href="./javadoc/">Javadoc</a>
+          <a href="https://github.com/slayyyyer/morphex">GitHub</a>
+        </nav>
+      </header>
+      <main>
+        <section class="block">
+          <div class="card page-head">
+            <div class="eyebrow">JMH 1.37 · fixed workload v1</div>
+            <h2>Benchmarks</h2>
+            <p class="small">
+              Two forks, three warmups and five 500 ms measurements per method,
+              GC profiler. Inputs are the fixed, versioned
+              <code>benchmark-workload-v1.tsv</code>; they are not sampled at
+              run time. Charts use the recorded scores only: release-baseline
+              rows and the targeted post-optimization reruns are labelled
+              separately and never blended into one bar.
+            </p>
+
+            <div class="scorecard">
+              <div class="score">
+                <span class="k">Repeated lookup</span>
+                <span class="v">81.4 <small>ns/op</small></span>
+                <span class="d win">1.36× faster · evo2 110.9</span>
+              </div>
+              <div class="score">
+                <span class="k">Exact lexical hit</span>
+                <span class="v">100.7 <small>ns/op</small></span>
+                <span class="d win">1.18× faster · evo2 118.5</span>
+              </div>
+              <div class="score">
+                <span class="k">Repeated allocation</span>
+                <span class="v">17.3 <small>B/op</small></span>
+                <span class="d win">6.1× lower · evo2 104.8</span>
+              </div>
+              <div class="score">
+                <span class="k">Compacted regular</span>
+                <span class="v">79.4 <small>ns/op</small></span>
+                <span class="d loss">1.33× slower · evo2 59.8</span>
+              </div>
+              <div class="score">
+                <span class="k">Unknown token</span>
+                <span class="v">608.6 <small>ns/op</small></span>
+                <span class="d loss">7.57× slower · evo2 80.4</span>
+              </div>
+            </div>
+
+            <nav class="jump" aria-label="Benchmark sections">
+              <a href="#latency">Latency</a>
+              <a href="#allocation">Allocation</a>
+              <a href="#optimization">Compacted path</a>
+              <a href="#concurrency">Concurrency</a>
+              <a href="#typescript">TypeScript (Node)</a>
+              <a href="#setup">Method &amp; setup</a>
+            </nav>
+
+            <p class="small" style="margin-top: 16px">
+              Raw data:
+              <code>results/release-1.2.0/benchmarks/jmh-workload-v1.json</code>
+              and the targeted optimization reruns
+              <code>optimization-unknown-compound.json</code>,
+              <code>optimization-compacted.json</code>,
+              <code>optimization-compacted-ascii.json</code> and
+              <code>optimization-compacted-flat-clean.json</code>. Methodology:
+              <a
+                href="https://github.com/slayyyyer/morphex/blob/main/docs/benchmarks.md"
+                >docs/benchmarks.md</a
+              >.
+            </p>
+          </div>
+        </section>
+
+        <section class="block" id="latency">
+          <div class="card">
+            <h3>Latency by path</h3>
+            <p class="small">
+              Arithmetic mean latency (<code>avgt</code>), lower is better. Rows
+              marked “targeted rerun” come from the post-release optimization
+              runs and use their own same-run evo2 reference; the remaining rows
+              are from the full workload run.
+            </p>
+            <figure
+              class="chart"
+              role="group"
+              aria-label="Latency by path in nanoseconds per operation, morphex compared with evo-inflector 2.0"
+            >
+              <div class="chart-head">
+                <span class="chart-title">ns/op · lower is better</span>
+                <div class="legend">
+                  <span><i class="evo"></i>evo-inflector 2.0</span>
+                  <span><i class="ours"></i>morphex</span>
+                </div>
+              </div>
+              <div class="chart-rows">
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Compacted regular
+                    <small>targeted rerun · flattened dispatch</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 7.5%"></span>
+                      </div>
+                      <span class="bar-val">59.8</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 9.9%"></span>
+                      </div>
+                      <span class="bar-val us">79.4</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Repeated lookup <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 13.9%"></span>
+                      </div>
+                      <span class="bar-val">110.9</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 10.2%"></span>
+                      </div>
+                      <span class="bar-val us">81.4</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Exact lexical hit <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 14.8%"></span>
+                      </div>
+                      <span class="bar-val">118.5</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 12.6%"></span>
+                      </div>
+                      <span class="bar-val us">100.7</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Unsupported input <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 9.8%"></span>
+                      </div>
+                      <span class="bar-val">78.6</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 48%"></span>
+                      </div>
+                      <span class="bar-val us">384.3</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Diagnostics (analyze)
+                    <small>release baseline · evo2 has no equivalent API</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 41%"></span>
+                      </div>
+                      <span class="bar-val">327.7</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 48.4%"></span>
+                      </div>
+                      <span class="bar-val us">387.4</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Compound <small>targeted rerun · optimized</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 12%"></span>
+                      </div>
+                      <span class="bar-val">95.8</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 55.3%"></span>
+                      </div>
+                      <span class="bar-val us">442.7</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Unknown token <small>targeted rerun · optimized</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 10.1%"></span>
+                      </div>
+                      <span class="bar-val">80.4</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 76.1%"></span>
+                      </div>
+                      <span class="bar-val us">608.6</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Uppercase inference <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 11.2%"></span>
+                      </div>
+                      <span class="bar-val">89.8</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 88.9%"></span>
+                      </div>
+                      <span class="bar-val us">711.4</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-axis" aria-hidden="true">
+                <span>0</span><span>200</span><span>400</span><span>600</span
+                ><span>800 ns/op</span>
+              </div>
+              <figcaption>
+                Bars share a 0–800 ns axis; printed values are the recorded
+                scores, so every bar is drawn to the same scale. Rows are
+                ordered by morphex latency.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="card">
+            <h3>Latency relative to evo-inflector 2.0</h3>
+            <p class="small">
+              Each bar is morphex ÷ evo2 for the same path and run. The dashed
+              marker is parity (1.00×): bars to its left are faster, bars to its
+              right are slower.
+            </p>
+            <figure
+              class="chart"
+              role="group"
+              aria-label="Morphex latency as a ratio of evo-inflector 2.0 latency, where parity is one times"
+            >
+              <div class="chart-head">
+                <span class="chart-title">ratio to evo2 · lower is better</span>
+                <div class="legend">
+                  <span><i class="fast"></i>faster than evo2</span>
+                  <span><i class="slow"></i>slower than evo2</span>
+                </div>
+              </div>
+              <div class="chart-rows">
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Repeated lookup <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill fast" style="--w: 9.2%"></span
+                        ><span class="bar-parity"></span>
+                      </div>
+                      <span class="bar-val us">0.73×</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Exact lexical hit <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill fast" style="--w: 10.6%"></span
+                        ><span class="bar-parity"></span>
+                      </div>
+                      <span class="bar-val us">0.85×</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Diagnostics (analyze)
+                    <small>evo2 has no equivalent API</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill slow" style="--w: 14.8%"></span
+                        ><span class="bar-parity"></span>
+                      </div>
+                      <span class="bar-val us">1.18×</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Compacted regular <small>targeted rerun</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill slow" style="--w: 16.6%"></span
+                        ><span class="bar-parity"></span>
+                      </div>
+                      <span class="bar-val us">1.33×</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Compound <small>targeted rerun</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill slow" style="--w: 57.8%"></span
+                        ><span class="bar-parity"></span>
+                      </div>
+                      <span class="bar-val us">4.62×</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Unsupported input <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill slow" style="--w: 61.1%"></span
+                        ><span class="bar-parity"></span>
+                      </div>
+                      <span class="bar-val us">4.89×</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Unknown token <small>targeted rerun · optimized</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill slow" style="--w: 94.6%"></span
+                        ><span class="bar-parity"></span>
+                      </div>
+                      <span class="bar-val us">7.57×</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Uppercase inference <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill slow" style="--w: 99%"></span
+                        ><span class="bar-parity"></span>
+                      </div>
+                      <span class="bar-val us">7.92×</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-axis" aria-hidden="true">
+                <span>0×</span><span>2×</span><span>4×</span><span>6×</span
+                ><span>8×</span>
+              </div>
+              <figcaption>
+                Dashed marker: 1.00× parity (evo2). Ratios are point estimates
+                from the recorded scores, not same-session A/B confidence
+                intervals.
+              </figcaption>
+            </figure>
+            <div class="callout warn">
+              <strong>Measured claim:</strong> repeated lookup is 1.36× faster
+              (81.4 vs 110.9 ns) and exact lexical hits are 1.18× faster (100.7
+              vs 118.5 ns). The optimized unknown and compound paths are 1.49×
+              and 1.13× faster than the release baseline, but remain 7.57× and
+              4.62× slower than evo2; compacted is 1.3× slower after flattening
+              the rule dispatch, and uppercase and unsupported remain up to 7.9×
+              slower. The optimized rows are separate targeted reruns. No
+              general speedup is claimed.
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Recorded results</h3>
+            <p class="small">
+              All rows exactly as recorded. Rows marked “optimized” or
+              “flattened dispatch” are the targeted reruns; the others are the
+              full workload run.
+            </p>
+            <div class="tw">
+              <table class="data">
+                <tr>
+                  <th>Benchmark</th>
+                  <th>Score ns/op</th>
+                  <th>Alloc B/op</th>
+                </tr>
+                <tr>
+                  <td>evo2LexicalHit</td>
+                  <td>118.5</td>
+                  <td>121.7</td>
+                </tr>
+                <tr>
+                  <td><strong>inflectorLexicalHit</strong></td>
+                  <td><strong>100.7</strong></td>
+                  <td>65.7</td>
+                </tr>
+                <tr>
+                  <td>
+                    evo2Compacted
+                    <span class="small">(flattened dispatch)</span>
+                  </td>
+                  <td>59.8</td>
+                  <td>80.6</td>
+                </tr>
+                <tr>
+                  <td>
+                    inflectorCompacted
+                    <span class="small">(flattened dispatch)</span>
+                  </td>
+                  <td>79.4</td>
+                  <td>51.4</td>
+                </tr>
+                <tr>
+                  <td>evo2Unknown</td>
+                  <td>80.4</td>
+                  <td>73.6</td>
+                </tr>
+                <tr>
+                  <td>
+                    inflectorUnknown <span class="small">(optimized)</span>
+                  </td>
+                  <td>608.6</td>
+                  <td>48.8</td>
+                </tr>
+                <tr>
+                  <td>evo2Uppercase</td>
+                  <td>89.8</td>
+                  <td>120.0</td>
+                </tr>
+                <tr>
+                  <td>inflectorUppercase</td>
+                  <td>711.4</td>
+                  <td>163.6</td>
+                </tr>
+                <tr>
+                  <td>evo2Compound</td>
+                  <td>95.8</td>
+                  <td>103.2</td>
+                </tr>
+                <tr>
+                  <td>
+                    inflectorCompound <span class="small">(optimized)</span>
+                  </td>
+                  <td>442.7</td>
+                  <td>197.6</td>
+                </tr>
+                <tr>
+                  <td>evo2Unsupported</td>
+                  <td>78.6</td>
+                  <td>113.1</td>
+                </tr>
+                <tr>
+                  <td>inflectorUnsupported</td>
+                  <td>384.3</td>
+                  <td>377.1</td>
+                </tr>
+                <tr>
+                  <td>evo2Repeated</td>
+                  <td>110.9</td>
+                  <td>104.8</td>
+                </tr>
+                <tr>
+                  <td><strong>inflectorRepeated</strong></td>
+                  <td><strong>81.4</strong></td>
+                  <td>17.3</td>
+                </tr>
+                <tr>
+                  <td>evo2AnalyzeEquivalent</td>
+                  <td>327.7</td>
+                  <td>269.6</td>
+                </tr>
+                <tr>
+                  <td>inflectorAnalyze</td>
+                  <td>387.4</td>
+                  <td>236.7</td>
+                </tr>
+                <tr>
+                  <td>inflectorRulesOnly</td>
+                  <td>1,032.4</td>
+                  <td>910.2</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="block" id="allocation">
+          <div class="card">
+            <h3>Allocation per operation</h3>
+            <p class="small">
+              Normalized GC allocation per operation
+              (<code>gc.alloc.rate.norm</code>), lower is better. Allocation is
+              where this library is consistently ahead, including on paths that
+              are slower in time.
+            </p>
+            <figure
+              class="chart"
+              role="group"
+              aria-label="Garbage collected allocation in bytes per operation, morphex compared with evo-inflector 2.0"
+            >
+              <div class="chart-head">
+                <span class="chart-title">B/op · lower is better</span>
+                <div class="legend">
+                  <span><i class="evo"></i>evo-inflector 2.0</span>
+                  <span><i class="ours"></i>morphex</span>
+                </div>
+              </div>
+              <div class="chart-rows">
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Repeated lookup <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 26.2%"></span>
+                      </div>
+                      <span class="bar-val">104.8</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 4.3%"></span>
+                      </div>
+                      <span class="bar-val us">17.3</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Unknown token <small>targeted rerun · optimized</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 18.4%"></span>
+                      </div>
+                      <span class="bar-val">73.6</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 12.2%"></span>
+                      </div>
+                      <span class="bar-val us">48.8</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Compacted regular
+                    <small>targeted rerun · flattened dispatch</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 20.1%"></span>
+                      </div>
+                      <span class="bar-val">80.6</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 12.9%"></span>
+                      </div>
+                      <span class="bar-val us">51.4</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Exact lexical hit <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 30.4%"></span>
+                      </div>
+                      <span class="bar-val">121.7</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 16.4%"></span>
+                      </div>
+                      <span class="bar-val us">65.7</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Uppercase inference <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 30%"></span>
+                      </div>
+                      <span class="bar-val">120.0</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 40.9%"></span>
+                      </div>
+                      <span class="bar-val us">163.6</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Compound <small>targeted rerun · optimized</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 25.8%"></span>
+                      </div>
+                      <span class="bar-val">103.2</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 49.4%"></span>
+                      </div>
+                      <span class="bar-val us">197.6</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Diagnostics (analyze)
+                    <small>release baseline · evo2 has no equivalent API</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 67.4%"></span>
+                      </div>
+                      <span class="bar-val">269.6</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 59.2%"></span>
+                      </div>
+                      <span class="bar-val us">236.7</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Unsupported input <small>release baseline</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 28.3%"></span>
+                      </div>
+                      <span class="bar-val">113.1</span>
+                    </div>
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 94.3%"></span>
+                      </div>
+                      <span class="bar-val us">377.1</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-axis" aria-hidden="true">
+                <span>0</span><span>100</span><span>200</span><span>300</span
+                ><span>400 B/op</span>
+              </div>
+              <figcaption>
+                Bars share a 0–400 B/op axis; printed values are the recorded
+                scores. Rows are ordered by morphex allocation.
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section class="block" id="optimization">
+          <div class="card">
+            <h3>Compacted path, stage by stage</h3>
+            <p class="small">
+              The compacted regular-word path after each retained change. Stages
+              are separate targeted runs, not a same-session A/B; the final gray
+              bar is the evo2 reference measured in the same clean run as the
+              final stage.
+            </p>
+            <figure
+              class="chart"
+              role="group"
+              aria-label="Compacted regular-word latency after each optimization stage, from 456.4 to 79.4 nanoseconds, with evo-inflector 2.0 at 59.8 nanoseconds"
+            >
+              <div class="chart-head">
+                <span class="chart-title"
+                  >compacted regular · ns/op · lower is better</span
+                >
+                <div class="legend">
+                  <span><i class="ours"></i>morphex stage</span>
+                  <span><i class="evo"></i>evo2 reference</span>
+                </div>
+              </div>
+              <div class="chart-rows">
+                <div class="bar-group">
+                  <div class="bar-name">
+                    Release baseline <small>full workload run</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 91.3%"></span>
+                      </div>
+                      <span class="bar-val us">456.4</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    After compound fast path
+                    <small>−59.0% · targeted rerun</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 37.5%"></span>
+                      </div>
+                      <span class="bar-val us">187.3</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    After ASCII shape path
+                    <small>−43.9% · targeted rerun</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 21%"></span>
+                      </div>
+                      <span class="bar-val us">105.0</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    After flattened dispatch
+                    <small>−24.3% · targeted rerun</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill" style="--w: 15.9%"></span>
+                      </div>
+                      <span class="bar-val us">79.4</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bar-group">
+                  <div class="bar-name">
+                    evo2 2.0, same clean run
+                    <small>reference · 1.33× faster than this library</small>
+                  </div>
+                  <div class="bar-pair">
+                    <div class="bar">
+                      <div class="bar-track" aria-hidden="true">
+                        <span class="bar-fill evo" style="--w: 12%"></span>
+                      </div>
+                      <span class="bar-val">59.8</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-axis" aria-hidden="true">
+                <span>0</span><span>100</span><span>200</span><span>300</span
+                ><span>400</span><span>500 ns/op</span>
+              </div>
+              <figcaption>
+                Bars share a 0–500 ns axis. Reduction percentages are relative
+                to the previous stage; only the final evo2 bar was measured in
+                the same run as its adjacent morphex bar.
+              </figcaption>
+            </figure>
+            <div class="tw">
+              <table class="data">
+                <tr>
+                  <th>Stage</th>
+                  <th>ns/op</th>
+                  <th>B/op</th>
+                  <th>Change vs previous</th>
+                </tr>
+                <tr>
+                  <td>Release baseline</td>
+                  <td>456.4</td>
+                  <td>395.4</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>After compound fast path</td>
+                  <td>187.3</td>
+                  <td>51.4</td>
+                  <td>2.44× faster</td>
+                </tr>
+                <tr>
+                  <td>After ASCII shape path</td>
+                  <td>105.0</td>
+                  <td>51.4</td>
+                  <td>1.78× faster</td>
+                </tr>
+                <tr>
+                  <td>After flattened dispatch</td>
+                  <td>79.4</td>
+                  <td>51.4</td>
+                  <td>1.32× faster</td>
+                </tr>
+                <tr>
+                  <td>evo2 2.0, same clean run</td>
+                  <td>59.8</td>
+                  <td>80.6</td>
+                  <td>reference</td>
+                </tr>
+              </table>
+            </div>
+            <p class="small">
+              Allocation fell from 395.4 to 51.4 B/op with the compound fast
+              path and stayed there; the ASCII and flattened-dispatch stages
+              changed latency only. The current path is
+              <strong>1.33× slower</strong> than evo2, down from 1.78× after the
+              ASCII path, 3.09× after the compound fix, and 4.36× in the release
+              baseline. Allocation remains lower than evo2.
+            </p>
+          </div>
+        </section>
+
+        <section class="block" id="concurrency">
+          <div class="grid two">
+            <div class="card">
+              <h3>Concurrency</h3>
+              <p class="small">
+                Four threads sharing one immutable instance, throughput over the
+                mixed workload, same run.
+              </p>
+              <figure
+                class="chart wide-vals"
+                role="group"
+                aria-label="Concurrent throughput in millions of operations per second, evo-inflector 2.0 at 20.91 and morphex at 4.82"
+              >
+                <div class="chart-head">
+                  <span class="chart-title">M ops/s · higher is better</span>
+                </div>
+                <div class="chart-rows">
+                  <div class="bar-group">
+                    <div class="bar-name">
+                      evo-inflector 2.0 <small>reference</small>
+                    </div>
+                    <div class="bar-pair">
+                      <div class="bar">
+                        <div class="bar-track" aria-hidden="true">
+                          <span class="bar-fill evo" style="--w: 99.6%"></span>
+                        </div>
+                        <span class="bar-val">20.91 M</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="bar-group">
+                    <div class="bar-name">
+                      morphex
+                      <small
+                        >thread-safe, but more allocation and probing per
+                        call</small
+                      >
+                    </div>
+                    <div class="bar-pair">
+                      <div class="bar">
+                        <div class="bar-track" aria-hidden="true">
+                          <span class="bar-fill" style="--w: 23%"></span>
+                        </div>
+                        <span class="bar-val us">4.82 M</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <figcaption>
+                  Bars are scaled to 21 M ops/s; values are printed. This is a
+                  <strong>4.34× lower throughput</strong> in the same run, not a
+                  claim about scaling.
+                </figcaption>
+              </figure>
+            </div>
+            <div class="card">
+              <h3>Startup and footprint</h3>
+              <div class="tw">
+                <table class="data">
+                  <tr>
+                    <td>Startup (load + first call)</td>
+                    <td>718–726 ms</td>
+                  </tr>
+                  <tr>
+                    <td>First pluralize after load</td>
+                    <td>2.5–3.6 ms</td>
+                  </tr>
+                  <tr>
+                    <td>Retained heap after GC</td>
+                    <td><strong>~18.2 MiB</strong> (19.08 MB)</td>
+                  </tr>
+                  <tr>
+                    <td>Cold 50k unseen-token calls</td>
+                    <td>428–449 ms</td>
+                  </tr>
+                  <tr>
+                    <td>lexicon entries</td>
+                    <td>147,338</td>
+                  </tr>
+                  <tr>
+                    <td>Concurrent throughput, 4 threads</td>
+                    <td>4.82M vs evo2 20.91M ops/s (4.34× lower)</td>
+                  </tr>
+                </table>
+              </div>
+              <p class="small">
+                The instance is immutable and thread-safe, but concurrency
+                throughput is lower in the same run. Startup was slower than the
+                historical 426 ms median; figures are not mixed across runs.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="block" id="typescript">
+          <div class="card">
+            <div class="eyebrow">Node.js · V8 · not JMH</div>
+            <h3>TypeScript port on Node.js</h3>
+            <p class="small">
+              A separate runtime, harness and workload from everything above.
+              These numbers come from
+              <code>morphex-ts/scripts/bench.ts</code> on an Intel Core
+              i5-12500H with Node.js 24.20.0: one warm-up pass, seven timed
+              samples, median reported, first sample dropped. Five runs are
+              shown as ranges.
+              <strong>They are not comparable to the JMH results above</strong>
+              and are not a cross-language speed claim.
+            </p>
+            <div class="tw">
+              <table class="data">
+                <tr>
+                  <th>Workload</th>
+                  <th>Delta engine</th>
+                  <th>Full engine</th>
+                  <th>Rules-only</th>
+                </tr>
+                <tr>
+                  <td>Repeated lexical word (<code>child</code>)</td>
+                  <td>111–119 ns</td>
+                  <td>269–280 ns</td>
+                  <td>130–139 ns</td>
+                </tr>
+                <tr>
+                  <td>Repeated rule word (<code>cat</code>)</td>
+                  <td>112–118 ns</td>
+                  <td>174–188 ns</td>
+                  <td>104–116 ns</td>
+                </tr>
+                <tr>
+                  <td>Repeated compound (<code>mother-in-law</code>)</td>
+                  <td>258–289 ns</td>
+                  <td>434–457 ns</td>
+                  <td>358–378 ns</td>
+                </tr>
+                <tr>
+                  <td>Distinct fixture lemmas (4,000 words)</td>
+                  <td>354–432 ns</td>
+                  <td>1,006–1,057 ns</td>
+                  <td>327–355 ns</td>
+                </tr>
+                <tr>
+                  <td><code>analyze()</code> repeated (<code>die</code>)</td>
+                  <td>258–278 ns</td>
+                  <td>421–441 ns</td>
+                  <td>221–228 ns</td>
+                </tr>
+              </table>
+            </div>
+            <p class="small">
+              The delta engine parses its four artifact sections and inserts
+              them directly into an open-addressed hash index over the 124,883
+              keys at load time, so a rule-only word such as
+              <code>cat</code> costs one hash and a short probe before the rules
+              run. The original four-section code measured 673–678 ns; a merged
+              binary search measured 286–293 ns; the hash index measures 112–118
+              ns (about 5.7–6.0× faster than the original). The index costs 1
+              MiB of memory; provider construction measures 50–51 ms end to end
+              (32–33 ms parsing, 17–19 ms building the index), down from 77–81
+              ms before the construction changes. It is built lazily on first
+              use. The full engine is now slower on these paths (174–188 ns) but
+              carries complete diagnostics, and rules-only ships no data at all.
+            </p>
+            <div class="tw">
+              <table class="data">
+                <tr>
+                  <th>Artifact</th>
+                  <th>Raw</th>
+                  <th>Gzip</th>
+                </tr>
+                <tr>
+                  <td>Delta lexicon (124,883 entries)</td>
+                  <td>1,962,900 B</td>
+                  <td>562,893 B</td>
+                </tr>
+                <tr>
+                  <td>Full lexicon (147,338 entries)</td>
+                  <td>3,707,556 B</td>
+                  <td>785,131 B</td>
+                </tr>
+                <tr>
+                  <td>Membership sidecar (340,726 hashes)</td>
+                  <td>1,817,208 B</td>
+                  <td>1,333,152 B</td>
+                </tr>
+                <tr>
+                  <td>Browser demo bundle (full lexicon)</td>
+                  <td>3,735,241 B</td>
+                  <td>794,191 B</td>
+                </tr>
+              </table>
+            </div>
+            <p class="small">
+              Method, build commands and the full discussion:
+              <a
+                href="https://github.com/slayyyyer/morphex/blob/main/morphex-ts/BENCHMARKS.md"
+                >morphex-ts/BENCHMARKS.md</a
+              >.
+            </p>
+          </div>
+        </section>
+
+        <section class="block" id="setup">
+          <div class="card">
+            <h3>Method at a glance</h3>
+            <div class="flow" role="list" aria-label="Benchmark method steps">
+              <div role="listitem">
+                <b>Fixed inputs</b>Versioned workload v1: lexical hits,
+                compacted words, unknown, uppercase, compounds, unsupported.
+              </div>
+              <div role="listitem">
+                <b>JMH run</b>2 forks · 3 warmups · 5 measurements · 500 ms
+                each.
+              </div>
+              <div role="listitem">
+                <b>Measure</b>Average latency plus normalized GC allocation per
+                operation.
+              </div>
+              <div role="listitem">
+                <b>Record</b>JSON receipt, same-run evo2 reference, no cross-run
+                mixing.
+              </div>
+            </div>
+            <div class="tw">
+              <table class="data">
+                <tr>
+                  <th>Field</th>
+                  <th>Value</th>
+                </tr>
+                <tr>
+                  <td>JDK / Maven / JMH</td>
+                  <td>
+                    Temurin 21.0.13 · 3.9.9 · 1.37 (<code
+                      >-f 2 -wi 3 -i 5 -w 500ms -r 500ms -prof gc</code
+                    >)
+                  </td>
+                </tr>
+                <tr>
+                  <td>Compare</td>
+                  <td>
+                    <code>org.atteo:evo-inflector:2.0</code>, same run and
+                    inputs
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Reproduce</h3>
+            <pre><code>./mvnw -q -pl inflector-benchmarks -am package
 java -jar inflector-benchmarks/target/benchmarks.jar \
   -f 2 -wi 3 -i 5 -w 500ms -r 500ms -prof gc \
   -rf json -rff results/release-1.2.0/benchmarks/jmh-workload-v1.json</code></pre>
-        <p class="small">The workload covers lexical hits, compacted regular words, unknown
-        inputs, uppercase inference, compounds and unsupported inputs. Historical corpus-only
-        runs are preserved but are not comparable to this fixed-category workload.</p>
-      </div>
+            <p class="small">
+              The workload covers lexical hits, compacted regular words, unknown
+              inputs, uppercase inference, compounds and unsupported inputs.
+              Historical corpus-only runs are preserved but are not comparable
+              to this fixed-category workload.
+            </p>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <div>
+          <b>Code: MIT.</b> <b>Data: CC BY-SA 3.0</b> (Wiktionary contributors
+          via Kaikki.org/Wiktextract).
+        </div>
+        <div>
+          <a href="https://github.com/slayyyyer/morphex">GitHub</a> ·
+          <a href="./javadoc/">Javadoc</a> ·
+          <a href="https://github.com/slayyyyer/morphex/blob/main/NOTICE"
+            >Attribution</a
+          >
+        </div>
+      </footer>
     </div>
-  </section>
-</main>
-<footer>
-  <div><b>Code: MIT.</b> <b>Data: CC BY-SA 3.0</b> (Wiktionary contributors via Kaikki.org/Wiktextract).</div>
-  <div><a href="https://github.com/slayyyyer/morphex">GitHub</a> · <a href="./javadoc/">Javadoc</a> · <a href="https://github.com/slayyyyer/morphex/blob/main/NOTICE">Attribution</a></div>
-</footer>
-</div>
-<script src="./site.js"></script>
-</body>
+    <script src="./site.js"></script>
+  </body>
 </html>

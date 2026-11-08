@@ -25,3 +25,11 @@ results/benchmarks/*.log
 inflector-benchmarks/results/*.tmp
 __pycache__/
 *.py[cod]
+
+# TypeScript port
+node_modules/
+morphex-ts/dist/
+morphex-ts/src/generated/
+morphex-ts/*.tgz
+morphex-ts/bench-results.json
+_pages/
