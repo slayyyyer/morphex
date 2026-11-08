@@ -192,10 +192,10 @@ The npm release runs through `.github/workflows/morphex-publish.yml`. Set the pa
 
 ```bash
 cd morphex-ts
-npm version 1.0.1 --no-git-tag-version
+npm version 1.4.0 --no-git-tag-version
 git add package.json package-lock.json
-git commit -m "Release morphex 1.0.1"
-git tag morphex-v1.0.1
+git commit -m "Release morphex 1.4.0"
+git tag morphex-v1.4.0
 git push origin main --tags
 ```
 

@@ -2,15 +2,12 @@
  * Browser demo entry point: the real inflector, not a re-implementation.
  *
  * The bundled full lexicon is used so `analyze()` can report alternatives, ambiguity,
- * countability and the decision stage exactly as the Java engine does. The rules-only engine is
- * built alongside it so the demo can show the same input with no lexicon at all.
+ * countability and the decision stage exactly as the Java engine does.
  */
 
 import { EnglishInflector } from '../english-inflector.js';
 import { BUNDLED_FULL_LEXICON } from '../generated/full-data.js';
 import { createFullLexicon } from '../lexicon.js';
-
-export type DemoMode = 'bundled' | 'rules';
 
 export interface DemoAnalysis {
   readonly input: string;
@@ -30,20 +27,17 @@ export interface DemoAnalysis {
 // falls back to the rules-only behaviour. The demo page states this explicitly.
 const fullLexicon = createFullLexicon(BUNDLED_FULL_LEXICON);
 const bundled = EnglishInflector.builder().withLexicon(fullLexicon).build();
-const rulesOnly = EnglishInflector.builder().withoutBundledLexicon().build();
 
 export const demoInfo = Object.freeze({
   bundledEntries: fullLexicon.size,
-  rulesOnly: true,
 });
 
-export function analyzeWord(input: string, mode: DemoMode = 'bundled'): DemoAnalysis | null {
+export function analyzeWord(input: string): DemoAnalysis | null {
   const word = input.trim();
   if (word.length === 0) {
     return null;
   }
-  const engine = mode === 'rules' ? rulesOnly : bundled;
-  const result = engine.analyze(word);
+  const result = bundled.analyze(word);
   return {
     input: word,
     plural: result.plural,
@@ -58,7 +52,6 @@ export function analyzeWord(input: string, mode: DemoMode = 'bundled'): DemoAnal
   };
 }
 
-export function pluralizeWord(input: string, count?: number, mode: DemoMode = 'bundled'): string {
-  const engine = mode === 'rules' ? rulesOnly : bundled;
-  return count === undefined ? engine.pluralize(input) : engine.pluralize(input, count);
+export function pluralizeWord(input: string, count?: number): string {
+  return count === undefined ? bundled.pluralize(input) : bundled.pluralize(input, count);
 }

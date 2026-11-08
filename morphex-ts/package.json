@@ -1,6 +1,6 @@
 {
   "name": "morphex",
-  "version": "1.0.1",
+  "version": "1.4.0",
   "description": "Deterministic English noun pluralization in TypeScript: auditable lexicon, three productive rules, compound handling, and a diagnostic analyze() API.",
   "license": "MIT",
   "author": "Justin Baker",

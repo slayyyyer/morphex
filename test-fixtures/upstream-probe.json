@@ -2,7 +2,7 @@
   "schema": "morphex-fixtures-v1",
   "kind": "upstream-probe",
   "source": "docs/upstream-probe.md",
-  "engine": "EnglishInflector 1.3.0",
+  "engine": "EnglishInflector 1.4.0",
   "count": 26,
   "cases": [
     ["German", "Germans", "German", "LEXICON", "lex:German"],

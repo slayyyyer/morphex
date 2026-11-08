@@ -26,8 +26,6 @@ h1 em{font-style:italic;font-weight:400;color:var(--acc)}
 .demo input:focus{outline:2px solid var(--acc);outline-offset:1px}
 .out{flex:1;min-width:180px;display:flex;align-items:center;font:600 24px 'JetBrains Mono',monospace;color:var(--acc);padding:12px 14px;border:1px dashed var(--acc);border-radius:10px;overflow-wrap:anywhere}
 .why{margin-top:12px;font:13px 'JetBrains Mono',monospace;color:var(--mute)}
-.rules-toggle{display:flex;gap:8px;align-items:center;cursor:pointer;user-select:none}
-.rules-toggle input{accent-color:var(--acc);margin:0}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .chip{border:1px solid var(--line);background:transparent;color:var(--ink);padding:5px 11px;border-radius:99px;font-size:13px;cursor:pointer}
 .chip:hover{border-color:var(--acc);color:var(--acc)}

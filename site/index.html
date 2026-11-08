@@ -34,7 +34,6 @@
     <div class="why" id="y"></div>
     <div class="why" id="detail"></div>
     <div class="chips" id="chips"></div>
-    <label class="why rules-toggle"><input type="checkbox" id="rules-only"> rules-only build · no lexicon data</label>
     <div class="why" id="catalog-note">Loading the real TypeScript engine…</div>
   </div>
 
@@ -42,16 +41,17 @@
     <a class="btn p" href="#install">Get started</a>
     <a class="btn" href="./comparison.html">See comparisons</a>
     <a class="btn" href="https://github.com/slayyyyer/morphex">GitHub</a>
-  </div>    <div class="badges"><span>Java 17+</span><span>Zero runtime deps</span><span>MIT code · CC BY-SA 3.0 data</span><span>Thread-safe · immutable</span><span>Release: 1.3.0</span></div>
+  </div>    <div class="badges"><span>Java 17+</span><span>Zero runtime deps</span><span>MIT code · CC BY-SA 3.0 data</span><span>Thread-safe · immutable</span><span>Release: 1.4.0</span></div>
 </div>
 
 <section id="install">
   <h2>Install</h2>
-  <p class="sub">The 1.3.0 artifacts are built from this release. Coordinates: <code>io.github.slayyyyer.morphex:english-inflector-core:1.3.0</code>.</p>
+  <p class="sub">The 1.4.0 artifacts are built from this release. Coordinates: <code>io.github.slayyyyer.morphex:english-inflector-core:1.4.0</code>.</p>
   <div class="tabs" role="tablist" id="tabs"></div>
   <pre id="snip"></pre>
   <p class="note"><b>Rules-only runtime mode:</b> <code>EnglishInflector.builder().withoutBundledLexicon().build()</code> disables loading the packaged lexicon and uses three productive rules plus your overrides. The lexical resources still ship inside the JAR, so the CC BY-SA 3.0 data attribution and distribution terms still apply.</p>
   <p class="note"><b>TypeScript / JavaScript:</b> the native port lives in <code>morphex-ts/</code> and shares this lexicon and compound table. Install it with <code>npm install morphex</code>. See <a href="#typescript">TypeScript / JavaScript</a> below.</p>
+  <p class="note"><b>New in 1.4.0:</b> Java and npm now share the same version. No public API or behavior change; the 1.3.0 evidence below still applies.</p>
   <p class="note"><b>New in 1.3.0:</b> independent AGID unseen-lemma evidence, ASCII shape fast paths, and a flattened ordered rule dispatch that brings compacted lookup to 79.4 ns/op. The public API and rule precedence are unchanged. The 1.2.0 compound/casing work remains the foundation; the linear selector is still not shipped.</p>
 
   <h3 style="margin:34px 0 12px;font-size:24px">Quickstart</h3>
@@ -74,6 +74,8 @@ r.source();          // LEXICON — "lex:die"</pre>
 <section id="typescript">
   <h2>TypeScript / JavaScript</h2>
   <p class="sub">A native port in <code>morphex-ts/</code>: same precedence, same 147,338-entry lexicon, same bounded compound table, zero runtime dependencies. Node 18+ and browsers.</p>
+  <div class="badges"><span>npm 1.4.0</span><span>Node 18+</span><span>Zero runtime deps</span><span>Types included</span></div>
+  <p class="note" style="margin-top:20px"><b>Install:</b> <code>npm install morphex@1.4.0</code></p>
 <pre class="solo">import { EnglishInflector } from 'morphex';
 
 const inflector = EnglishInflector.standard();
@@ -88,7 +90,7 @@ result.alternatives;  // ['dies']
 result.ambiguous;     // true
 result.stage;         // 'LEXICON'
 result.source;        // 'lex:die'</pre>
-  <p class="note"><b>Install:</b> <code>npm install morphex</code>. Or build from a checkout: <code>cd morphex-ts &amp;&amp; npm install &amp;&amp; npm run build</code>. Full API and conformance notes are in <a href="https://github.com/slayyyyer/morphex/blob/main/morphex-ts/README.md">morphex-ts/README.md</a>.</p>
+  <p class="note"><b>From a checkout:</b> <code>cd morphex-ts &amp;&amp; npm install &amp;&amp; npm run build</code>. Full API and conformance notes are in <a href="https://github.com/slayyyyer/morphex/blob/main/morphex-ts/README.md">morphex-ts/README.md</a>.</p>
   <p class="note"><b>Rules-only vs bundled lexicon.</b> The rules-only entry point (<code>morphex/rules</code>, or <code>withoutBundledLexicon()</code>) ships no data at all and loses irregular forms by design. The default package ships a delta artifact containing only entries the three rules do not reproduce; <code>morphex/full</code> is opt-in for complete <code>analyze()</code> metadata. Sizes below are measured by the build scripts on this machine, not estimates.</p>
   <div class="tw"><table>
     <tr><th>Artifact</th><th>Raw</th><th>Gzip</th></tr>
@@ -96,9 +98,9 @@ result.source;        // 'lex:die'</pre>
     <tr><td>Delta lexicon for <code>pluralize()</code> (124,883 entries)</td><td>1,962,900 B</td><td>562,893 B</td></tr>
     <tr><td>Full lexicon for <code>analyze()</code> (147,338 entries)</td><td>3,707,556 B</td><td>785,131 B</td></tr>
     <tr><td>Membership sidecar (340,726 hashes, base64)</td><td>1,817,208 B</td><td>1,333,152 B</td></tr>
-    <tr><td>This page's demo bundle (full lexicon, minified ESM)</td><td>3,735,241 B</td><td>794,191 B</td></tr>
+    <tr><td>This page's demo bundle (full lexicon, minified ESM)</td><td>3,735,118 B</td><td>794,141 B</td></tr>
   </table></div>
-  <p class="note">The demo above loads the full lexicon but not the membership sidecar, so uppercase-initialism inference for unknown acronyms is disabled in the browser; that is why the toggle and the note say so. Node builds can load the sidecar with <code>createBundledFullLexicon()</code>.</p>
+  <p class="note">The demo above loads the full 147,338-entry lexicon; the 1.3 MB membership sidecar is omitted in the browser, so uppercase-initialism inference for unknown acronyms is disabled here. Node builds can load the sidecar with <code>createBundledFullLexicon()</code>.</p>
 </section>
 
 <section>

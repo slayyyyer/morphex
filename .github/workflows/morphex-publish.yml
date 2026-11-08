@@ -3,7 +3,7 @@
 #   allowed action: npm publish
 #
 # Release by pushing a tag that matches the package version, for example:
-#   morphex-v1.0.1
+#   morphex-v1.4.0
 
 name: morphex-publish
 

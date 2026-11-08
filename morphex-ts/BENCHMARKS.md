@@ -75,7 +75,7 @@ Measured by `scripts/build-lexicon.ts` and `scripts/build-site.ts` and written t
 | Delta artifact for `pluralize()` (124,883 entries) | 1,962,900 B | 562,893 B |
 | Full artifact for `analyze()` (147,338 entries) | 3,707,556 B | 785,131 B |
 | Membership sidecar (340,726 hashes, base64) | 1,817,208 B | 1,333,152 B |
-| Browser demo bundle (full lexicon, minified ESM) | 3,735,241 B | 794,191 B |
+| Browser demo bundle (full lexicon, minified ESM) | 3,735,118 B | 794,141 B |
 
 The delta artifact is 26.0% of the source TSV's size and 84.8% of the full artifact's entries:
 85% of the lexicon is already reproduced by the three productive rules plus the identity lists,
@@ -86,7 +86,7 @@ the demo; browsers download it gzipped at 562,893 B.
 
 ## Notes
 
-- The browser demo loads the **full lexicon without the membership sidecar**: 794,191 B gzip
+- The browser demo loads the **full lexicon without the membership sidecar**: 794,141 B gzip
   including the engine. Membership is only needed for unknown-uppercase initialism inference, so
   the demo behaves like a rules-only build for that one policy and says so on the page.
 - The `morphex/rules` entry point replaces the generated delta module at build time; it contains

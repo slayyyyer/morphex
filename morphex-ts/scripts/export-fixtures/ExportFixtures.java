@@ -46,7 +46,7 @@ public final class ExportFixtures {
         out.append("  \"schema\": ").append(q(SCHEMA)).append(",\n");
         out.append("  \"kind\": \"p1\",\n");
         out.append("  \"source\": ").append(q("results/release-1.2.0/eval/p1-test-gold.tsv")).append(",\n");
-        out.append("  \"engine\": ").append(q("EnglishInflector 1.3.0")).append(",\n");
+        out.append("  \"engine\": ").append(q("EnglishInflector 1.4.0")).append(",\n");
 
         List<String> rows = new ArrayList<>();
         for (String line : Files.readAllLines(gold, StandardCharsets.UTF_8)) {
@@ -109,7 +109,7 @@ public final class ExportFixtures {
         out.append("  \"schema\": ").append(q(SCHEMA)).append(",\n");
         out.append("  \"kind\": \"upstream-probe\",\n");
         out.append("  \"source\": ").append(q("docs/upstream-probe.md")).append(",\n");
-        out.append("  \"engine\": ").append(q("EnglishInflector 1.3.0")).append(",\n");
+        out.append("  \"engine\": ").append(q("EnglishInflector 1.4.0")).append(",\n");
         out.append("  \"count\": ").append(inputs.size()).append(",\n");
         out.append("  \"cases\": [\n");
         List<String> rows = new ArrayList<>();

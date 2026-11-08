@@ -2,7 +2,7 @@
   "schema": "morphex-fixtures-v1",
   "kind": "p1",
   "source": "results/release-1.2.0/eval/p1-test-gold.tsv",
-  "engine": "EnglishInflector 1.3.0",
+  "engine": "EnglishInflector 1.4.0",
   "count": 50978,
   "cases": [
     ["AABNCP", "AABNCP", "AABNCPs", ["AABNCPs"], 1, "COUNTABLE", 0, "LEXICON", "lex:AABNCP#initialism", 0],

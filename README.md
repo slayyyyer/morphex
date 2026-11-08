@@ -9,18 +9,22 @@ Deterministic English noun pluralization for Java 17+, inspired by and built on 
 - Compared against evo-inflector 2.0 on the frozen lexical-coverage protocol: **100.000%** vs **96.474%** accepted-form accuracy. On the family-holdout protocol this library scores **97.365%** vs **96.474%** (see `docs/evaluation.md`).
 - The linear-selector investigation remains rejected and **not shipped** (`docs/learning.md`).
 
-Status: `1.3.0` release.
+Status: `1.4.0` release (Java and npm aligned).
 
 Website: https://slayyyyer.github.io/morphex/ (install, quickstart, comparison, benchmarks, design, Javadoc, live TypeScript demo).
 
 ## Two implementations
 
 - **Java 17+** — the original library in `inflector-core/`, with the Maven coordinates in Install below and the JMH evidence on the site.
-- **TypeScript** — a native port in [`morphex-ts/`](morphex-ts/README.md) for Node 18+ and browsers: the same precedence pipeline, the same 147,338-entry lexicon, the same bounded compound table, and a typed `analyze()` API. Install it with `npm install morphex`.
+- **TypeScript** — a native port in [`morphex-ts/`](morphex-ts/README.md) for Node 18+ and browsers: the same precedence pipeline, the same 147,338-entry lexicon, the same bounded compound table, and a typed `analyze()` API. Install it with `npm install morphex`; the current npm release is 1.4.0.
 
 Both implementations are generated from the same committed data (`inflector-core/src/main/resources/.../lexicon-v2.tsv`), and the TypeScript suite is checked against fixtures exported from the Java engine by `morphex-ts/scripts/export-fixtures/`. CI regenerates those fixtures and fails on any diff, so the ports cannot drift silently. TypeScript timings and bundle sizes are measured separately in [`morphex-ts/BENCHMARKS.md`](morphex-ts/BENCHMARKS.md); they are not comparable to the Java JMH results.
 
-## What's new in 1.3.0
+## What's new in 1.4.0
+
+- **Aligned releases.** Java and npm now share version 1.4.0. No public API or behavior change; the 1.3.0 evidence below still applies.
+
+### 1.3.0
 
 - **Independent AGID evidence.** The AGID 2016.01.19 stress test adds 261 genuinely unseen lemmas; the lexicon and rules-only select 249/261 (95.40%) versus evo2 at 248/261 (95.02%). AGID is generated data and its overall 93.84% lexicon result is a documented `MASS`/invariant policy stress result, not a natural-text accuracy claim.
 - **Faster compacted path.** ASCII shape fast paths and flattened ordered rule dispatch reduce the compacted benchmark from 105.0 to 79.4 ns/op; it remains 1.33x slower than evo2 (59.8 ns) and allocation is unchanged at 51.4 B/op.
@@ -43,7 +47,7 @@ Both implementations are generated from the same committed data (`inflector-core
 <dependency>
   <groupId>io.github.slayyyyer.morphex</groupId>
   <artifactId>english-inflector-core</artifactId>
-  <version>1.3.0</version>
+  <version>1.4.0</version>
 </dependency>
 ```
 
